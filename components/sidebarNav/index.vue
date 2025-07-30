@@ -1,7 +1,8 @@
 <template>
     <div class="">
         <div class="w-2/12 fixed h-screen bg-blue-950">
-            <NavLink/>
+            <NavLink navigationItem = "Main Menu"/>
+            <NavLink navigationItem = "Main Menu"/>
         </div>
     </div>
 </template>
