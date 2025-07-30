@@ -15,7 +15,7 @@
                 </div>
                 <div class="flex-col gap-1">
                     <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
-                    <p class="text-xs text-black/60">Kaprog - 7 Account</p>
+                    <p class="text-xs text-black/60">Kaprog - {{ props.countKaprog }}7 Account</p>
                 </div>
             </div>
             <div>
@@ -23,15 +23,19 @@
                     <h1 class="font-bold text-sm mx-6 my-4">GENERAL MENU</h1>
                 </div>
                 <div>
-                    <NavLink navigationItem = "Main Menu"/>
-                    <NavLink navigationItem = "Main Menu"/>
+                    <NavLink navigationItem = "Dashboard" :icons="IconsDashboard"/>
+                    <NavLink navigationItem = "Accounts" :icons="IconsAccounts"/>
                 </div>
             </div>
         </div>
     </div>
 </template>
-<script>
-import { NavLink } from '#components';
+<script setup>
+import { IconsAccounts, IconsDashboard, NavLink } from '#components';
+
+const props = defineProps({
+    countKaprog : Number,
+})
 
 
 </script>
