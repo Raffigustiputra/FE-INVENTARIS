@@ -25,6 +25,7 @@
                 <div>
                     <NavLink navigationItem = "Dashboard" :icons="IconsDashboard" navigateTo="/user/dashboard"/>
                     <NavLink navigationItem = "Accounts" :icons="IconsAccounts" navigateTo="/user/accounts"/>
+                    <NavLink navigationItem = "Inventory" :icons="IconsAccounts" navigateTo="/user/inventory"/>
                 </div>
             </div>
             <div class="border-b border-black/10 mx-4"></div>
@@ -34,9 +35,9 @@
                 </div>
                 <div>
                     <NavMajor majorColor="bg-blue-300" majorName="PPLG"/>
-                    <NavMajor majorColor="bg-blue-300" majorName="PPLG"/>
-                    <NavMajor majorColor="bg-blue-300" majorName="PPLG"/>
-                    <NavMajor majorColor="bg-blue-300" majorName="PPLG"/>
+                    <NavMajor majorColor="bg-orange-300" majorName="MPLB"/>
+                    <NavMajor majorColor="bg-green-300" majorName="DKV"/>
+                    <NavMajor majorColor="bg-red-300" majorName="KLN"/>
                 </div>
             </div>
         </div>
