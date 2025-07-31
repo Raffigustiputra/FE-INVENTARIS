@@ -25,7 +25,7 @@
                 <div>
                     <NavLink navigationItem = "Dashboard" :icons="IconsDashboard" navigateTo="/user/dashboard"/>
                     <NavLink navigationItem = "Accounts" :icons="IconsAccounts" navigateTo="/user/accounts"/>
-                    <NavLink navigationItem = "Inventory" :icons="IconsAccounts" navigateTo="/user/inventory"/>
+                    <NavLink navigationItem = "Inventory" :icons="IconsAccounts" navigateTo="/user/inventory" class="mb-2"/>
                 </div>
             </div>
             <div class="border-b border-black/10 mx-4"></div>
