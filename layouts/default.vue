@@ -2,7 +2,7 @@
   <Head>
     <Title>{{ route.meta.title }} - Inventaris</Title>
   </Head>
-  <div class="w-full min-h-screen">
+  <div class="w-full min-h-screen font-Poppins">
     <div class="flex">
       <div class="w-2/12">
         <SidebarNav />
