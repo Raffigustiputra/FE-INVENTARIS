@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <div class="w-2/12 fixed h-screen bg-gray-100">
+        <div class="w-3/12 fixed h-screen bg-white">
             <div class="flex items-center my-6 px-4">
                 <div class="size-8 bg-black">
                     
