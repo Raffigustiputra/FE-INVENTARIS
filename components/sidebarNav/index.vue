@@ -1,44 +1,53 @@
 <template>
     <div class="">
-        <div class="w-2/12 fixed h-screen bg-white border border-r border-black/10 ">
-            <div class="flex items-center my-4 px-4">
-                <div class="size-8 bg-black">
-                    
-                </div>
-                <h1 class="text-2xl font-bold px-2">WV</h1>
-            </div>
-            <div class="border-b border-black/10 mx-4">
-            </div>
-            <div class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto">
-                <div class="bg-black/10 size-8 rounded-full">
-
-                </div>
-                <div class="flex-col gap-1">
-                    <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
-                    <p class="text-xs text-black/60">Kaprog - {{ props.countKaprog }}7 Account</p>
-                </div>
-            </div>
-            <div class="">
-                <div>
-                    <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">GENERAL MENU</h1>
-                </div>
-                <div>
-                    <NavLink navigationItem = "Dashboard" :icons="IconsDashboard" navigateTo="/user/dashboard"/>
-                    <NavLink navigationItem = "Accounts" :icons="IconsAccounts" navigateTo="/user/accounts"/>
-                    <NavLink navigationItem = "Inventory" :icons="IconsAccounts" navigateTo="/user/inventory" class="mb-2"/>
-                </div>
-            </div>
-            <div class="border-b border-black/10 mx-4"></div>
+        <div class="w-2/12 fixed h-screen bg-white border border-r border-black/10 flex flex-col justify-between">
+            <!-- Bagian Atas -->
             <div>
-                <div>
-                    <h1 class="font-bold text-sm mx-6 my-4 text-[#BAB8B8]">MAJOR</h1>
+                <div class="flex items-center my-4 px-4">
+                    <div class="size-8 bg-black">
+                        
+                    </div>
+                    <h1 class="text-2xl font-bold px-2">WV</h1>
                 </div>
-                <div>
-                    <NavMajor majorColor="bg-blue-300" majorName="PPLG"/>
-                    <NavMajor majorColor="bg-orange-300" majorName="MPLB"/>
-                    <NavMajor majorColor="bg-green-300" majorName="DKV"/>
-                    <NavMajor majorColor="bg-red-300" majorName="KLN"/>
+                <div class="border-b border-black/10 mx-4">
                 </div>
+                <div class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto">
+                    <div class="bg-black/10 size-8 rounded-full">
+    
+                    </div>
+                    <div class="flex-col gap-1">
+                        <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
+                        <p class="text-xs text-black/60">Kaprog - {{ props.countKaprog }}7 Account</p>
+                    </div>
+                </div>
+                <div class="">
+                    <div>
+                        <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">GENERAL MENU</h1>
+                    </div>
+                    <div>
+                        <NavLink navigationItem = "Dashboard" :icons="IconsDashboard" navigateTo="/user/dashboard"/>
+                        <NavLink navigationItem = "Accounts" :icons="IconsAccounts" navigateTo="/user/accounts"/>
+                        <NavLink navigationItem = "Inventory" :icons="IconsAccounts" navigateTo="/user/inventory" class="mb-2"/>
+                    </div>
+                </div>
+                <div class="border-b border-black/10 mx-4"></div>
+                <div>
+                    <div>
+                        <h1 class="font-bold text-sm mx-6 my-4 text-[#BAB8B8]">MAJOR</h1>
+                    </div>
+                    <div>
+                        <NavMajor majorColor="bg-blue-300" majorName="PPLG"/>
+                        <NavMajor majorColor="bg-orange-300" majorName="MPLB"/>
+                        <NavMajor majorColor="bg-green-300" majorName="DKV"/>
+                        <NavMajor majorColor="bg-red-300" majorName="KLN"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian Logout / bawah -->
+            <div class="flex flex-col h-20 justify-evenly">
+                <div class="border-b border-black/10 mx-4 flex items-end justify-end"></div>
+                <IconsLogoutIcon class="w-5 h-5 ml-5 text-gray-500" />
             </div>
         </div>
     </div>

@@ -13,9 +13,9 @@
           <p class="text-sm text-gray-600">Manage Your Items</p>
         </div>
         <div class="bg-white flex items-center justify-center p-3 rounded-lg shadow"><IconsAvatar /></div>
-        <!-- coba Badge -->
-        <BadgeInfo type="good" text="Good" />
-        <SearchBox text="Search Inventory..." />
+        <!-- coba Badge & seargsbogs-->
+        <!-- <BadgeInfo type="good" text="Good" />
+        <SearchBox text="Search Inventory..." /> -->
       </div>
     </div>
   </div>
