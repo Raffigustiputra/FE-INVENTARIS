@@ -1,5 +1,5 @@
 <template>
-    <div class="w-9/12 h-20 fixed top-0 right-0 bg-white shadow-sm z-10 border-b border-black/10">
+    <div class="w-10/12 h-20 fixed top-0 right-0 bg-white shadow-sm z-10 border-b border-black/10">
         <div class="container mx-auto flex items-center justify-between py-3 px-6">
             <nav class="flex items-center font-semibold text-lg mt-2.5">
                 <IconsNavbar />
