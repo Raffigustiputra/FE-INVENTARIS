@@ -6,6 +6,16 @@ definePageMeta({
 
 <template>
     <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute right-8 top-28">
+            <div class="flex items-center relative">
+                <img
+                    src="/images/wikrama-logo.png"
+                    alt="Logo Wikrama"
+                    class="size-22 object-contain" />
+                <img src="/images/rpl.png" alt="Logo RPL" class="size-20 object-contain" />
+            </div>
+        </div>
+
         <!-- Background Image Layer -->
         <div
             class="absolute inset-0 bg-cover bg-center"
@@ -15,22 +25,12 @@ definePageMeta({
         <div class="relative z-10 mx-24">
             <div class="mb-6">
                 <div class="font-bold text-3xl">
+                    <div></div>
                     <div class="flex items-center justify-between w-full gap-3">
                         <h1>LOGO WV</h1>
-                        <div class="flex justify-between items-center">
-                            <img
-                                src="/images/wikrama-logo.png"
-                                alt="Logo Wikrama"
-                                class="size-20 object-contain" />
-                            <img
-                                src="/images/rpl.png"
-                                alt="Logo RPL"
-                                class="size-24 object-contain" />
-                        </div>
                     </div>
                     <h1>Welcome to WikVentory</h1>
                 </div>
-
                 <div class="w-5/12 mt-2">
                     <p>
                         A Data and Management System for Inventory Management. Monitor, manage, and
