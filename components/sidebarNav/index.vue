@@ -1,3 +1,4 @@
+
 <template>
     <div class="">
         <div class="w-2/12 fixed h-screen bg-white border border-r border-black/10">

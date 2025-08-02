@@ -17,3 +17,8 @@
         </div>
     </div>
 </template>
+<script setup>
+
+import { BadgeInfo } from "#components";
+
+</script>
