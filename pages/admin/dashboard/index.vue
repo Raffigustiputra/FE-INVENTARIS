@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-screen">
+    <div class="">
         <button-edit />
         <button-delete />
     </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <Navbar :breadcrumbs="breadcrumbs" />
-    <div class="flex items-center justify-between mt-12 mb-4">
+    <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
       <SearchBox text="Search inventory..." />
     </div>
@@ -18,7 +18,7 @@
                 class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500"
               />
             </th>
-            <th class="px-4 py-2">Type</th>
+            <th class="px-10 py-2">Type</th>
             <th class="px-4 py-2 text-right"><div class="mr-2">Action</div></th>
           </tr>
         </thead>
@@ -36,7 +36,7 @@
                 class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500"
               />
             </td>
-            <td class="px-4 py-4">
+            <td class="px-10 py-4">
               <span class="text-black text-xs font-medium">{{ item.name }}</span>
             </td>
             <td class="px-4 py-4 text-right">

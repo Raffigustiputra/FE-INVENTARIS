@@ -13,7 +13,7 @@
             <th class="px-8 py-2 w-4/12">Name</th>
             <th class="px-4 py-2 w-3/12">Major Name</th>
             <th align="center" class="px-4 py-2 w-3/12">Role</th>
-            <th class="px-4 py-2 w-3/12 text-right">Action</th> <!-- Tambah text-right -->
+            <th class="px-4 py-2 w-3/12 text-right"><div class="mr-2">Action</div></th>
           </tr>
         </thead>
         <tbody class="bg-white">
