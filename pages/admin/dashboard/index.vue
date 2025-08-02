@@ -1,6 +1,7 @@
 <template>
     <div class="w-full h-screen">
-        <h1>Home</h1>
+        <button-edit />
+        <button-delete />
     </div>
 </template>
 <script setup>
