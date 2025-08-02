@@ -10,7 +10,7 @@
                 <div class="bg-black/10 size-8 rounded-full"></div>
                 <div class="flex-col gap-1">
                     <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
-                    <p class="text-xs text-black/60">Kaprog - {{ props.countKaprog }}7 Account</p>
+                    <p class="text-xs text-black/60">Inventory Management System</p>
                 </div>
             </div>
             <div class="">

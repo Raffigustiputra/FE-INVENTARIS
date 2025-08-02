@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-7">
       <h1 class="font-semibold text-2xl">List Account</h1>
       <SearchBox />
     </div>
@@ -11,7 +11,7 @@
           <tr class="text-sm font-medium text-gray-700">
             <th class="px-8 py-2 w-4/12">Name</th>
             <th class="px-4 py-2 w-3/12">Major Name</th>
-            <th class="px-4 py-2 w-3/12">Role</th>
+            <th align="center" class="px-4 py-2 w-3/12">Role</th>
             <th class="px-4 py-2 w-3/12 text-right">Action</th> <!-- Tambah text-right -->
           </tr>
         </thead>
@@ -30,7 +30,7 @@
                 <span class="text-white text-xs font-medium">PPLG</span>
               </div>
             </td>
-            <td class="px-4 py-4">
+            <td align="center" class="px-4 py-4">
               <span class="text-xs font-medium">Super Admin</span>
             </td>
             <td class="px-4 py-4 text-right"> <!-- Tambah text-right -->
