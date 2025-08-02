@@ -1,6 +1,8 @@
 <template>
     <div
-    class="bg-blue-400 p-1 size-8 rounded-md flex justify-center items-center">
+    class="bg-blue-400 p-1 rounded-md flex justify-center items-center"
+    :class="props.size"
+    >
         <svg
             width="17"
             height="17"
@@ -32,6 +34,11 @@
         </svg>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
+const props = withDefaults(defineProps<{
+  size?: string
+}>(), {
+  size: 'size-7',
+})
 
 </script>

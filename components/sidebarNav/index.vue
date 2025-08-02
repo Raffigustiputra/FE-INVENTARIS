@@ -21,15 +21,15 @@
                     <NavLink
                         navigationItem="Dashboard"
                         :icons="IconsDashboard"
-                        navigateTo="/user/dashboard" />
+                        navigateTo="/admin/dashboard" />
                     <NavLink
                         navigationItem="Accounts"
                         :icons="IconsAccounts"
-                        navigateTo="/user/accounts" />
+                        navigateTo="/admin/accounts" />
                     <NavLink
                         navigationItem="Inventory"
                         :icons="IconsAccounts"
-                        navigateTo="/user/inventory"
+                        navigateTo="/admin/inventory"
                         class="mb-2" />
                 </div>
             </div>

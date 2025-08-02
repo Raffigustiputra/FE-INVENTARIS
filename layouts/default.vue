@@ -11,7 +11,7 @@
             <Navbar />
             </div>
       <div class="w-10/12 flex py-4 px-10 flex-col">
-        <div class="w-full mt-24 h-auto bg-red-100">
+        <div class="w-full mt-24 h-auto ">
           <slot></slot>
         </div>
       </div>

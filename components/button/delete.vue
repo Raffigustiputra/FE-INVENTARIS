@@ -1,6 +1,8 @@
 <template>
     <div
-    class="bg-red-500 p-1 size-8 rounded-md flex justify-center items-center">
+    class="bg-red-500 p-1 rounded-md flex justify-center items-center"
+    :class="props.size"
+    >
         <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <rect x="0.532227" y="0.758789" width="15.4823" height="15.4823" fill="url(#pattern0_258_93)"/>
 <defs>
@@ -13,6 +15,10 @@
 
     </div>
 </template>
-<script setup>
-
+<script setup lang="ts">
+const props = withDefaults(defineProps<{
+  size?: string
+}>(), {
+  size: 'size-7',
+})
 </script>
