@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mt-12 mb-4">
       <h1 class="font-semibold text-2xl">Inventory</h1>
-      <SearchBox />
+      <SearchBox text="Search inventory..." />
     </div>
 
     <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
