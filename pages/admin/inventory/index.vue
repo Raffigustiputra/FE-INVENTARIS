@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Navbar :breadcrumbs="breadcrumbs" />
     <div class="flex items-center justify-between mt-12 mb-4">
       <h1 class="font-semibold text-2xl">Inventory</h1>
       <SearchBox text="Search inventory..." />
@@ -52,12 +53,21 @@
 </template>
 
 <script setup>
+import { IconsNavbarIconsFile, IconsNavbarIconsPrint } from '#components'
 import { ref, watch } from 'vue'
 
 definePageMeta({
     layout: "default",
     title: "Inventory"
 })
+
+const breadcrumbs = [{
+  label: "Manage Inventory",
+  icon: IconsNavbarIconsFile,
+}, {
+  label: "Print Selected",
+  icon: IconsNavbarIconsPrint
+}]
 
 const items = ref([
   { id: 1, name: 'Lenovo' },
@@ -82,5 +92,5 @@ function toggleAll() {
 
 watch(selectedItems, (newVal) => {
   selectAll.value = newVal.length === items.value.length
-})
+});
 </script>
