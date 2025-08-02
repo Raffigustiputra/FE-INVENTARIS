@@ -1,39 +1,66 @@
 <script setup>
 definePageMeta({
-  layout: "none",
-})
+    layout: 'none',
+});
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-      <h1 class="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h1>
-      <form class="space-y-4">
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            class="w-full px-4 py-2 mt-1 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+    <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute right-8 top-28">
+            <div class="flex items-center relative">
+                <img
+                    src="/images/wikrama-logo.png"
+                    alt="Logo Wikrama"
+                    class="size-22 object-contain" />
+                <img src="/images/rpl.png" alt="Logo RPL" class="size-20 object-contain" />
+            </div>
         </div>
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            class="w-full px-4 py-2 mt-1 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+
+        <!-- Background Image Layer -->
+        <div
+            class="absolute inset-0 bg-cover bg-center"
+            style="background-image: url('/images/Banner-Web.jpg'); opacity: 0.3"></div>
+
+        <!-- Konten utama -->
+        <div class="relative z-10 mx-24">
+            <div class="mb-6">
+                <div class="font-bold text-3xl">
+                    <div></div>
+                    <div class="flex items-center justify-between w-full gap-3">
+                        <h1>LOGO WV</h1>
+                    </div>
+                    <h1>Welcome to WikVentory</h1>
+                </div>
+                <div class="w-5/12 mt-2">
+                    <p>
+                        A Data and Management System for Inventory Management. Monitor, manage, and
+                        integrate all inventory data more easily and quickly. Please log in to start
+                        using the available features.
+                    </p>
+                </div>
+            </div>
+
+            <div class="w-5/12 py-4 rounded-xl bg-white">
+                <div class="w-full text-center">
+                    <h1 class="font-semibold">Log in to start using WikVentory</h1>
+                </div>
+                <div class="mx-4 flex flex-col gap-1">
+                    <h1>Username</h1>
+                    <input type="text" class="px-4 py-1 w-full border border-black rounded-lg" />
+                </div>
+                <div class="mx-4 mt-4 flex flex-col gap-1">
+                    <h1>Password</h1>
+                    <input
+                        type="password"
+                        class="px-4 py-1 w-full border border-black rounded-lg" />
+                </div>
+                <div class="mx-4 mt-6">
+                    <button
+                        class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-lg">
+                        LOGIN
+                    </button>
+                </div>
+            </div>
         </div>
-        <button
-          type="submit"
-          class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-semibold rounded-xl transition duration-200"
-        >
-          Sign In
-        </button>
-      </form>
     </div>
-  </div>
 </template>
