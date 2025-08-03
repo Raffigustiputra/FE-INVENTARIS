@@ -2,7 +2,7 @@
     <div class="">
         <button-edit />
         <button-delete />
-        <div class="w-4/12">
+        <div class="w-full">
             <InputText label="Brand Name" />
             <InputText label="Unit Code" />
             <InputTextarea />
