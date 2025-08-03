@@ -57,6 +57,7 @@
 import { IconsNavbarIconsFile, IconsNavbarIconsPrint } from '#components';
 import { ref, watch } from 'vue';
 
+
 definePageMeta({
     layout: 'default',
     title: 'Inventory',
