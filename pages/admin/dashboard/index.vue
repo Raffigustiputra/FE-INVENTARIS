@@ -5,6 +5,8 @@
         <div class="w-4/12">
             <InputText label="Brand Name" />
             <InputText label="Unit Code" />
+            <InputTextarea />
+            <InputDate />
         </div>
     </div>
 </template>
