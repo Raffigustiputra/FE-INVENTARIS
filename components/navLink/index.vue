@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-4 my-1">
+  <div class="mx-4 my-3">
     <NuxtLink
       :to="props.navigateTo"
       class="px-4 py-2 rounded-lg flex items-center gap-3 duration-300 hover:cursor-pointer"
