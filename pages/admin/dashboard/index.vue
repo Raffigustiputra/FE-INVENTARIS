@@ -3,7 +3,8 @@
         <button-edit />
         <button-delete />
         <div class="w-4/12">
-            <InputText />
+            <InputText label="Brand Name" />
+            <InputText label="Unit Code" />
         </div>
     </div>
 </template>
