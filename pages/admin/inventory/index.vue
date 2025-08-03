@@ -50,9 +50,11 @@
 
             <!-- Name -->
             <td class="px-10 py-4">
-              <span class="text-black text-xs font-medium">{{
+              <NuxtLink
+              :to="`/admin/inventory/${item.id}`"
+              class="text-black text-xs font-medium">{{
                 item.name
-              }}</span>
+              }}</NuxtLink>
             </td>
 
             <!-- Action -->
