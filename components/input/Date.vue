@@ -1,5 +1,5 @@
 <template>
-    <div class="space-y-4 w-full">
+    <div class="space-y-4 my-2 w-full">
         <!-- added date -->
         <div>
             <label for="brand" class="block text-sm font-medium text-gray-700">Brand Name</label>
