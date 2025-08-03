@@ -19,7 +19,7 @@
                 <div>
                     <svg
                         @click="$emit('btnClose')"
-                        class="size-3"
+                        class="size-3 hover:cursor-pointer"
                         viewBox="0 0 12 12"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -36,10 +36,10 @@
         <div class="border-t w-full justify-end flex gap-3 px-4 py-2 border-[#D2D2D2]">
             <button 
             @click="$emit('btnClose')"
-            class="border-2 border-[#D2D2D2] px-3 py-1 text-sm rounded-md font-medium">Cancel</button>
+            class="border-2 hover:cursor-pointer hover:bg-black/10 duration-200 border-[#D2D2D2] px-3 py-1 text-sm rounded-md font-medium">Cancel</button>
             <button
             @click="$emit('btnSubmit')"
-            class="bg-[#3A6CC2] text-white px-3 py-1 text-sm rounded-md font-medium">Submit</button>
+            class="bg-[#3A6CC2] hover:cursor-pointer duration-200 hover:bg-[#335fac] text-white px-3 py-1 text-sm rounded-md font-medium">Submit</button>
         </div>
     </div>
 </template>
