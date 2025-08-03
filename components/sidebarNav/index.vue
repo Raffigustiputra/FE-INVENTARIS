@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="fixed size-16 w-2/12 flex items-center bottom-0 bg-white border border-t border-black/10">
+        <div class="fixed h-16  flex items-center bottom-0 bg-white  ">
             <div class="mx-6">
                 <svg
                     width="23"
