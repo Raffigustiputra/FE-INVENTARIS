@@ -4,7 +4,7 @@
     <Navbar :breadcrumbs="breadcrumbs" />
 
     <!-- Heading & Search -->
-    <div class="flex items-center justify-between mt-20 mb-7">
+    <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
       <SearchBox text="Search inventory..." />
     </div>
