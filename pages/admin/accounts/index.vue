@@ -24,12 +24,10 @@
           >
             <td class="flex items-center gap-2 px-8 py-4">
               <div class="size-6 bg-black rounded-full"></div>
-              <span class="text-xs font-medium">NAMA KAPROG NYA DISINI NANTI</span>
+              <span class="text-xs font-medium">Nama Kaprog</span>
             </td>
             <td class="px-4 py-4">
-              <div class="bg-[#A2C5FF99] w-24 flex justify-center rounded-md py-1">
-                <span class="text-[#1B5DCC] text-xs font-semibold">PPLG</span>
-              </div>
+              <BadgeMajor :type="getMajorType('PPLG')" text="PPLG" />
             </td>
             <td align="center" class="px-4 py-4">
               <span class="text-xs font-medium">Super Admin</span>
@@ -48,7 +46,7 @@
 </template>
 
 <script setup>
-import { IconsNavbarIconsAddUser, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsManageUser } from '#components';
+import { BadgeMajor, IconsNavbarIconsAddUser, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsManageUser } from '#components';
 
 definePageMeta({
     layout: "default",
@@ -77,4 +75,25 @@ const breadcrumbs = [
     to: 'admin/accounts/sort-by-role'
   },
 ];
+
+const getMajorType = (major)=> {
+  switch(major) {
+    case 'PPLG':
+      return 'pplg';
+    case 'DKV':
+      return 'dkv';
+    case 'TJKT':
+      return 'tjkt';
+    case 'MPLB':
+      return 'mplb';
+    case 'PMN':
+      return 'pmn';
+    case 'HTL':
+      return 'htl';
+    case 'KLN':
+      return 'kln';
+    default:
+      return 'default'; 
+  }
+}
 </script>
