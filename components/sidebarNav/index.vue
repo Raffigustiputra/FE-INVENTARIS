@@ -10,13 +10,13 @@
             <div class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto">
                 <div class="bg-black/10 size-8 rounded-full"></div>
                 <div class="flex-col gap-1">
-                    <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
-                    <p class="text-xs text-black/60">Inventory Management System</p>
+                    <h1 class="text-sm font-semibold">SMK Wikrama Bogor</h1>
+                    <p class="text-xs font-medium text-black/60">Inventory Management System</p>
                 </div>
             </div>
             <div class="">
                 <div>
-                    <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">GENERAL MENU</h1>
+                    <h1 class="font-semibold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">GENERAL MENU</h1>
                 </div>
                 <div>
                     <NavLink
@@ -29,7 +29,7 @@
                         navigateTo="/admin/accounts" />
                     <NavLink
                         navigationItem="Inventory"
-                        :icons="IconsAccounts"
+                        :icons="IconsInventory"
                         navigateTo="/admin/inventory"
                         class="mb-2" />
                 </div>
@@ -37,7 +37,7 @@
             <div class="border-b border-black/10 mx-4"></div>
             <div>
                 <div>
-                    <h1 class="font-bold text-sm mx-6 my-4 text-[#BAB8B8]">MAJOR</h1>
+                    <h1 class="font-semibold text-sm mx-6 my-4 text-[#BAB8B8]">MAJOR</h1>
                 </div>
                 <div>
                     <NavMajor majorColor="bg-blue-300" majorName="PPLG" />
@@ -78,7 +78,7 @@
     </div>
 </template>
 <script setup>
-import { IconsAccounts, IconsDashboard, NavLink } from '#components';
+import { IconsAccounts, IconsDashboard, IconsInventory, NavLink } from '#components';
 
 const props = defineProps({
     countKaprog: Number,

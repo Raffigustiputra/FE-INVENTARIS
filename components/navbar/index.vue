@@ -32,14 +32,18 @@
             :key="index"
             class="flex items-center gap-4"
           >
-            <div class="text-[#A9A9A9] flex gap-1 hover:text-[#727272]">
+            <router-link
+              v-if="item.to"
+              :to="`/${item.to}`"
+              class="text-[#A9A9A9] flex gap-1 hover:text-[#727272]"
+            >
               <component
                 :is="item.icon"
                 class="w-5 h-5"
                 v-if="item.icon"
               />
               <h3 class="font-medium text-sm">{{ item.label }}</h3>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
