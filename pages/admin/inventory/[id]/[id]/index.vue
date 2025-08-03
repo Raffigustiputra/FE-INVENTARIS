@@ -58,7 +58,11 @@
     </div>
 </template>
 <script setup>
-import { IconsNavbarIconsFile, IconsNavbarIconsPrint } from '#components';
+import { IconsNavbarIconsFile, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsPrint } from '#components';
+
+definePageMeta({
+  title: "Inventory",
+});
 
 const breadcrumbs = [
     {
@@ -69,6 +73,14 @@ const breadcrumbs = [
         label: 'Print Selected',
         icon: IconsNavbarIconsPrint,
     },
+    {
+    label: "Sort by Major",
+    icon: IconsNavbarIconsFilterMajor,
+  },
+  {
+    label: "Sort by Condition",
+    icon: IconsNavbarIconsFilterRole,
+  }
 ];
 
 const inventory = [

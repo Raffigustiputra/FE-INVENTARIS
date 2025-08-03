@@ -1,9 +1,7 @@
 <template>
   <div>
-    <!-- Navbar dengan breadcrumbs -->
     <Navbar :breadcrumbs="breadcrumbs" />
 
-    <!-- Heading & Search -->
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
       <SearchBox text="Search inventory..." />
@@ -19,7 +17,7 @@
                 type="checkbox"
                 v-model="selectAll"
                 @change="toggleAll"
-                class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500"
+                class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 hover:cursor-pointer checked:border-blue-500"
               />
             </th>
             <th class="px-10 py-2">Type</th>
@@ -51,10 +49,10 @@
             <!-- Name -->
             <td class="px-10 py-4">
               <NuxtLink
-              :to="`/admin/inventory/${item.id}`"
-              class="text-black text-xs font-medium">{{
-                item.name
-              }}</NuxtLink>
+                :to="`/admin/inventory/${item.id}`"
+                class="text-black text-xs font-medium"
+                >{{ item.name }}</NuxtLink
+              >
             </td>
 
             <!-- Action -->
@@ -68,12 +66,20 @@
         </tbody>
       </table>
     </div>
+    <p class="text-xs text-gray-500 mt-3 ml-2">
+      Showing 1 to {{ items.length }} of {{ items.length }} Items
+    </p>
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from "vue";
-import { IconsNavbarIconsFile, IconsNavbarIconsPrint } from "#components";
+import {
+  IconsNavbar,
+  IconsNavbarIconsAddUser,
+  IconsNavbarIconsFile,
+  IconsNavbarIconsPrint,
+} from "#components";
 
 definePageMeta({
   layout: "default",
@@ -84,6 +90,10 @@ const breadcrumbs = [
   {
     label: "Manage Inventory",
     icon: IconsNavbarIconsFile,
+  },
+  {
+    label: "Add Type",
+    icon: IconsNavbarIconsAddUser,
   },
   {
     label: "Print Selected",

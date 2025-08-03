@@ -7,6 +7,11 @@
             <InputText label="Unit Code" />
             <InputTextarea />
             <InputDate />
+            <InputSelect label="type">
+            <option value="">Laptop</option>
+            <option value="">Desktop</option>
+            <option value="">Printer</option>
+            </InputSelect>
         </div>
     </div>
 </template>

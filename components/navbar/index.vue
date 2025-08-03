@@ -7,7 +7,6 @@
         class="container mx-auto flex items-center justify-between py-3 px-6"
       >
         <nav class="flex items-center font-semibold text-lg">
-          <IconsNavbar />
         </nav>
 
         <div class="flex items-center gap-3">
@@ -25,7 +24,7 @@
 
       <div
         v-if="breadcrumbs && breadcrumbs.length > 0"
-        class="w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-12"
+        class="w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-9"
       >
         <div class="container mx-auto flex items-center gap-5">
           <div
@@ -33,7 +32,7 @@
         :key="index"
         class="flex items-center gap-4"
           >
-        <div class="text-[#A9A9A9] flex gap-1 hover:text-[#727272] hover:cursor-pointer">
+        <div class="text-[#A9A9A9] flex gap-2.5 hover:text-[#727272] hover:cursor-pointer">
           <component
             :is="item.icon"
             class="w-5 h-5"
