@@ -6,7 +6,7 @@ definePageMeta({
 
 <template>
     <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute right-8 top-28">
+        <div class="absolute right-8 top-12">
             <div class="flex items-center relative">
                 <img
                     src="/images/wikrama-logo.png"
