@@ -13,7 +13,7 @@
       </div>
       <h1
         :class="[
-          'text-sm font-semibold',
+          'text-sm font-medium',
           isActive ? 'text-white' : 'text-black/60'
         ]"
       >
