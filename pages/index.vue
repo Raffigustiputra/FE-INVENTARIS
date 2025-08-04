@@ -1,4 +1,34 @@
 <script setup>
+const authStore = useAuthStore();
+
+const router = useRouter();
+const url = useRuntimeConfig().public.authUrl;
+
+const login = async () => {
+    try {
+        const response = await $fetch(`${url}/login`, {
+            method: 'POST'
+            ,
+            body: {
+                username: authStore.input.username,
+                password: authStore.input.password,
+            },
+        });
+        console.log(response.data);
+
+        authStore.token = response.token;
+        authStore.role = response.data.role;
+        authStore.name = response.data.name;
+        authStore.usid = response.data.usid;
+        authStore.username = response.data.username;
+
+        router.push('/admin/dashboard');
+    } catch (err) {
+        console.error('Login gagal:', err);
+        alert('Username/password salah atau server error.');
+    }
+};
+
 definePageMeta({
     layout: 'none',
 });
@@ -46,16 +76,21 @@ definePageMeta({
                 </div>
                 <div class="mx-4 flex flex-col gap-1">
                     <h1>Username</h1>
-                    <input type="text" class="px-4 py-1 w-full border border-black rounded-lg" />
+                    <input
+                        v-model="authStore.input.username"
+                        type="text"
+                        class="px-4 py-1 w-full border border-black rounded-lg" />
                 </div>
                 <div class="mx-4 mt-4 flex flex-col gap-1">
                     <h1>Password</h1>
                     <input
+                        v-model="authStore.input.password"
                         type="password"
                         class="px-4 py-1 w-full border border-black rounded-lg" />
                 </div>
                 <div class="mx-4 mt-6">
                     <button
+                        @click="login"
                         class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-lg">
                         LOGIN
                     </button>

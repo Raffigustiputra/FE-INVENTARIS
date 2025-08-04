@@ -1,6 +1,6 @@
 <template>
-    <div class="border border-[#D2D2D2] w-5/12 rounded-sm">
-        <div class="border-b border-[#D2D2D2] py-2 px-4">
+    <div class="border bg-white border-[#D2D2D2] w-5/12 rounded-sm">
+        <div class="border-b bg-white rounded-sm border-[#D2D2D2] py-2 px-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <div>
@@ -33,7 +33,7 @@
         <div class="pt-2 pb-4 px-4 max-h-96 min-h-32 rounded-sm overflow-y-auto">
             <slot></slot>
         </div>
-        <div class="border-t w-full justify-end flex gap-3 px-4 py-2 border-[#D2D2D2]">
+        <div class="border-t w-full justify-end flex gap-3 px-4 py-2 bg-white rounded-sm border-[#D2D2D2]">
             <button 
             @click="$emit('btnClose')"
             class="border-2 hover:cursor-pointer hover:bg-black/10 duration-200 border-[#D2D2D2] px-3 py-1 text-sm rounded-md font-medium">Cancel</button>

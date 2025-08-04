@@ -6,10 +6,7 @@
       :class="isActive ? 'bg-[#0844A4]' : 'hover:bg-black/10'"
     >
       <div>
-        <component
-          :is="props.icons"
-          :class="['w-5 h-5', isActive ? 'text-white' : 'text-black/60']"
-        />
+        <slot :isActive="isActive"></slot>
       </div>
       <h1
         :class="[

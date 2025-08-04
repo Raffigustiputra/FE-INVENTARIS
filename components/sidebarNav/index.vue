@@ -1,4 +1,3 @@
-
 <template>
     <div class="">
         <div class="w-2/10 fixed h-screen bg-white border border-r border-black/10">
@@ -19,19 +18,38 @@
                     <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">GENERAL MENU</h1>
                 </div>
                 <div>
-                    <NavLink
-                        navigationItem="Dashboard"
-                        :icons="IconsDashboard"
-                        navigateTo="/admin/dashboard" />
-                    <NavLink
-                        navigationItem="Accounts"
-                        :icons="IconsAccounts"
-                        navigateTo="/admin/accounts" />
-                    <NavLink
-                        navigationItem="Inventory"
-                        :icons="IconsAccounts"
-                        navigateTo="/admin/inventory"
-                        class="mb-2" />
+                    <NavLink navigationItem="Dashboard" navigateTo="/admin/dashboard">
+                        <template #default="{ isActive }">
+                            <IconsDashboard
+                                :class="[
+                                    'size-4',
+                                    'transition-colors duration-300',
+                                    isActive ? 'fill-white' : 'fill-[#727272]',
+                                ]" />
+                        </template>
+                    </NavLink>
+
+                    <NavLink navigationItem="Accounts" navigateTo="/admin/accounts">
+                        <template #default="{ isActive }">
+                            <IconsAccounts
+                                :class="[
+                                    'size-4',
+                                    'transition-colors duration-300',
+                                    isActive ? 'fill-white' : 'fill-[#727272]',
+                                ]" />
+                        </template>
+                    </NavLink>
+
+                    <NavLink navigationItem="Inventory" navigateTo="/admin/inventory" class="mb-2">
+                        <template #default="{ isActive }">
+                            <IconsInventory
+                                :class="[
+                                    'size-4',
+                                    'transition-colors duration-300',
+                                    isActive ? 'fill-white' : 'fill-[#727272]',
+                                ]" />
+                        </template>
+                    </NavLink>
                 </div>
             </div>
             <div class="border-b border-black/10 mx-4"></div>
@@ -47,7 +65,7 @@
                 </div>
             </div>
         </div>
-        <div class="fixed h-16  flex items-center bottom-0 bg-white  ">
+        <div class="fixed h-16 flex items-center bottom-0 bg-white">
             <div class="mx-6">
                 <svg
                     width="23"
