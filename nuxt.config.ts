@@ -9,6 +9,12 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  ssr: false,
+  runtimeConfig : {
+    public : {
+      authUrl : process.env.NUXT_AUTH_URL, 
+    }
+  },
 
   modules: ["@pinia/nuxt"],
 });

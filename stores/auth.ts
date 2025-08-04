@@ -10,15 +10,18 @@ export const useAuthStore = defineStore('auth', {
         },
 
         token: null,
+        username: null,
         role: null,
         name: null,
         usid: null,
     }),
 
     getters: {
-        key: (state) => state.token,
-        role: (state) => state.role,
-        name: (state) => state.name,
-        usid: (state) => state.usid,
+        getToken: (state) => state.token,
+        getRole: (state) => state.role,
+        getName: (state) => state.name,
+        getUsid: (state) => state.usid,
     },
+
+    persist: true,
 });
