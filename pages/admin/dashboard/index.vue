@@ -21,7 +21,7 @@
                 </div>  
                 <div class="w-full flex items-center gap-2">
                     <InputDate class="w-1/2" label="Date"/>
-                    <InputSelect class="w-1/2" label="type">
+                    <InputSelect class="w-1/2" label="Type">
                     <option value="">Laptop</option>
                     <option value="">Desktop</option>
                     <option value="">Printer</option>
