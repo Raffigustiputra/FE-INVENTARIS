@@ -28,6 +28,7 @@
                     </InputSelect>
                 </div>
             <InputTextarea
+            label="Description"
             placeholder="Input Description Here.."
             />
         </Modal>
