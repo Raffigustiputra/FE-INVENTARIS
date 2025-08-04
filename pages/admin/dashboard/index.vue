@@ -16,8 +16,8 @@
             @btnClose="Closemodal"
             > 
                 <div class="w-full flex items-center gap-2">
-                    <InputText class="w-1/2" label="Brand Name" />
-                    <InputText class="w-1/2" label="Unit Code" />
+                    <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.." />
+                    <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
                 </div>  
                 <div class="w-full flex items-center gap-2">
                     <InputDate class="w-1/2" />
@@ -27,7 +27,9 @@
                     <option value="">Printer</option>
                     </InputSelect>
                 </div>
-            <InputTextarea />
+            <InputTextarea
+            placeholder="Input Description Here.."
+            />
         </Modal>
             </div>
         </div>
