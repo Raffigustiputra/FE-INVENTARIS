@@ -1,7 +1,7 @@
 
 <template>
     <div class="">
-        <div class="w-2/12 fixed h-screen bg-white border border-r border-black/10">
+        <div class="w-2/10 fixed h-screen bg-white border border-r border-black/10">
             <div class="flex items-center mt-6 mb-4 px-6">
                 <div class="size-8 bg-black"></div>
                 <h1 class="text-2xl font-bold px-2">WV</h1>
@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="fixed size-16 w-2/12 flex items-center bottom-0 bg-white border border-t border-black/10">
+        <div class="fixed h-16  flex items-center bottom-0 bg-white  ">
             <div class="mx-6">
                 <svg
                     width="23"

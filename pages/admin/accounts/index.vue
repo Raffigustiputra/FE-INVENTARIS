@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-7">
+    <Navbar :breadcrumbs="breadcrumbs" />
+    <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Account</h1>
-      <SearchBox />
+      <SearchBox text="Search account..." />
     </div>
 
     <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
@@ -12,7 +13,7 @@
             <th class="px-8 py-2 w-4/12">Name</th>
             <th class="px-4 py-2 w-3/12">Major Name</th>
             <th align="center" class="px-4 py-2 w-3/12">Role</th>
-            <th class="px-4 py-2 w-3/12 text-right">Action</th> <!-- Tambah text-right -->
+            <th class="px-4 py-2 w-3/12 text-right"><div class="mr-2">Action</div></th>
           </tr>
         </thead>
         <tbody class="bg-white">
@@ -45,3 +46,31 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { IconsNavbarIconsAddUser, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsManageUser } from '#components';
+
+definePageMeta({
+    layout: "default",
+    title: "Accounts",
+});
+
+const breadcrumbs = [
+  {
+    label: 'Manage Accounts',
+    icon: IconsNavbarIconsManageUser
+  },
+  {
+    label: 'Add Account',
+    icon: IconsNavbarIconsAddUser
+  },
+  {
+    label: 'Sort by Major',
+    icon: IconsNavbarIconsFilterMajor
+  },
+  {
+    label: 'Sort by Role',
+    icon: IconsNavbarIconsFilterRole
+  },
+];
+</script>
