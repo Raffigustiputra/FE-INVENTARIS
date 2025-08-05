@@ -1,7 +1,7 @@
 <template>
     <div class="fixed top-0 right-0 z-10 w-2/12">
         <div class="w-full flex justify-end items-start">
-            <div @click="$emit('hide')" class="cursor-pointer bg-[#ffffff]  border-[#f40000] mt-2 mr-2 w-full h-auto flex justify-start items-center p-4 gap-4 rounded-[10px] shadow-md border ">
+            <div @click="$emit('hide')" class="cursor-pointer bg-[#ffffff]  border-[#f40000] mt-2 mr-2 w-full h-auto flex justify-start items-center p-3 gap-4 rounded-md shadow-md border ">
                 <div>
                     <svg width="22" height="22" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g clip-path="url(#clip0_5018_1585)">
