@@ -1,3 +1,22 @@
+
+<style scoped>
+.alert-enter-from,
+.alert-leave-to {
+    opacity: 0;
+    transform: translateX(50%);
+}
+
+.alert-enter-to,
+.alert-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.alert-enter-active,
+.alert-leave-active {
+    transition: all 350ms ease;
+}
+</style>
 <script setup>
 const authStore = useAuthStore();
 let switchEye = ref(false);
@@ -9,6 +28,30 @@ const switchVisibility = () => {
 
 const router = useRouter();
 const url = useRuntimeConfig().public.authUrl;
+
+const alertError = ref(false);
+const alertMessage = ref('');
+const alertSuccess = ref(false);
+
+const showAlert = (type, message) => {
+    if (type === 'error') {
+        alertMessage.value = message;
+        alertError.value = true;
+        setTimeout(() => {
+            alertError.value = false;
+            alertMessage.value = null;
+        }, 3000);
+    } else if (type === 'success') {
+        alertMessage.value = message;
+        alertSuccess.value = true;
+        setTimeout(() => {
+            alertSuccess.value = false;
+            alertMessage.value = null;
+        }, 2500);
+    } else {
+        alert(message);
+    }
+};
 
 const login = async () => {
     try {
@@ -30,7 +73,7 @@ const login = async () => {
         router.push('/admin/dashboard');
     } catch (err) {
         console.error('Login gagal:', err);
-        alert('Username/password salah atau server error.');
+        showAlert('error', 'Terjadi kesalahan saat login.');
     }
 };
 
@@ -40,6 +83,13 @@ definePageMeta({
 </script>
 
 <template>
+    <transition name="alert">
+        <AlertError v-if="alertError" :title="alertMessage" @hide="alertError = false" />
+    </transition>
+    <transition name="alert">
+        <AlertSuccess v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
+    </transition>
+
     <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute right-8 top-28">
             <div class="flex items-center relative">
