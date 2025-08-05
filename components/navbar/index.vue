@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="w-8/10 h-18.5 flex flex-col fixed top-0 right-0 bg-white shadow-sm z-10 border-b border-black/10"
+      class="w-8/10 h-18.5 flex flex-col fixed top-0 right-0 bg-white z-10 border-b border-black/10"
     >
       <div
         class="container mx-auto flex items-center justify-between py-3 px-6"
@@ -12,8 +12,8 @@
 
         <div class="flex items-center gap-3">
           <div class="text-right">
-            <p class="font-semibold text-sm text-gray-800">Admin</p>
-            <p class="font-medium text-xs text-gray-600">Manage Your Items</p>
+            <p class="font-medium text-gray-800">Admin</p>
+            <p class="text-sm text-gray-600">Manage Your Items</p>
           </div>
           <div
             class="bg-white flex items-center justify-center p-3 rounded-lg shadow"
@@ -24,26 +24,23 @@
       </div>
 
       <div
-        class="w-8/10 border-t border-b bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-12"
+        v-if="breadcrumbs && breadcrumbs.length > 0"
+        class="w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-12"
       >
         <div class="container mx-auto flex items-center gap-5">
           <div
-            v-for="(item, index) in breadcrumbs"
-            :key="index"
-            class="flex items-center gap-4"
+        v-for="(item, index) in breadcrumbs"
+        :key="index"
+        class="flex items-center gap-4"
           >
-            <router-link
-              v-if="item.to"
-              :to="`/${item.to}`"
-              class="text-[#A9A9A9] flex gap-1 hover:text-[#727272]"
-            >
-              <component
-                :is="item.icon"
-                class="w-5 h-5"
-                v-if="item.icon"
-              />
-              <h3 class="font-medium text-sm">{{ item.label }}</h3>
-            </router-link>
+        <div class="text-[#A9A9A9] flex gap-1 hover:text-[#727272] hover:cursor-pointer">
+          <component
+            :is="item.icon"
+            class="w-5 h-5"
+            v-if="item.icon"
+          />
+          <h3 class="font-medium text-sm">{{ item.label }}</h3>
+        </div>
           </div>
         </div>
       </div>

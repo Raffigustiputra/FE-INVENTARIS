@@ -57,22 +57,18 @@ const breadcrumbs = [
   {
     label: 'Manage Accounts',
     icon: IconsNavbarIconsManageUser,
-    // to: 'admin/accounts/manage-accounts'
   },
   {
     label: 'Add Account',
     icon: IconsNavbarIconsAddUser,
-    // to: 'admin/accounts/add-account'
   },
   {
     label: 'Sort by Major',
     icon: IconsNavbarIconsFilterMajor,
-    // to: 'admin/accounts/sort-by-major'
   },
   {
     label: 'Sort by Role',
     icon: IconsNavbarIconsFilterRole,
-    // to: 'admin/accounts/sort-by-role'
   },
 ];
 
