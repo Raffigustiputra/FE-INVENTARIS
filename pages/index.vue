@@ -70,28 +70,30 @@ definePageMeta({
                 </div>
             </div>
 
-            <div class="w-5/12 py-4 rounded-xl bg-white">
+            <div class="w-5/12 pt-4 pb-8 rounded-xl bg-white ">
                 <div class="w-full text-center">
                     <h1 class="font-semibold">Log in to start using WikVentory</h1>
                 </div>
                 <div class="mx-4 flex flex-col gap-1">
-                    <h1>Username</h1>
+                    <h1 class="ml-1 font-medium text-sm">Username</h1>
                     <input
                         v-model="authStore.input.username"
                         type="text"
-                        class="px-4 py-1 w-full border border-black rounded-lg" />
+                        placeholder="Input your username..."
+                        class="px-4 py-3 focus:ring-1 focus:ring-[#dddddd] outline-none w-full border text-xs border-[#EAEAEA] rounded-lg" />
                 </div>
                 <div class="mx-4 mt-4 flex flex-col gap-1">
-                    <h1>Password</h1>
+                    <h1 class="ml-1 font-medium text-sm">Password</h1>
                     <input
                         v-model="authStore.input.password"
                         type="password"
-                        class="px-4 py-1 w-full border border-black rounded-lg" />
+                        placeholder="Input your password..."
+                        class="px-4 py-3 text-xs w-full border focus:ring-1 focus:ring-[#dddddd] outline-none border-[#EAEAEA] rounded-lg" />
                 </div>
                 <div class="mx-4 mt-6">
                     <button
                         @click="login"
-                        class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-lg">
+                        class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-md">
                         LOGIN
                     </button>
                 </div>
