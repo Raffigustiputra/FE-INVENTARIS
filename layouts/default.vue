@@ -7,11 +7,11 @@
       <div class="w-2/12">
         <SidebarNav />
       </div>
-        <div class="">
-            <Navbar />
-            </div>
-      <div class="w-10/12 flex py-4 px-10 flex-col">
-        <div class="w-full mt-20 h-auto ">
+      <div class="">
+        <Navbar/>
+      </div>
+      <div class="ml-12 w-8/10 flex py-4 px-10 flex-col">
+        <div class="w-full mt-20 h-auto">
           <slot></slot>
         </div>
       </div>

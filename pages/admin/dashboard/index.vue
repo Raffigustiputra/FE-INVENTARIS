@@ -1,40 +1,52 @@
 <template>
-    <div class="flex justify-between items-center">
-        <div>
-            <h1 class="font-semibold text-lg">Welcome back, Admin!</h1>
-            <p class="text-xs text-gray-500">Here's a summary of your dashboard for today</p>
-        </div>
+  <div>
+    <button-edit />
+    <button-delete />
+    <!-- <AlertError /> -->
+    <!-- <AlertSuccess /> -->
 
-        <div class="flex items-center gap-1 text-sm text-gray-600">
-            <span class="font-semibold text-black">{{ today }}</span>
-            <Calendar class="w-4 h-4" />
-        </div>
-    </div>
+    <h1 @click="OpenModal">test buat klik modal</h1>
 
-    <!-- Grid kartu info -->
-    <div class="mt-6 border-y border-gray-200">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 divide-x divide-gray-200">
-            <div v-for="i in 4" :key="i" class="flex items-center p-4">
-                <!-- Icon -->
-                <userIcon class="mr-4" />
-
-                <!-- Text -->
-                <div>
-                    <p class="text-xs font-semibold text-gray-800">INI TITLE</p>
-                    <p class="text-sm font-bold text-gray-900">125</p>
-                </div>
+    <div class="w-full">
+      <!-- Tambahkan Transition di sini -->
+      <Transition name="fade">
+        <div
+          v-if="modal"
+          class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        >
+          <Modal @btnClose="Closemodal">
+            <div class="w-full flex items-center gap-2">
+              <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.." />
+              <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
             </div>
+            <div class="w-full flex items-center gap-2">
+              <InputDate class="w-1/2" />
+              <InputSelect class="w-1/2" label="type">
+                <option value="">Laptop</option>
+                <option value="">Desktop</option>
+                <option value="">Printer</option>
+              </InputSelect>
+            </div>
+            <InputTextarea label="Description" placeholder="Input Description Here.." />
+          </Modal>
         </div>
+      </Transition>
     </div>
+  </div>
 </template>
 
 <script setup>
-import Calendar from '@/components/icons/calendar.vue'
-import UserIcon from '@/components/icons/userIcon.vue'
+let modal = ref(false)
+let OpenModal = () => {
+  modal.value = true
+}
+let Closemodal = () => {
+  modal.value = false
+}
 
 definePageMeta({
-    layout: "default",
-    title: "Home - Inventaris"
+  layout: "default",
+  title: "Home - Inventaris"
 })
 
 const now = new Date()
@@ -48,3 +60,22 @@ const date = now.toLocaleDateString("en-GB", {
 
 const today = `${weekday}, ${date}`
 </script>
+
+<style scoped>
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1); /* spring-like easing */
+}
+</style>

@@ -3,36 +3,48 @@
     <NuxtLink
       :to="props.navigateTo"
       class="px-4 py-2 rounded-lg flex items-center gap-3 duration-300 hover:cursor-pointer"
-      :class="isActive ? 'bg-blue-500' : 'hover:bg-black/10'"
+      :class="isActive ? 'bg-[#0844A4]' : 'hover:bg-black/10'"
     >
       <div>
-        <component
-          :is="props.icons"
-          :class="['w-5 h-5', isActive ? 'text-white' : 'text-black/60']"
-        />
+        <slot :isActive="isActive"></slot>
       </div>
       <h1
         :class="[
           'text-sm font-semibold',
-          isActive ? 'text-white' : 'text-black/60'
+          isActive ? 'text-white' : 'text-black/60',
         ]"
       >
         {{ props.navigationItem }}
       </h1>
+      <svg
+        v-if="props.childMenu"
+        :class="['w-4 h-4 transition-transform absolute right-10']"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
     </NuxtLink>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import type { Component } from 'vue'
+import { useRoute } from "vue-router";
+import type { Component } from "vue";
 
 const props = defineProps<{
-  navigationItem: string
-  navigateTo: string
-  icons: Component | string
-}>()
+  navigationItem: string;
+  navigateTo: string;
+  icons: Component | string;
+  childMenu?: string | null;
+}>();
 
-const route = useRoute()
-const isActive = computed(() => route.path === props.navigateTo)
+const route = useRoute();
+const isActive = computed(() => route.path === props.navigateTo);
 </script>
