@@ -18,7 +18,7 @@
       </h1>
       <svg
         v-if="props.childMenu"
-        :class="['w-4 h-4 transition-transform absolute right-10']"
+        :class="['w-4 h-4 transition-transform absolute right-10', isOpen ? 'rotate-180' : 'rotate-0']"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
@@ -43,6 +43,7 @@ const props = defineProps<{
   navigateTo: string;
   icons: Component | string;
   childMenu?: string | null;
+  isOpen?: boolean
 }>();
 
 const route = useRoute();
