@@ -74,7 +74,6 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { IconsNavbarIconsFile, IconsNavbarIconsPrint } from '#components'
 import {
   IconsNavbar,
   IconsNavbarIconsAddUser,
