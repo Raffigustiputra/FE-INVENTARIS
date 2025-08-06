@@ -48,6 +48,17 @@ definePageMeta({
   layout: "default",
   title: "Home - Inventaris"
 })
+
+const now = new Date()
+
+const weekday = now.toLocaleDateString("en-GB", { weekday: "short" })
+const date = now.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+})
+
+const today = `${weekday}, ${date}`
 </script>
 
 <style scoped>
