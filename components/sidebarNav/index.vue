@@ -55,6 +55,7 @@
                 :childMenu="menu.childMenu"
                 :navigationItem="menu.name"
                 :navigateTo="menu.childMenu ? '' : menu.path"
+                :isOpen="expandedMenu === menu.name"
                 @click="
                   menu.childMenu
                     ? toggleMenu(menu.name)
