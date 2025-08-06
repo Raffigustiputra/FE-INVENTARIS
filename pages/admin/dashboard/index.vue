@@ -20,7 +20,7 @@
               <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
             </div>
             <div class="w-full flex items-center gap-2">
-              <InputDate class="w-1/2" />
+              <InputDate class="w-1/2" label="Date" />
               <InputSelect class="w-1/2" label="type">
                 <option value="">Laptop</option>
                 <option value="">Desktop</option>
