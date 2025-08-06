@@ -4,7 +4,13 @@
         <div class="flex items-center justify-between mt-12 mb-4">
             <h1 class="font-semibold text-2xl">
                 <NuxtLink to="/admin/inventory">Inventory /</NuxtLink>
-                lengtop / lenodo
+                <NuxtLink 
+                :to="`/admin/inventory`"
+                >
+                    lengtop
+                </NuxtLink>
+                
+                / lenodo
             </h1>
             <SearchBox />
         </div>
