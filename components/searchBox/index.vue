@@ -12,6 +12,7 @@ import { IconsSearchIcon } from "#components";
 const props = defineProps({
   text: {
     type: String,
+    default: "Search Inventory...",
     required: true,
   },
 });
