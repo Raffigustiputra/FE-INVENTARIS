@@ -2,6 +2,8 @@
   <div>
     <button-edit />
     <button-delete />
+    <!-- <AlertError /> -->
+    <!-- <AlertSuccess /> -->
 
     <h1 @click="OpenModal">test buat klik modal</h1>
 
