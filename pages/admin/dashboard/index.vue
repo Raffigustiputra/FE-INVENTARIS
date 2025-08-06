@@ -14,7 +14,7 @@
           v-if="modal"
           class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
         >
-          <Modal @btnClose="Closemodal">
+          <Modal @btnClose="Closemodal" title="Add new item">
             <div class="w-full flex items-center gap-2">
               <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.." />
               <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
