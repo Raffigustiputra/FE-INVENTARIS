@@ -187,7 +187,7 @@ definePageMeta({
             </div>
          <!--copy right-->
             <p class="text-xs mt-10">
-                © PPLG XII-V 2025. All Rights Reservedd.
+                © PPLG XII-V 2025. All Rights Reservedd
             </p>
         </div>
     </div>
