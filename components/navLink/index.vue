@@ -10,7 +10,7 @@
       </div>
       <h1
         :class="[
-          'text-sm font-semibold',
+          'text-sm font-semibold select-none',
           isActive ? 'text-white' : 'text-black/60',
         ]"
       >
@@ -18,7 +18,7 @@
       </h1>
       <svg
         v-if="props.childMenu"
-        :class="['w-4 h-4 transition-transform absolute right-10', isOpen ? 'rotate-180' : 'rotate-0']"
+        :class="['w-4 h-4 transition-transform absolute right-10 select-none', isOpen ? 'rotate-180' : 'rotate-0']"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
