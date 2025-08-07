@@ -52,10 +52,10 @@ const showAlert = (type, message) => {
         alert(message);
     }
 };
-
+    
 const login = async () => {
     try {
-        const response = await $fetch(`${url}/login`, {
+        const response = await $fetch(`${url}/api/login`, {
             method: 'POST',
             body: {
                 username: authStore.input.username,
@@ -125,7 +125,7 @@ definePageMeta({
                 </div>
             </div>
 
-            <div class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
+            <form @submit.prevent="login" class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
                 <div class="w-full text-center">
                     <h1 class="font-semibold">Log in to start using WikVentory</h1>
                 </div>
@@ -187,7 +187,7 @@ definePageMeta({
                         LOGIN
                     </button>
                 </div>
-            </div>
+            </form>
          <!--copy right-->
             <p class="text-xs mt-10">
                 © PPLG XII-V 2025. All Rights Reservedd
