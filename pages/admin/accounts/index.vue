@@ -56,6 +56,9 @@
         </tbody>
       </table>
     </div>
+    <p class="text-xs text-gray-500 mt-3 ml-2">
+      Showing {{ users.length > 0 ? 1 : 0 }} to {{ users.length }} of {{ users.length }} Accounts
+    </p>
   </div>
 </template>
 

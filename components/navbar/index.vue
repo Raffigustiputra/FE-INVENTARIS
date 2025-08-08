@@ -11,8 +11,8 @@
 
         <div class="flex items-center gap-3">
           <div class="text-right">
-            <p class="font-medium text-gray-800">{{ authStore.name }}</p>
-            <p class="text-sm text-gray-600">Manage Your Items</p>
+            <p class="font-medium text-gray-800">{{ authStore.name || 'User' }}</p>
+            <p class="text-sm text-gray-600">{{ authStore.role || 'Role' }}</p>
           </div>
           <div
             class="bg-white flex items-center justify-center p-3 rounded-lg shadow"
@@ -49,12 +49,29 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth';
+
 const emit = defineEmits(['breadcrumbClick']);
+const authStore = useAuthStore();
+
 defineProps({
   breadcrumbs: {
     type: Array,
     default: () => [],
   },
 });
-const authStore = useAuthStore();
+
+// const formatRole = (role) => {
+//   if (!role) return 'Role';
+  
+//   const roleMap = {
+//     'superadmin': 'Super Administrator',
+//     'admin': 'Administrator', 
+//     'kaprog': 'Kepala Program',
+//     'user': 'User',
+//     'student': 'Student'
+//   };
+  
+//   return roleMap[role.toLowerCase()] || role.charAt(0).toUpperCase() + role.slice(1);
+// };
 </script>

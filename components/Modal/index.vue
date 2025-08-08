@@ -49,7 +49,6 @@
 const emits = defineEmits([
     'btnClose',
     'btnSubmit'
-
 ]);
 
 const props = defineProps({
@@ -59,7 +58,7 @@ const props = defineProps({
   },
   showActions: {
     type: Boolean,
-    default: true  // default tetap tampil
+    default: true
   }
 })
 </script>
