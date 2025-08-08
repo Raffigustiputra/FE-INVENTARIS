@@ -19,32 +19,25 @@
           </tr>
         </thead>
         <tbody class="bg-white">
-          <tr 
-            v-for="account in accounts"
-            :key="account.id"
+          <tr
+            v-for="user in users"
+            :key="user.id"
             class="border-b border-[#EEEEEE] hover:bg-gray-50"
           >
-            <!-- Name -->
-            <td class="px-8 py-4">
-              <div class="flex items-center gap-2">
-                <div class="w-6 h-6 bg-black rounded-full"></div>
-                <span class="text-xs font-medium">{{ account.name }}</span>
-              </div>
+            <td class="flex items-center gap-2 px-8 py-4">
+                <IconsUserIcon />
+              <span class="text-xs font-medium">{{ user.name }}</span>
             </td>
-
-            <!-- Major Badge -->
             <td class="px-4 py-4">
-              <div class="flex items-center">
-                <Badge type="major" :value="account.major" :label="account.major" />
+              <div class="bg-blue-300 w-24 flex justify-center rounded-md py-1">
+                <span class="text-white text-xs font-medium">{{
+                  user.major?.name || "N/A"
+                }}</span>
               </div>
             </td>
-
-            <!-- Role -->
-            <td class="px-4 py-4 text-center">
-              <span class="text-xs font-medium">{{ account.role }}</span>
+            <td align="center" class="px-4 py-4">
+              <span class="text-xs font-medium">{{ user.role }}</span>
             </td>
-
-            <!-- Actions -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
                 <ButtonEdit />
@@ -66,10 +59,44 @@ import {
   IconsNavbarIconsManageUser,
 } from "#components";
 import Badge from "~/components/badges/badge.vue";
+import { useAuthStore } from "@/stores/auth";
 
 definePageMeta({
   layout: "default",
   title: "Accounts",
+});
+
+const authStore = useAuthStore();
+const url = useRuntimeConfig().public.localUrl;
+
+const users = ref([]);
+const pending = ref(true);
+const error = ref(null);
+
+const fetchUsers = async () => {
+  try {
+    pending.value = true;
+    const res = await $fetch(`${url}/user`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+
+    if (res.status === 200 && res.data) {
+      users.value = res.data;
+    } else {
+      users.value = [];
+    }
+  } catch (err) {
+    error.value = err;
+  } finally {
+    pending.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchUsers();
 });
 
 const breadcrumbs = [
@@ -90,30 +117,4 @@ const breadcrumbs = [
     icon: IconsNavbarIconsFilterRole,
   },
 ];
-
-const accounts = ref([
-  { id: 1, name: 'Nama Kaprog', major: 'PPLG', role: 'Super Admin' },
-  { id: 2, name: 'Kaprog DKV', major: 'DKV', role: 'Admin' },
-])
-
-const getMajorType = (major) => {
-  switch (major) {
-    case "PPLG":
-      return "pplg";
-    case "DKV":
-      return "dkv";
-    case "TJKT":
-      return "tjkt";
-    case "MPLB":
-      return "mplb";
-    case "PMN":
-      return "pmn";
-    case "HTL":
-      return "htl";
-    case "KLN":
-      return "kln";
-    default:
-      return "default";
-  }
-};
 </script>
