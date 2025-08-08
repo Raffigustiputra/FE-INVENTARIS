@@ -114,9 +114,5 @@ const breadcrumbs = [
     label: "Sort by Major",
     icon: IconsNavbarIconsFilterMajor,
   },
-  {
-    label: "Sort by Role",
-    icon: IconsNavbarIconsFilterRole,
-  },
 ];
 </script>
