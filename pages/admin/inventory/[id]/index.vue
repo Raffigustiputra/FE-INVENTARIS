@@ -92,6 +92,7 @@ const itemNames = ref([
     { id: 4, name: "Earphone" },
 ]);
 
+// Ambil item yang sedang dibuka
 const item = computed(() => itemNames.value.find(i => i.id === id))
 
 const selectedItems = ref([])
