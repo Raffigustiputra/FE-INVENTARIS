@@ -10,33 +10,41 @@
       <table class="min-w-full text-sm text-left">
         <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
           <tr class="text-sm font-medium text-gray-700">
-            <th class="px-8 py-2 w-4/12">Name</th>
-            <th class="px-4 py-2 w-3/12">Major Name</th>
-            <th align="center" class="px-4 py-2 w-3/12">Role</th>
-            <th class="px-4 py-2 w-3/12 text-right">
+            <th class="px-8 py-2 w-4/12 font-semibold">Name</th>
+            <th class="px-4 py-2 w-3/12 font-semibold">Major Name</th>
+            <th align="center" class="px-4 py-2 w-3/12 font-semibold">Role</th>
+            <th class="px-4 py-2 w-3/12 text-right font-semibold">
               <div class="mr-2">Action</div>
             </th>
           </tr>
         </thead>
         <tbody class="bg-white">
-          <tr
-            v-for="i in 7"
-            :key="i"
+          <tr 
+            v-for="account in accounts"
+            :key="account.id"
             class="border-b border-[#EEEEEE] hover:bg-gray-50"
           >
-            <td class="flex items-center gap-2 px-8 py-4">
-              <div class="size-6 bg-black rounded-full"></div>
-              <span class="text-xs font-medium">Nama Kaprog</span>
+            <!-- Name -->
+            <td class="px-8 py-4">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-black rounded-full"></div>
+                <span class="text-xs font-medium">{{ account.name }}</span>
+              </div>
             </td>
+
+            <!-- Major Badge -->
             <td class="px-4 py-4">
-              <BadgeMajor :type="getMajorType('PPLG')" text="PPLG" />
+              <div class="flex items-center">
+                <Badge type="major" :value="account.major" :label="account.major" />
+              </div>
             </td>
-            <!-- <td class="px-4 py-4">
-              <StatusBadge :status="getStatus('BORROWED')" />
-            </td> -->
-            <td align="center" class="px-4 py-4">
-              <span class="text-xs font-medium">Super Admin</span>
+
+            <!-- Role -->
+            <td class="px-4 py-4 text-center">
+              <span class="text-xs font-medium">{{ account.role }}</span>
             </td>
+
+            <!-- Actions -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
                 <ButtonEdit />
@@ -52,13 +60,12 @@
 
 <script setup>
 import {
-  BadgeMajor,
   IconsNavbarIconsAddUser,
   IconsNavbarIconsFilterMajor,
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsManageUser,
-  StatusBadge,
 } from "#components";
+import Badge from "~/components/badges/badge.vue";
 
 definePageMeta({
   layout: "default",
@@ -84,6 +91,11 @@ const breadcrumbs = [
   },
 ];
 
+const accounts = ref([
+  { id: 1, name: 'Nama Kaprog', major: 'PPLG', role: 'Super Admin' },
+  { id: 2, name: 'Kaprog DKV', major: 'DKV', role: 'Admin' },
+])
+
 const getMajorType = (major) => {
   switch (major) {
     case "PPLG":
@@ -102,17 +114,6 @@ const getMajorType = (major) => {
       return "kln";
     default:
       return "default";
-  }
-};
-
-const getStatus = (status) => {
-  switch (status) {
-    case "AVAILABLE":
-      return "AVAILABLE";
-    case "BORROWED":
-      return "BORROWED";
-    case "UNAVAILABLE":
-      return "UNAVAILABLE";
   }
 };
 </script>

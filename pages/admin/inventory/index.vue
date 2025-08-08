@@ -20,8 +20,8 @@
                 class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 hover:cursor-pointer checked:border-blue-500"
               />
             </th>
-            <th class="px-10 py-2">Type</th>
-            <th class="px-4 py-2 text-right">
+            <th class="px-10 py-2 font-semibold">Type</th>
+            <th class="px-4 py-2 font-semibold text-right">
               <div class="mr-2">Action</div>
             </th>
           </tr>
