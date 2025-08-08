@@ -37,6 +37,9 @@ export const useAuthStore = defineStore('auth', {
             if (process.client) {
                 localStorage.setItem('auth-token', data.token);
                 localStorage.setItem('auth-usid', data.usid);
+                localStorage.setItem('auth-role', data.role);
+                localStorage.setItem('auth-name', data.name);
+                localStorage.setItem('auth-username', data.username);
                 localStorage.setItem('auth-isAuth', 'true');
             }
         },
