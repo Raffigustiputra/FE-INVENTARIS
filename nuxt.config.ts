@@ -13,7 +13,6 @@ export default defineNuxtConfig({
   runtimeConfig : {
     public : {
       authUrl : process.env.NUXT_AUTH_URL,
-      localUrl: process.env.NUXT_LOCAL_URL
     }
   },
 
