@@ -91,8 +91,9 @@ const fetchUsers = async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
+        'ngrok-skip-browser-warning': true,
       },
-      
+
     });   
     if (res.status === 200 && res.data) {
       users.value = res.data;

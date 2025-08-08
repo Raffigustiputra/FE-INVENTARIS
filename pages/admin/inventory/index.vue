@@ -37,7 +37,14 @@
       <SearchBox text="Search inventory..." />
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <div v-if="pending" class="space-y-4">
+      <TableSkeleton 
+        :rows="4" 
+        :columns="4"
+      />
+    </div>
+
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="bg-[#F7F8F9]">
           <tr class="text-sm font-medium text-gray-700">
@@ -247,7 +254,7 @@ const handleBreadcrumbClickType = (breadcrumb) => {
   }
 };
 
-const { items, fetchItems, createItem, updateItem, deleteItem } = useItem();
+const { items,pending, fetchItems, createItem, updateItem, deleteItem } = useItem();
 
 const handleCreateItem = async () => {
   console.log("=== FORM SUBMISSION DEBUG ===");
