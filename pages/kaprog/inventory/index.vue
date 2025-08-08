@@ -8,7 +8,6 @@
     </div>
 
     <div class="w-full">
-        <!-- Tambahkan Transition di sini -->
         <Transition name="fade">
             <div v-if="modal"
                 class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30">
@@ -96,7 +95,6 @@ const openModalFromBreadcrumb = (item) => {
     }
 };
 
-// Tambahkan di <script setup>
 import { ref } from "vue";
 const modal = ref(false);
 const modalTitle = ref("");
