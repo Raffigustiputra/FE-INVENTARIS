@@ -11,7 +11,7 @@
 
         <div class="flex items-center gap-3">
           <div class="text-right">
-            <p class="font-medium text-gray-800">Admin</p>
+            <p class="font-medium text-gray-800">{{ authStore.name }}</p>
             <p class="text-sm text-gray-600">Manage Your Items</p>
           </div>
           <div
@@ -24,7 +24,7 @@
 
       <div
         v-if="breadcrumbs && breadcrumbs.length > 0"
-        class="w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-9"
+        class="w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-4 px-9"
       >
         <div class="container mx-auto flex items-center gap-5">
           <div
@@ -56,4 +56,5 @@ defineProps({
     default: () => [],
   },
 });
+const authStore = useAuthStore();
 </script>

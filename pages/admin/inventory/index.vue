@@ -7,8 +7,16 @@
         <SearchBox text="Search inventory..." />
       </div>
 
+      <!-- Loading State dengan Skeleton -->
+    <div v-if="pending" class="space-y-4">
+      <TableSkeleton 
+        :rows="4" 
+        :columns="5"
+      />
+    </div>
+
       <!-- Tabel -->
-      <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+      <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
         <table class="min-w-full text-sm text-left">
           <thead class="bg-[#F7F8F9]">
             <tr class="text-sm font-medium text-gray-700">

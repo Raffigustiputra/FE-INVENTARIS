@@ -6,7 +6,15 @@
       <SearchBox text="Search account..." />
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <!-- Loading State dengan Skeleton -->
+    <div v-if="pending" class="space-y-4">
+      <TableSkeleton 
+        :rows="4" 
+        :columns="5"
+      />
+    </div>
+
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
           <tr class="text-sm font-medium text-gray-700">
@@ -36,7 +44,7 @@
               </div>
             </td>
             <td align="center" class="px-4 py-4">
-              <span class="text-xs font-medium">{{ user.role }}</span>
+              <span class="text-xs font-medium uppercase">{{ user.role }}</span>
             </td>
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
@@ -66,7 +74,7 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
-const url = useRuntimeConfig().public.localUrl;
+const url = useRuntimeConfig().public.authUrl;
 
 const users = ref([]);
 const pending = ref(true);
@@ -74,14 +82,15 @@ const error = ref(null);
 
 const fetchUsers = async () => {
   try {
+    // await new Promise(resolve => setTimeout(resolve, 1500))
     pending.value = true;
     const res = await $fetch(`${url}/user`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
       },
-    });
-
+      
+    });   
     if (res.status === 200 && res.data) {
       users.value = res.data;
     } else {
