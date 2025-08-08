@@ -27,7 +27,7 @@ const switchVisibility = () => {
 };
 
 const router = useRouter();
-const url = useRuntimeConfig().public.localUrl;
+const url = useRuntimeConfig().public.authUrl;
 
 const alertError = ref(false);
 const alertMessage = ref('');
@@ -55,7 +55,7 @@ const showAlert = (type, message) => {
     
 const login = async () => {
     try {
-        const response = await $fetch(`${url}/api/login`, {
+        const response = await $fetch(`${url}/login`, {
             method: 'POST',
             body: {
                 username: authStore.input.username,
@@ -64,7 +64,6 @@ const login = async () => {
         });
         console.log(response.data);
 
-        // Gunakan action yang sudah ada di store
         authStore.setAuthData({
             token: response.token,
             role: response.data.role,
@@ -183,13 +182,13 @@ definePageMeta({
                 <div class="mx-4 mt-6">
                     <button
                         @click="login"
-                        class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-md">
+                        class="w-full bg-[#0844A4] text-white py-2 text-sm hover:cursor-pointer font-medium rounded-md">
                         LOGIN
                     </button>
                 </div>
             </form>
          <!--copy right-->
-            <p class="text-xs mt-10">
+            <p class="text-xs font-semibold mt-10">
                 © PPLG XII-V 2025. All Rights Reservedd
             </p>
         </div>
