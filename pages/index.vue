@@ -27,7 +27,7 @@ const switchVisibility = () => {
 };
 
 const router = useRouter();
-const url = useRuntimeConfig().public.authUrl;
+const url = useRuntimeConfig().public.localUrl;
 
 const alertError = ref(false);
 const alertMessage = ref('');
@@ -64,11 +64,14 @@ const login = async () => {
         });
         console.log(response.data);
 
-        authStore.token = response.token;
-        authStore.role = response.data.role;
-        authStore.name = response.data.name;
-        authStore.usid = response.data.usid;
-        authStore.username = response.data.username;
+        // Gunakan action yang sudah ada di store
+        authStore.setAuthData({
+            token: response.token,
+            role: response.data.role,
+            name: response.data.name,
+            usid: response.data.usid,
+            username: response.data.username
+        });
 
         router.push('/admin/dashboard');
     } catch (err) {

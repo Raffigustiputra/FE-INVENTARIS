@@ -32,7 +32,8 @@
         :key="index"
         class="flex items-center gap-4"
           >
-        <div class="text-[#A9A9A9] flex gap-2.5 hover:text-[#727272] hover:cursor-pointer">
+        <div class="text-[#A9A9A9] flex gap-2.5 hover:text-[#727272] hover:cursor-pointer"
+          @click="$emit('breadcrumbClick', item)">
           <component
             :is="item.icon"
             class="w-5 h-5"
@@ -48,6 +49,7 @@
 </template>
 
 <script setup>
+const emit = defineEmits(['breadcrumbClick']);
 defineProps({
   breadcrumbs: {
     type: Array,
