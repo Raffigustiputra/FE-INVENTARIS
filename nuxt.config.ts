@@ -12,9 +12,12 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig : {
     public : {
-      authUrl : process.env.NUXT_AUTH_URL, 
+      authUrl : process.env.NUXT_AUTH_URL,
+      localUrl: process.env.NUXT_LOCAL_URL
     }
   },
 
-  modules: ["@pinia/nuxt"],
+  modules: [
+    "@pinia/nuxt"
+  ],
 });
