@@ -27,7 +27,7 @@ const switchVisibility = () => {
 };
 
 const router = useRouter();
-const url = useRuntimeConfig().public.authUrl;
+const url = useRuntimeConfig().public.localUrl;
 
 const alertError = ref(false);
 const alertMessage = ref('');
@@ -64,11 +64,14 @@ const login = async () => {
         });
         console.log(response.data);
 
-        authStore.token = response.token;
-        authStore.role = response.data.role;
-        authStore.name = response.data.name;
-        authStore.usid = response.data.usid;
-        authStore.username = response.data.username;
+        // Gunakan action yang sudah ada di store
+        authStore.setAuthData({
+            token: response.token,
+            role: response.data.role,
+            name: response.data.name,
+            usid: response.data.usid,
+            username: response.data.username
+        });
 
         router.push('/admin/dashboard');
     } catch (err) {
@@ -91,13 +94,13 @@ definePageMeta({
     </transition>
 
     <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute right-8 top-28">
+        <div class="absolute right-8 top-10">
             <div class="flex items-center relative">
                 <img
-                    src="/images/wikrama-logo.png"
-                    alt="Logo Wikrama"
-                    class="size-22 object-contain" />
-                <img src="/images/rpl.png" alt="Logo RPL" class="size-20 object-contain" />
+                    src="/public/images/wv-blue.png"
+                    alt="Logo wv-blue"
+                    class="size-18 object-contain" />
+                <img src="/images/wikrama-logo.png" alt="Logo Wikrama" class="size-20 object-contain" />
             </div>
         </div>
 
@@ -111,9 +114,6 @@ definePageMeta({
             <div class="mb-6">
                 <div class="font-bold text-3xl">
                     <div></div>
-                    <div class="flex items-center justify-between w-full gap-3">
-                        <h1>LOGO WV</h1>
-                    </div>
                     <h1>Welcome to WikVentory</h1>
                 </div>
                 <div class="w-5/12 mt-2">
@@ -188,6 +188,10 @@ definePageMeta({
                     </button>
                 </div>
             </div>
+         <!--copy right-->
+            <p class="text-xs mt-10">
+                © PPLG XII-V 2025. All Rights Reservedd
+            </p>
         </div>
     </div>
 </template>

@@ -13,28 +13,32 @@
             <th class="px-8 py-2 w-4/12">Name</th>
             <th class="px-4 py-2 w-3/12">Major Name</th>
             <th align="center" class="px-4 py-2 w-3/12">Role</th>
-            <th class="px-4 py-2 w-3/12 text-right"><div class="mr-2">Action</div></th>
+            <th class="px-4 py-2 w-3/12 text-right">
+              <div class="mr-2">Action</div>
+            </th>
           </tr>
         </thead>
         <tbody class="bg-white">
           <tr
-            v-for="i in 7"
-            :key="i"
+            v-for="user in users"
+            :key="user.id"
             class="border-b border-[#EEEEEE] hover:bg-gray-50"
           >
             <td class="flex items-center gap-2 px-8 py-4">
-              <div class="size-6 bg-black rounded-full"></div>
-              <span class="text-xs font-medium">NAMA KAPROG NYA DISINI NANTI</span>
+                <IconsUserIcon />
+              <span class="text-xs font-medium">{{ user.name }}</span>
             </td>
             <td class="px-4 py-4">
               <div class="bg-blue-300 w-24 flex justify-center rounded-md py-1">
-                <span class="text-white text-xs font-medium">PPLG</span>
+                <span class="text-white text-xs font-medium">{{
+                  user.major?.name || "N/A"
+                }}</span>
               </div>
             </td>
             <td align="center" class="px-4 py-4">
-              <span class="text-xs font-medium">Super Admin</span>
+              <span class="text-xs font-medium">{{ user.role }}</span>
             </td>
-            <td class="px-4 py-4 text-right"> <!-- Tambah text-right -->
+            <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
                 <ButtonEdit />
                 <ButtonDelete />
@@ -48,29 +52,68 @@
 </template>
 
 <script setup>
-import { IconsNavbarIconsAddUser, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsManageUser } from '#components';
+import {
+  IconsNavbarIconsAddUser,
+  IconsNavbarIconsFilterMajor,
+  IconsNavbarIconsFilterRole,
+  IconsNavbarIconsManageUser,
+} from "#components";
+import { useAuthStore } from "@/stores/auth";
 
 definePageMeta({
-    layout: "default",
-    title: "Accounts",
+  layout: "default",
+  title: "Accounts",
+});
+
+const authStore = useAuthStore();
+const url = useRuntimeConfig().public.localUrl;
+
+const users = ref([]);
+const pending = ref(true);
+const error = ref(null);
+
+const fetchUsers = async () => {
+  try {
+    pending.value = true;
+    const res = await $fetch(`${url}/user`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+
+    if (res.status === 200 && res.data) {
+      users.value = res.data;
+    } else {
+      users.value = [];
+    }
+  } catch (err) {
+    error.value = err;
+  } finally {
+    pending.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchUsers();
 });
 
 const breadcrumbs = [
   {
-    label: 'Manage Accounts',
-    icon: IconsNavbarIconsManageUser
+    label: "Manage Accounts",
+    icon: IconsNavbarIconsManageUser,
   },
   {
-    label: 'Add Account',
-    icon: IconsNavbarIconsAddUser
+    label: "Add Account",
+    icon: IconsNavbarIconsAddUser,
   },
   {
-    label: 'Sort by Major',
-    icon: IconsNavbarIconsFilterMajor
+    label: "Sort by Major",
+    icon: IconsNavbarIconsFilterMajor,
   },
   {
-    label: 'Sort by Role',
-    icon: IconsNavbarIconsFilterRole
+    label: "Sort by Role",
+    icon: IconsNavbarIconsFilterRole,
   },
 ];
 </script>

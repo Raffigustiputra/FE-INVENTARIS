@@ -80,10 +80,44 @@
     IconsNavbarIconsFile,
     IconsNavbarIconsPrint,
   } from "#components";
+  import { useAuthStore } from "@/stores/auth";
 
   definePageMeta({
     layout: "default",
     title: "Inventory",
+  });
+
+  const authStore = useAuthStore();
+  const items = ref([]);
+  const url = useRuntimeConfig().public.localUrl;
+  const pending = ref(true);
+  const error = ref(null);
+
+  const fetchItem = async () => {
+    try {
+      pending.value = true;
+      const res = await $fetch(`${url}/item`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      });
+
+      if (res.status === 200 && res.data) {
+        items.value = res.data;
+      } else {
+        items.value = [];
+      }
+    } catch (err) {
+      error.value = err;
+    } finally {
+      pending.value = false;
+    }
+  };
+
+  onMounted(() => {
+    console.log("Token:", authStore.token);
+    fetchItem();
   });
 
   const breadcrumbs = [
@@ -100,13 +134,6 @@
       icon: IconsNavbarIconsPrint,
     },
   ];
-
-  const items = ref([
-    { id: 1, name: "Laptop" },
-    { id: 2, name: "Mouse" },
-    { id: 3, name: "Keyboard" },
-    { id: 4, name: "Earphone" },
-  ]);
 
   const selectedItems = ref([]);
   const selectAll = ref(false);
