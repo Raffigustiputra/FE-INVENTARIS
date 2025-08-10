@@ -3,6 +3,7 @@
 .fade-leave-active {
   transition: all 0.2s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -11,12 +12,46 @@
 </style>
 
 <template>
+  <Transition name="fade">
+    <div
+    v-if="createModal"
+    class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+    >
+    <Modal
+    title="Add New Major"
+    @btnSubmit="submitCreateMajor"
+    @btnClose="closeCreateModal"
+    >
+    <div class="w-full flex items-center gap-2 ">
+      <InputText
+      class="w-8/12"
+      v-model="majorStore.input.name"
+      label="Major Name" placeholder="Enter Major Name Here.." />
+      <div class="w-4/12">
+        <h1 class=" text-sm  mb-2 font-medium text-[#727272] ml-0.5">
+          Major Color
+        </h1>
+        <input
+        v-model="majorStore.input.color"
+        type="color" name="" id="" class="size-10 w-full rounded-sm  p-1 border border-[#D2D2D2]" />
+      </div>
+      </div>
+    </Modal>
+    </div>
+  </Transition>
+
   <div class="">
-    <div class="w-2/10 fixed h-screen bg-white border border-r border-black/10">
+    <!-- SIDEBAR -->
+    <div
+      class="w-2/10 fixed h-screen bg-white border border-r border-black/10 overflow-y-auto"
+    >
+      <!-- LOGO ATAS -->
       <div class="flex items-center w-[189px] ml-5 mt-6 mb-4">
         <img src="../../public/images/wv-logo.png" alt="" />
       </div>
       <div class="border-b border-black/10 mx-4"></div>
+
+      <!-- HEADER SMK -->
       <div
         class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
       >
@@ -37,9 +72,13 @@
           <p class="text-xs text-black/60">Inventory Management System</p>
         </div>
       </div>
+
+      <!-- MENU -->
       <div class="">
         <div>
-          <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">
+          <h1
+            class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
+          >
             GENERAL MENU
           </h1>
         </div>
@@ -72,7 +111,6 @@
                     class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
                   >
                     <div class="flex items-center gap-2">
-                        
                       <component
                         :is="menu.icon"
                         :class="[
@@ -86,6 +124,7 @@
               </NavLink>
             </div>
 
+            <!-- CHILD MENU -->
             <transition name="fade">
               <div
                 v-if="expandedMenu === menu.name"
@@ -116,38 +155,127 @@
           </template>
         </div>
       </div>
+
       <div class="border-b border-black/10 mx-4"></div>
+
+      <!-- MAJOR SECTION -->
       <div v-if="$route.path.includes('/admin')">
-        <div>
-          <h1 class="font-bold text-sm mx-6 my-4 text-[#BAB8B8]">MAJOR</h1>
+        <div class="flex justify-between items-center px-6 my-4">
+          <h1 class="font-bold text-sm text-[#BAB8B8]">MAJOR</h1>
+          <div
+            class="font-semibold cursor-pointer 
+            text-[#BAB8B8] hover:text-[#9e9e9e] transition-colors duration-300
+            "
+            @click="openCreateModal"
+          >
+            +
+          </div>
         </div>
-        <div>
-          <NavMajor majorColor="bg-blue-300" majorName="PPLG" />
-          <NavMajor majorColor="bg-orange-300" majorName="MPLB" />
-          <NavMajor majorColor="bg-green-300" majorName="DKV" />
-          <NavMajor majorColor="bg-red-300" majorName="KLN" />
+        <div
+          v-for="major in majorStore.dataMajor"
+          :key="major.id"
+        >
+          <NavMajor :majorColor="major.color" :majorName="major.name" />
         </div>
       </div>
+
+      <div class="border-b border-black/10 mx-4"></div>
+
+      <!-- LOGOUT -->
+      <div>
+        <IconsLogoutIcon
+          class="size-4 fill-[#727272] cursor-pointer hover:fill-white transition-colors duration-300 mx-6 mb-4 mt-4"
+          @click="submitLogout"
+        />
+      </div>
     </div>
-    <div class="fixed h-16 flex items-center bottom-0 bg-white">
-      <div class="mx-6"></div>
-    </div>
+
+    <!-- FOOTER / BOTTOM BAR -->
   </div>
 </template>
 <script setup>
 import {
   IconsAccounts,
+  IconsManage,
   IconsActivity,
+  IconsLogoutIcon,
   IconsBorrowed,
   IconsDashboard,
   IconsHistory,
   IconsInventory,
   NavLink,
+
 } from "#components";
+
+const authStore = useAuthStore();
+const url = useRuntimeConfig().public.authUrl;
+const router = useRouter();
+const majorStore = useMajorStore();
+
+
+const createModal = ref(false);
+const openCreateModal = () => {
+  createModal.value = true
+}
+const closeCreateModal = () => {
+  createModal.value = false
+  majorStore.input.name = ''
+  majorStore.input.icon = ''
+  majorStore.input.color = ''
+}
 
 const props = defineProps({
   countKaprog: Number,
 });
+
+
+const GetMajor = async () => {
+  const response = await $fetch(`${url}/major`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
+  if (response.status === 200) {
+    majorStore.dataMajor = response.data
+  }
+}
+
+const submitCreateMajor = async () => {
+  const response = await $fetch(`${url}/major`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    }, body : {
+      name: majorStore.input.name,
+      icon : majorStore.input.icon,
+      color : majorStore.input.color
+    }
+  });
+  if (response.status === 200) {
+    GetMajor();
+    closeCreateModal();
+  }
+  majorStore.$patch({
+    name: '',
+  })
+}
+
+const submitLogout = async () => {
+  const response = await $fetch(`${url}/logout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
+  if (response.status === 200) {
+    authStore.$reset();
+    router.push("/");
+  }
+}
 
 // menu yang ini dipake nya nanti pas udah connect api biar dinamis
 // const allMenus = [
@@ -201,14 +329,31 @@ const allMenus = [
     icon: IconsDashboard,
   },
   {
-    name: "Accounts",
-    path: "/admin/accounts",
-    icon: IconsAccounts,
-  },
-  {
     name: "Inventory",
     path: "/admin/inventory",
     icon: IconsInventory,
+  },
+  {
+    name: "Manage Data",
+    path: "/admin/manage",
+    icon: IconsManage,
+    childMenu: [
+      {
+        name: "Accounts",
+        path: "/admin/manage/accounts",
+        icon: IconsAccounts,
+      },
+      {
+        name: "Teachers",
+        path: "/admin/manage/teachers",
+        icon: IconsAccounts,
+      },
+      {
+        name: "Students",
+        path: "/admin/manage/students",
+        icon: IconsAccounts,
+      },
+    ]
   },
   {
     name: "Inventory",
@@ -243,4 +388,8 @@ const allMenus = [
     icon: IconsActivity,
   },
 ];
+
+onMounted(() => {
+  GetMajor()
+});
 </script>

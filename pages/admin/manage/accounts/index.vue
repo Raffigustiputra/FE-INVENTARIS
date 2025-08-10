@@ -48,6 +48,9 @@
         </tbody>
       </table>
     </div>
+    <p class="text-xs text-gray-500 mt-3 ml-2">
+      Showing {{ users.length > 0 ? 1 : 0 }} to {{ users.length }} of {{ users.length }} Accounts
+    </p>
   </div>
 </template>
 
@@ -66,7 +69,7 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
-const url = useRuntimeConfig().public.localUrl;
+const url = useRuntimeConfig().public.authUrl;
 
 const users = ref([]);
 const pending = ref(true);
@@ -110,10 +113,6 @@ const breadcrumbs = [
   {
     label: "Sort by Major",
     icon: IconsNavbarIconsFilterMajor,
-  },
-  {
-    label: "Sort by Role",
-    icon: IconsNavbarIconsFilterRole,
   },
 ];
 </script>
