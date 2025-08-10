@@ -87,7 +87,9 @@
       <div class="border-b border-black/10 mx-4"></div>
       <div v-if="$route.path.includes('/admin')">
         <div>
-          <h1 class="font-bold text-sm mx-6 my-4 text-[#BAB8B8]">MAJOR</h1>
+          <div class="flex justify-between items-center px-6 my-4">
+            <h1 class="font-bold text-sm text-[#BAB8B8]">MAJOR</h1>
+          </div>
         </div>
         <div>
           <NavMajor majorColor="bg-blue-300" majorName="PPLG" />
@@ -95,6 +97,12 @@
           <NavMajor majorColor="bg-green-300" majorName="DKV" />
           <NavMajor majorColor="bg-red-300" majorName="KLN" />
         </div>
+      </div>
+      <div class="border-b border-black/10 mx-4"></div>
+      <div>
+        <IconsLogoutIcon
+          class="size-4 fill-[#727272] cursor-pointer hover:fill-white transition-colors duration-300 mx-6 mt-4"
+          @click="submitLogout" />
       </div>
     </div>
     <div class="fixed h-16 flex items-center bottom-0 bg-white">
@@ -107,16 +115,36 @@ import {
   IconsAccounts,
   IconsManage,
   IconsActivity,
+  IconsLogoutIcon,
   IconsBorrowed,
   IconsDashboard,
   IconsHistory,
   IconsInventory,
   NavLink,
+
 } from "#components";
+
+const authStore = useAuthStore();
+const url = useRuntimeConfig().public.authUrl;
+const router = useRouter();
 
 const props = defineProps({
   countKaprog: Number,
 });
+
+const submitLogout = async () => {
+  const response = await $fetch(`${url}/logout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
+  if (response.status === 200) {
+    authStore.$reset();
+    router.push("/");
+  }
+}
 
 // menu yang ini dipake nya nanti pas udah connect api biar dinamis
 // const allMenus = [
