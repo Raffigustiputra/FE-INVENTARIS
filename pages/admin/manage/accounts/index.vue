@@ -1,128 +1,371 @@
 <template>
-  <div>
-    <Navbar :breadcrumbs="breadcrumbs" />
-    <div class="flex items-center justify-between mt-12 mb-7">
-      <h1 class="font-semibold text-2xl">List Account</h1>
-      <SearchBox text="Search account..." />
-    </div>
+    <div>
+        <Transition name="fade">
+            <div
+                v-if="modalCreate"
+                class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30">
+                <Modal
+                    @btnSubmit="submitCreateAccount"
+                    @btnClose="CloseModalCreate"
+                    title="Add New Account">
+                    <div class="w-full flex items-center gap-2">
+                        <InputText
+                            v-model="accountStore.input.name"
+                            class="w-1/2"
+                            label="Name"
+                            placeholder="Enter Name Here.." />
+                        <InputText
+                            v-model="accountStore.input.username"
+                            class="w-1/2"
+                            label="Username"
+                            placeholder="Enter Name Here.." />
+                    </div>
+                    <div class="w-full flex items-center gap-2">
+                        <InputSelect
+                            placeholder="Select Role"
+                            v-model="accountStore.input.role"
+                            class="w-1/2"
+                            label="Role">
+                            <option value="superadmin">Super Admin</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                        </InputSelect>
+                        <InputText
+                            v-model="accountStore.input.password"
+                            class="w-1/2"
+                            label="Password"
+                            placeholder="Enter Password Here.." />
+                    </div>
+                    <InputSelect
+                        placeholder="Select Major"
+                        v-model="accountStore.input.major_id"
+                        class="w-full"
+                        label="Major">
+                        <option
+                            v-for="major in majorStore.dataMajor"
+                            :key="major.id"
+                            :value="major.id">
+                            {{ major.name }}
+                        </option>
+                    </InputSelect>
+                </Modal>
+            </div>
+        </Transition>
 
-    <!-- Loading State dengan Skeleton -->
-    <div v-if="pending" class="space-y-4">
-      <TableSkeleton 
-        :rows="4" 
-        :columns="5"
-      />
-    </div>
+        <Transition name="fade">
+            <div
+                v-if="modalEdit"
+                class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30">
+                <Modal
+                    @btnSubmit="submitEditAccount"
+                    @btnClose="CloseModalCreate"
+                    title="Add New Account">
+                    <div class="w-full flex items-center gap-2">
+                        <InputText
+                            v-model="accountStore.input.name"
+                            class="w-1/2"
+                            label="Name"
+                            placeholder="Enter Name Here.." />
+                        <InputText
+                            v-model="accountStore.input.username"
+                            class="w-1/2"
+                            label="Username"
+                            placeholder="Enter Name Here.." />
+                    </div>
+                    <div class="w-full flex items-center gap-2">
+                        <InputSelect
+                            placeholder="Select Role"
+                            v-model="accountStore.input.role"
+                            class="w-1/2"
+                            label="Role">
+                            <option value="superadmin">Super Admin</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                        </InputSelect>
+                        <InputSelect
+                            placeholder="Select Major"
+                            v-model="accountStore.input.major_id"
+                            class="w-1/2"
+                            label="Major">
+                            <option
+                                v-for="major in majorStore.dataMajor"
+                                :key="major.id"
+                                :value="major.id">
+                                {{ major.name }}
+                            </option>
+                        </InputSelect>
+                    </div>
+                </Modal>
+            </div>
+        </Transition>
+        <Transition name="fade">
+          <div
+            v-if="modalDelete"  
+            class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+            <Modal
+                @btnClose="CloseModalCreate"
+                @btnSubmit="submitDeleteAccount"
+                title="Delete Type"
+                :isSubmitting="isSubmitting">
+                <div class="w-full flex flex-col items-center py-4">
+                    <div class="text-red-500 mb-3"></div>
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Confirm Deletion</h3>
+                    <p class="text-center text-gray-600">
+                        Are you sure you want to delete
+                        <span class="font-semibold">{{ accountStore.input.name }}</span>
+                        ?
+                        <br />
+                        <span class="text-sm text-red-500">This action cannot be undone.</span>
+                    </p>
+                </div>
+            </Modal>
+          </div>
+        </Transition>
 
-    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
-      <table class="min-w-full text-sm text-left">
-        <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
-          <tr class="text-sm font-medium text-gray-700">
-            <th class="px-8 py-2 w-4/12">Name</th>
-            <th class="px-4 py-2 w-3/12">Major Name</th>
-            <th align="center" class="px-4 py-2 w-3/12">Role</th>
-            <th class="px-4 py-2 w-3/12 text-right">
-              <div class="mr-2">Action</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white">
-          <tr
-            v-for="user in users"
-            :key="user.id"
-            class="border-b border-[#EEEEEE] hover:bg-gray-50"
-          >
-            <td class="flex items-center gap-2 px-8 py-4">
-                <IconsUserIcon />
-              <span class="text-xs font-medium">{{ user.name }}</span>
-            </td>
-            <td class="px-4 py-4">
-              <div class="bg-blue-300 w-24 flex justify-center rounded-md py-1">
-                <span class="text-white text-xs font-medium">{{
-                  user.major?.name || "N/A"
-                }}</span>
-              </div>
-            </td>
-            <td align="center" class="px-4 py-4">
-              <span class="text-xs font-medium uppercase">{{ user.role }}</span>
-            </td>
-            <td class="px-4 py-4 text-right">
-              <div class="inline-flex gap-1 items-center">
-                <ButtonEdit />
-                <ButtonDelete />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="handleBreadcrumbClick" />
+        <div class="flex items-center justify-between mt-12 mb-7">
+            <h1 class="font-semibold text-2xl">List Account</h1>
+            <SearchBox text="Search account..." />
+        </div>
+
+        <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+            <table class="min-w-full text-sm text-left">
+                <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
+                    <tr class="text-sm font-medium text-gray-700">
+                        <th class="px-8 py-2 w-4/12">Name</th>
+                        <th class="px-4 py-2 w-3/12">Major Name</th>
+                        <th align="center" class="px-4 py-2 w-3/12">Role</th>
+                        <th class="px-4 py-2 w-3/12 text-right">
+                            <div class="mr-2">Action</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    <tr
+                        v-for="user in accountStore.Accounts"
+                        :key="user.id"
+                        class="border-b border-[#EEEEEE] hover:bg-gray-50">
+                        <td class="flex items-center gap-2 px-8 py-4">
+                            <IconsUserIcon />
+                            <span class="text-xs font-medium">{{ user.name }}</span>
+                        </td>
+                        <td class="px-4 py-4">
+                            <div
+                                :style="{
+                                    backgroundColor: `rgba(${parseInt(
+                                        user.major?.color.slice(1, 3),
+                                        16
+                                    )}, ${parseInt(user.major?.color.slice(3, 5), 16)}, ${parseInt(
+                                        user.major?.color.slice(5, 7),
+                                        16
+                                    )}, 0.8)`,
+                                }"
+                                class="w-24 flex justify-center rounded-md py-1">
+                                <span
+                                    :style="{ color: darkenColor(user.major?.color, 70) }"
+                                    class="text-xs font-medium">
+                                    {{ user.major?.name || 'N/A' }}
+                                </span>
+                            </div>
+                        </td>
+                        <td align="center" class="px-4 py-4">
+                            <span class="text-xs font-medium">{{ user.role }}</span>
+                        </td>
+                        <td class="px-4 py-4 text-right">
+                            <div class="inline-flex gap-1 items-center">
+                                <ButtonEdit @click="openModalEdit(user)" />
+                                <ButtonDelete @click="openModalDelete(user)" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-xs text-gray-500 mt-3 ml-2">
+            Showing {{ accountStore.Accounts.length > 0 ? 1 : 0 }} to
+            {{ accountStore.Accounts.length }} of {{ accountStore.Accounts.length }} Accounts
+        </p>
     </div>
-    <p class="text-xs text-gray-500 mt-3 ml-2">
-      Showing {{ users.length > 0 ? 1 : 0 }} to {{ users.length }} of {{ users.length }} Accounts
-    </p>
-  </div>
 </template>
 
 <script setup>
 import {
-  IconsNavbarIconsAddUser,
-  IconsNavbarIconsFilterMajor,
-  IconsNavbarIconsFilterRole,
-  IconsNavbarIconsManageUser,
-} from "#components";
-import { useAuthStore } from "@/stores/auth";
+    IconsNavbarIconsAddUser,
+    IconsNavbarIconsFilterMajor,
+    IconsNavbarIconsFilterRole,
+    IconsNavbarIconsManageUser,
+} from '#components';
+import { useAuthStore } from '@/stores/auth';
 
 definePageMeta({
-  layout: "default",
-  title: "Accounts",
+    layout: 'default',
+    title: 'Accounts',
 });
 
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const accountStore = useAccountsStore();
+const majorStore = useMajorStore();
 
-const users = ref([]);
+let modalCreate = ref(false);
+let modalEdit = ref(false);
+let modalDelete = ref(false);
+
+const openModalEdit = (item) => {
+    
+    modalEdit.value = true;
+    accountStore.input.id = item.id;
+    accountStore.input.name = item.name;
+    accountStore.input.username = item.username;
+    accountStore.input.role = item.role;
+    accountStore.input.major_id = item.major_id;
+};
+
+const openModalDelete = (item) => {
+    accountStore.input.id = item.id;
+    accountStore.input.name = item.name;
+    modalDelete.value = true;
+}
+const OpenModalCreate = () => {
+    modalCreate.value = true;
+    getMajor();
+};
+
+const CloseModalCreate = () => {
+    modalCreate.value = false;
+    modalEdit.value = false;
+    modalEdit.value = false;
+    accountStore.input.name = '';
+    accountStore.input.username = '';
+    accountStore.input.role = '';
+    accountStore.input.password = '';
+    accountStore.input.major_id = '';
+};
+
 const pending = ref(true);
 const error = ref(null);
 
-const fetchUsers = async () => {
-  try {
-    // await new Promise(resolve => setTimeout(resolve, 1500))
-    pending.value = true;
-    const res = await $fetch(`${url}/user`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-        'ngrok-skip-browser-warning': true,
-      },
-
-    });   
-    if (res.status === 200 && res.data) {
-      users.value = res.data;
-    } else {
-      users.value = [];
+const GetMajor = async () => {
+    const response = await $fetch(`${url}/major`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.token}`,
+        },
+    });
+    if (response.status === 200) {
+        majorStore.dataMajor = response.data;
     }
-  } catch (err) {
-    error.value = err;
-  } finally {
-    pending.value = false;
-  }
 };
 
+const fetchUsers = async () => {
+    const response = await $fetch(`${url}/user`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.token}`,
+        },
+    });
+
+    if (response.status === 200) {
+        accountStore.Accounts = response.data;
+    }
+};
+
+const submitCreateAccount = async () => {
+    const response = await $fetch(`${url}/user`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.token}`,
+        },
+        body: {
+            name: accountStore.input.name,
+            username: accountStore.input.username,
+            role: accountStore.input.role,
+            password: accountStore.input.password,
+            major_id: accountStore.input.major_id,
+        },
+    });
+    if (response.status === 200 || response.status === 201) {
+        fetchUsers();
+        CloseModalCreate();
+    } else {
+        console.log(response);
+    }
+};
+
+const submitEditAccount = async () => {
+    const response = await $fetch(`${url}/user/${accountStore.input.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.token}`,
+        },
+        body: {
+            name: accountStore.input.name,
+            username: accountStore.input.username,
+            role: accountStore.input.role,
+            major_id: accountStore.input.major_id,
+        },
+    });
+    if (response.status === 200 || response.status === 201) {
+        fetchUsers();
+        CloseModalCreate();
+    } else {
+        console.log(response);
+    }
+}
+
+const submitDeleteAccount = async () => {
+    const response = await $fetch(`${url}/user/${accountStore.input.id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.token}`,
+        },
+    });
+    if (response.status === 200 || response.status === 201) {
+        fetchUsers();
+        CloseModalCreate();
+    }
+}
+
+function darkenColor(hex, percent) {
+    if (!hex) return '#000';
+    let num = parseInt(hex.slice(1), 16),
+        r = (num >> 16) - percent,
+        g = ((num >> 8) & 0x00ff) - percent,
+        b = (num & 0x0000ff) - percent;
+    return (
+        '#' +
+        (0x1000000 + (r < 0 ? 0 : r) * 0x10000 + (g < 0 ? 0 : g) * 0x100 + (b < 0 ? 0 : b))
+            .toString(16)
+            .slice(1)
+    );
+}
+
 onMounted(() => {
-  fetchUsers();
+    fetchUsers();
 });
 
 const breadcrumbs = [
-  {
-    label: "Manage Accounts",
-    icon: IconsNavbarIconsManageUser,
-  },
-  {
-    label: "Add Account",
-    icon: IconsNavbarIconsAddUser,
-  },
-  {
-    label: "Sort by Major",
-    icon: IconsNavbarIconsFilterMajor,
-  },
+    {
+        label: 'Manage Accounts',
+        icon: IconsNavbarIconsManageUser,
+    },
+    {
+        label: 'Add Account',
+        icon: IconsNavbarIconsAddUser,
+        onClick: OpenModalCreate,
+    },
+    {
+        label: 'Sort by Major',
+        icon: IconsNavbarIconsFilterMajor,
+    },
 ];
+
+function handleBreadcrumbClick(item) {
+    if (item.onClick) item.onClick();
+}
 </script>
