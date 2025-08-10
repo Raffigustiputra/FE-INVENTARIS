@@ -62,7 +62,6 @@ const login = async () => {
                 password: authStore.input.password,
             },
         });
-        console.log(response.data);
 
         authStore.setAuthData({
             token: response.token,
@@ -146,7 +145,7 @@ definePageMeta({
                     <button
                         type="button"
                         @click="switchVisibility"
-                        class="absolute right-3 top-11 transform -translate-y-1/2">
+                        class="absolute right-3 top-11 transform -translate-y-1/2 hover:cursor-pointer">
                         <svg
                             v-if="switchEye === true"
                             xmlns="http://www.w3.org/2000/svg"
