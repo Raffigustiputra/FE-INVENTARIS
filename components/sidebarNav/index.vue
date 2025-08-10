@@ -18,19 +18,24 @@
     class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
     >
     <Modal
+    title="Add New Major"
     @btnSubmit="submitCreateMajor"
     @btnClose="closeCreateModal"
     >
+    <div class="w-full flex items-center gap-2 ">
       <InputText
+      class="w-8/12"
       v-model="majorStore.input.name"
       label="Major Name" placeholder="Enter Major Name Here.." />
-      <h1 class=" text-sm  mt-4 mb-2 font-medium text-[#727272] ml-0.5">
-        Major Color
-      </h1>
-      <input
-      v-model="majorStore.input.color"
-      type="color" name="" id="" class="size-10 rounded-sm w-4/12 p-1 border border-[#D2D2D2]" />
-
+      <div class="w-4/12">
+        <h1 class=" text-sm  mb-2 font-medium text-[#727272] ml-0.5">
+          Major Color
+        </h1>
+        <input
+        v-model="majorStore.input.color"
+        type="color" name="" id="" class="size-10 w-full rounded-sm  p-1 border border-[#D2D2D2]" />
+      </div>
+      </div>
     </Modal>
     </div>
   </Transition>
