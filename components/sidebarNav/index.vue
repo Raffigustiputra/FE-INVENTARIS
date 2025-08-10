@@ -24,78 +24,124 @@
       <InputText
       v-model="majorStore.input.name"
       label="Major Name" placeholder="Enter Major Name Here.." />
+      <h1 class=" text-sm  mt-4 mb-2 font-medium text-[#727272] ml-0.5">
+        Major Color
+      </h1>
       <input
       v-model="majorStore.input.color"
-      type="color" name="" id="" class="w-full mt-2" />
+      type="color" name="" id="" class="size-10 rounded-sm w-4/12 p-1 border border-[#D2D2D2]" />
 
     </Modal>
     </div>
   </Transition>
 
   <div class="">
-    <div class="w-2/10 fixed h-screen bg-white border border-r border-black/10">
+    <!-- SIDEBAR -->
+    <div
+      class="w-2/10 fixed h-screen bg-white border border-r border-black/10 overflow-y-auto"
+    >
+      <!-- LOGO ATAS -->
       <div class="flex items-center w-[189px] ml-5 mt-6 mb-4">
         <img src="../../public/images/wv-logo.png" alt="" />
       </div>
       <div class="border-b border-black/10 mx-4"></div>
-      <div class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto">
-        <img v-if="$route.path.includes('/admin')" src="../../public/images/wikrama-logo.png" alt="Wikrama Logo"
-          class="w-[45px]" />
-        <img v-else src="../../public/images/rpl.png" alt="RPL Logo" class="w-[45px]" />
+
+      <!-- HEADER SMK -->
+      <div
+        class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
+      >
+        <img
+          v-if="$route.path.includes('/admin')"
+          src="../../public/images/wikrama-logo.png"
+          alt="Wikrama Logo"
+          class="w-[45px]"
+        />
+        <img
+          v-else
+          src="../../public/images/rpl.png"
+          alt="RPL Logo"
+          class="w-[45px]"
+        />
         <div class="flex-col gap-1">
           <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
           <p class="text-xs text-black/60">Inventory Management System</p>
         </div>
       </div>
+
+      <!-- MENU -->
       <div class="">
         <div>
-          <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">
+          <h1
+            class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
+          >
             GENERAL MENU
           </h1>
         </div>
         <div>
           <template v-for="menu in allMenus" :key="menu.name">
             <div>
-              <NavLink v-if="
-                $route &&
-                menu &&
-                $route.path.split('/')[1] === menu.path.split('/')[1]
-              " :childMenu="menu.childMenu" :navigationItem="menu.name" :navigateTo="menu.childMenu ? '' : menu.path"
-                :isOpen="expandedMenu === menu.name" @click="
+              <NavLink
+                v-if="
+                  $route &&
+                  menu &&
+                  $route.path.split('/')[1] === menu.path.split('/')[1]
+                "
+                :childMenu="menu.childMenu"
+                :navigationItem="menu.name"
+                :navigateTo="menu.childMenu ? '' : menu.path"
+                :isOpen="expandedMenu === menu.name"
+                @click="
                   menu.childMenu
                     ? toggleMenu(menu.name)
                     : $router.push(menu.path)
-                  ">
+                "
+              >
                 <template #default="{ isActive }">
-                  <div @click="
-                    menu.childMenu
-                      ? toggleMenu(menu.name)
-                      : $router.push(menu.path)
+                  <div
+                    @click="
+                      menu.childMenu
+                        ? toggleMenu(menu.name)
+                        : $router.push(menu.path)
                     "
-                    class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300">
+                    class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
+                  >
                     <div class="flex items-center gap-2">
-
-                      <component :is="menu.icon" :class="[
-                        'size-4 transition-colors duration-300',
-                        isActive ? 'fill-white' : 'fill-[#727272]',
-                      ]" />
+                      <component
+                        :is="menu.icon"
+                        :class="[
+                          'size-4 transition-colors duration-300',
+                          isActive ? 'fill-white' : 'fill-[#727272]',
+                        ]"
+                      />
                     </div>
                   </div>
                 </template>
               </NavLink>
             </div>
 
+            <!-- CHILD MENU -->
             <transition name="fade">
-              <div v-if="expandedMenu === menu.name" class="pl-8 mt-1 space-y-1">
-                <NavLink v-for="child in menu.childMenu" :key="child.name" :navigationItem="child.name"
-                  :navigateTo="child.path">
+              <div
+                v-if="expandedMenu === menu.name"
+                class="pl-8 mt-1 space-y-1"
+              >
+                <NavLink
+                  v-for="child in menu.childMenu"
+                  :key="child.name"
+                  :navigationItem="child.name"
+                  :navigateTo="child.path"
+                >
                   <template #default="{ isActive }">
                     <div
-                      class="flex items-center gap-2 px-3 py-1 rounded-md cursor-pointer transition-colors duration-300">
-                      <component :class="[
-                        'size-4 transition-colors duration-300',
-                        isActive ? 'text-white' : 'text-[#727272]',
-                      ]" :is="child.icon" />
+                      class="flex items-center gap-2 px-3 py-1 rounded-md cursor-pointer transition-colors duration-300"
+                    >
+                      <component
+                        :class="[
+                          'size-4 transition-colors duration-300',
+                          isActive ? 'text-white' : 'text-[#727272]',
+                        ]"
+                        :is="child.icon"
+                      />
                     </div>
                   </template>
                 </NavLink>
@@ -104,35 +150,42 @@
           </template>
         </div>
       </div>
+
       <div class="border-b border-black/10 mx-4"></div>
+
+      <!-- MAJOR SECTION -->
       <div v-if="$route.path.includes('/admin')">
-        <div>
-          <div class="flex justify-between items-center px-6 my-4">
-            <h1 class="font-bold text-sm text-[#BAB8B8]">MAJOR</h1>
-            <div class="font-semibold"
+        <div class="flex justify-between items-center px-6 my-4">
+          <h1 class="font-bold text-sm text-[#BAB8B8]">MAJOR</h1>
+          <div
+            class="font-semibold cursor-pointer 
+            text-[#BAB8B8] hover:text-[#9e9e9e] transition-colors duration-300
+            "
             @click="openCreateModal"
-            >
-              +
-            </div>
+          >
+            +
           </div>
         </div>
-        <div>
-          <NavMajor majorColor="bg-blue-300" majorName="PPLG" />
-          <NavMajor majorColor="bg-orange-300" majorName="MPLB" />
-          <NavMajor majorColor="bg-green-300" majorName="DKV" />
-          <NavMajor majorColor="bg-red-300" majorName="KLN" />
+        <div
+          v-for="major in majorStore.dataMajor"
+          :key="major.id"
+        >
+          <NavMajor :majorColor="major.color" :majorName="major.name" />
         </div>
       </div>
+
       <div class="border-b border-black/10 mx-4"></div>
+
+      <!-- LOGOUT -->
       <div>
         <IconsLogoutIcon
-          class="size-4 fill-[#727272] cursor-pointer hover:fill-white transition-colors duration-300 mx-6 mt-4"
-          @click="submitLogout" />
+          class="size-4 fill-[#727272] cursor-pointer hover:fill-white transition-colors duration-300 mx-6 mb-4 mt-4"
+          @click="submitLogout"
+        />
       </div>
     </div>
-    <div class="fixed h-16 flex items-center bottom-0 bg-white">
-      <div class="mx-6"></div>
-    </div>
+
+    <!-- FOOTER / BOTTOM BAR -->
   </div>
 </template>
 <script setup>
@@ -161,6 +214,9 @@ const openCreateModal = () => {
 }
 const closeCreateModal = () => {
   createModal.value = false
+  majorStore.input.name = ''
+  majorStore.input.icon = ''
+  majorStore.input.color = ''
 }
 
 const props = defineProps({
@@ -194,6 +250,8 @@ const submitCreateMajor = async () => {
     }
   });
   if (response.status === 200) {
+    GetMajor();
+    closeCreateModal();
   }
   majorStore.$patch({
     name: '',
