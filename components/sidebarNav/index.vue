@@ -145,7 +145,7 @@
                       <component
                         :class="[
                           'size-4 transition-colors duration-300',
-                          isActive ? 'text-white' : 'text-[#727272]',
+                          isActive ? 'fill-white' : 'fill-[#727272]',
                         ]"
                         :is="child.icon"
                       />
@@ -228,7 +228,7 @@
                       <component
                         :class="[
                           'size-4 transition-colors duration-300',
-                          isActive ? 'text-white' : 'text-[#727272]',
+                          isActive ? 'fill-white' : 'fill-[#727272]',
                         ]"
                         :is="child.icon"
                       />
