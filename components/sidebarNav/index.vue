@@ -46,20 +46,20 @@
       class="w-2/10 fixed h-screen bg-white border border-r border-black/10 overflow-y-auto"
     >
       <!-- LOGO ATAS -->
-      <div class="flex items-center w-[189px] ml-5 mt-6 mb-4">
+      <div class="select-none flex items-center w-[189px] ml-5 mt-6 mb-4">
         <img src="../../public/images/wv-logo.png" alt="" />
       </div>
       <div class="border-b border-black/10 mx-4"></div>
 
       <!-- HEADER SMK -->
       <div
-        class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
+        class="select-none bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
       >
         <img
           v-if="$route.path.includes('/admin')"
           src="../../public/images/wikrama-logo.png"
           alt="Wikrama Logo"
-          class="w-[45px]"
+          class="select-none w-[45px]"
         />
         <img
           v-else
@@ -68,7 +68,7 @@
           class="w-[45px]"
         />
         <div class="flex-col gap-1">
-          <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
+          <h1 class=" text-sm font-bold">SMK Wikrama Bogor</h1>
           <p class="text-xs text-black/60">Inventory Management System</p>
         </div>
       </div>
@@ -79,7 +79,7 @@
       class="">
         <div>
           <h1
-            class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
+            class="select-none font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
           >
             GENERAL MENU
           </h1>
