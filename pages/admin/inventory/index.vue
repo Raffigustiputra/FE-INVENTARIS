@@ -15,17 +15,39 @@
 .alert-leave-active {
   transition: all 350ms ease;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
 </style>
 
 <template>
   <div>
     <transition name="alert">
+      <AlertError
+        class="z-50"
+        v-if="alertError"
+        :title="alertMessage"
+        @hide="alertError = false"
+      />
+    </transition>
+    <transition name="alert">
       <AlertSuccess
+        class="z-50"
         v-if="alertSuccess"
         :title="alertMessage"
         @hide="alertSuccess = false"
-        style="z-index: 9999"
       />
+    </transition>
+    <transition name="alert">
+      <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
     </transition>
     <Navbar
       :breadcrumbs="breadcrumbs"
@@ -37,95 +59,101 @@
     </div>
 
     <!-- Modal Create -->
-    <div
-      v-if="modalCreate"
-      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-    >
-      <Modal
-        @btnClose="closeCreateModal"
-        @btnSubmit="createItem"
-        title="Create Type"
-        :isSubmitting="isSubmitting"
+    <Transition name="fade">
+      <div
+        v-if="modalCreate"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
-        <div class="w-full flex flex-col py-4">
-          <div class="mb-4">
-            <label
-              class="block text-gray-700 text-sm font-medium mb-2"
-              for="itemName"
-            >
-              Item Name
-            </label>
-            <input
-              id="itemName"
-              v-model="mainInventoryStore.input.name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter item name"
-            />
+        <Modal
+          @btnClose="closeCreateModal"
+          @btnSubmit="createItem"
+          title="Create Type"
+          :isSubmitting="isSubmitting"
+        >
+          <div class="w-full flex flex-col py-4">
+            <div class="mb-4">
+              <label
+                class="block text-gray-700 text-sm font-medium mb-2"
+                for="itemName"
+              >
+                Item Name
+              </label>
+              <input
+                id="itemName"
+                v-model="mainInventoryStore.input.name"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter item name"
+              />
+            </div>
           </div>
-        </div>
-      </Modal>
-    </div>
-
+        </Modal>
+      </div>
+    </Transition>
+  
     <!-- Modal Update -->
-    <div
-      v-if="modalUpdate"
-      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-    >
-      <Modal
-        @btnClose="closeModalUpdate"
-        @btnSubmit="updateItem"
-        title="Update Type"
-        :isSubmitting="isSubmitting"
+    <Transition name="fade">
+      <div
+        v-if="modalUpdate"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
-        <div class="w-full flex flex-col py-4">
-          <div class="mb-4">
-            <label
-              class="block text-gray-700 text-sm font-medium mb-2"
-              for="itemName"
-            >
-              Item Name
-            </label>
-            <input
-              id="itemName"
-              v-model="mainInventoryStore.input.name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter item name"
-            />
+        <Modal
+          @btnClose="closeModalUpdate"
+          @btnSubmit="updateItem"
+          title="Update Type"
+          :isSubmitting="isSubmitting"
+        >
+          <div class="w-full flex flex-col py-4">
+            <div class="mb-4">
+              <label
+                class="block text-gray-700 text-sm font-medium mb-2"
+                for="itemName"
+              >
+                Item Name
+              </label>
+              <input
+                id="itemName"
+                v-model="mainInventoryStore.input.name"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter item name"
+              />
+            </div>
           </div>
-        </div>
-      </Modal>
-    </div>
-
+        </Modal>
+      </div>
+    </Transition>
+  
     <!-- Modal Delete -->
-    <div
-      v-if="modalDelete"
-      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-    >
-      <Modal
-        @btnClose="closeModalDelete"
-        @btnSubmit="deleteItems"
-        title="Delete Type"
-        :isSubmitting="isSubmitting"
+    <Transition name="fade">
+      <div
+        v-if="modalDelete"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
-        <div class="w-full flex flex-col items-center py-4">
-          <div class="text-red-500 mb-3"></div>
-          <h3 class="text-lg font-medium text-gray-700 mb-2">
-            Confirm Deletion
-          </h3>
-          <p class="text-center text-gray-600">
-            Are you sure you want to delete
-            <span class="font-semibold">{{ deleteItemData?.name }}</span>
-            ?
-            <br />
-            <span class="text-sm text-red-500"
-              >This action cannot be undone.</span
-            >
-          </p>
-        </div>
-      </Modal>
-    </div>
+        <Modal
+          @btnClose="closeModalDelete"
+          @btnSubmit="deleteItems"
+          title="Delete Type"
+          :isSubmitting="isSubmitting"
+        >
+          <div class="w-full flex flex-col items-center py-4">
+            <div class="text-red-500 mb-3"></div>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">
+              Confirm Deletion
+            </h3>
+            <p class="text-center text-gray-600">
+              Are you sure you want to delete
+              <span class="font-semibold">{{ deleteItemData?.name }}</span>
+              ?
+              <br />
+              <span class="text-sm text-red-500"
+                >This action cannot be undone.</span
+              >
+            </p>
+          </div>
+        </Modal>
+      </div>
+    </Transition>
 
     <!-- Tabel -->
     <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
@@ -188,7 +216,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, Transition, watch } from "vue";
 import {
   IconsNavbarIconsAddUser,
   IconsNavbarIconsFile,
@@ -206,18 +234,36 @@ const mainInventoryStore = useMainInventoryStore();
 
 const selectedItemId = ref(null);
 
-const alertSuccess = ref(false);
+const alertError = ref(false);
 const alertMessage = ref("");
+const alertSuccess = ref(false);
+const alertWarning = ref(false);
 
-function showAlert(type, message) {
-  if (type === "success") {
-    alertMessage.value = message;
+const showAlert = (type, message) => {
+  alertMessage.value = message;
+
+  if (type === "error") {
+    alertError.value = true;
+    setTimeout(() => {
+      alertError.value = false;
+      alertMessage.value = "";
+    }, 3000);
+  } else if (type === "warning") {
+    alertWarning.value = true;
+    setTimeout(() => {
+      alertWarning.value = false;
+      alertMessage.value = "";
+    }, 2500);
+  } else if (type === "success") {
     alertSuccess.value = true;
     setTimeout(() => {
       alertSuccess.value = false;
-    }, 2000);
+      alertMessage.value = "";
+    }, 2500);
+  } else {
+    alert(message);
   }
-}
+};
 
 const modalCreate = ref(false);
 const openCreateModal = () => {
@@ -269,6 +315,10 @@ const getMainInvetoryItems = async () => {
 const isSubmitting = ref(false);
 
 const createItem = async () => {
+  if (!mainInventoryStore.input.name || mainInventoryStore.input.name.trim() === "") {
+    showAlert("warning", "Type name cannot be empty");
+    return;
+  }
   isSubmitting.value = true;
   const response = await $fetch(`${url}/item`, {
     method: "POST",
@@ -288,6 +338,10 @@ const createItem = async () => {
 };
 
 const updateItem = async () => {
+  if (!mainInventoryStore.input.name || mainInventoryStore.input.name.trim() === "") {
+    showAlert("warning", "Type name cannot be empty");
+    return;
+  }
   isSubmitting.value = true;
   const response = await $fetch(`${url}/item/${selectedItemId.value}`, {
     method: "PUT",
@@ -307,6 +361,10 @@ const updateItem = async () => {
 };
 
 const deleteItems = async () => {
+  if (!selectedItemId.value) {
+    showAlert("warning", "No item selected for deletion");
+    return;
+  }
   isSubmitting.value = true;
   const response = await $fetch(`${url}/item/${selectedItemId.value}`, {
     method: "DELETE",

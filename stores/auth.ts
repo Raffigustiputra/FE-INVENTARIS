@@ -1,20 +1,21 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
+// Tambahkan import useCookie dari Nuxt
+import { useCookie } from "#app";
 
-export const useAuthStore = defineStore('auth', {
-    state: () => ({
-        isAuth: false,
-
-        input: {
-            username: '',
-            password: '',
-        },
-
-        token: null as string | null,
-        username: null as string | null,
-        role: null as string | null,
-        name: null as string | null,
-        usid: null as string | null,
-    }),
+export const useAuthStore = defineStore("auth", {
+  state: () => ({
+    isAuth: false,
+    input: {
+      username: "",
+      password: "",
+    },
+    token: null as string | null,
+    username: null as string | null,
+    role: null as string | null,
+    name: null as string | null,
+    usid: null as string | null,
+    loginTime: 0 as number,
+  }),
 
     getters: {
         getToken: (state) => state.token,
@@ -38,31 +39,31 @@ export const useAuthStore = defineStore('auth', {
                 localStorage.setItem('auth-token', data.token);
                 localStorage.setItem('auth-usid', data.usid);
                 localStorage.setItem('auth-isAuth', 'true');
-                localStorage.setItem('auth-role', data.role);
-                localStorage.setItem('auth-name', data.name);
-                localStorage.setItem('auth-username', data.username);
             }
         },
 
-        loadFromStorage() {
-            if (process.client) {
-                const token = localStorage.getItem('auth-token');
-                const role = localStorage.getItem('auth-role');
-                const name = localStorage.getItem('auth-name');
-                const usid = localStorage.getItem('auth-usid');
-                const username = localStorage.getItem('auth-username');
-                const isAuth = localStorage.getItem('auth-isAuth');
+    loadFromStorage() {
+      if (process.client) {
+        // Ambil dari cookies, fallback ke null jika undefined
+        const token = useCookie("auth-token").value ?? null;
+        const role = useCookie("auth-role").value ?? null;
+        const name = useCookie("auth-name").value ?? null;
+        const usid = useCookie("auth-usid").value ?? null;
+        const username = useCookie("auth-username").value ?? null;
+        const isAuth = useCookie("auth-isAuth").value ?? null;
+        const loginTime = useCookie("auth-login-time").value ?? null;
 
-                if (token) {
-                    this.token = token;
-                    this.role = role;
-                    this.name = name;
-                    this.usid = usid;
-                    this.username = username;
-                    this.isAuth = isAuth === 'true';
-                }
-            }
-        },
+        if (token) {
+          this.token = token;
+          this.role = role;
+          this.name = name;
+          this.usid = usid;
+          this.username = username;
+          this.isAuth = isAuth === "true";
+          this.loginTime = loginTime ? parseInt(loginTime) : 0;
+        }
+      }
+    },
 
         logout() {
             this.token = null;
@@ -84,4 +85,5 @@ export const useAuthStore = defineStore('auth', {
             }
         }
     },
+    persist : true
 });

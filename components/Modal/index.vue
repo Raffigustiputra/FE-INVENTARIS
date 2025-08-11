@@ -2,7 +2,7 @@
   <div class="border bg-white border-[#D2D2D2] w-5/12 rounded-sm">
     <div class="border-b bg-white rounded-sm border-[#D2D2D2] py-2 px-4">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center p-1.5 gap-2">
           <div>
             <svg
               class="size-5"
@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="pt-2 pb-4 px-4 max-h-96 min-h-32 rounded-sm overflow-y-auto">
+    <div class="pt-2 pb-4 px-5 max-h-96 min-h-32 rounded-sm overflow-y-auto">
       <slot></slot>
     </div>
     <div
