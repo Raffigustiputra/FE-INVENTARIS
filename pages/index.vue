@@ -75,7 +75,7 @@ const login = async () => {
         router.push('/admin/dashboard');
     } catch (err) {
         console.error('Login gagal:', err);
-        showAlert('error', 'Terjadi kesalahan saat login.');
+        showAlert('error', 'Failed to login');
     }
 };
 
