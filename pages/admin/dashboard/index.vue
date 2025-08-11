@@ -14,11 +14,11 @@
       <!-- Tambahkan Transition di sini -->
       <Transition name="fade">
         <div
-          v-if="modal"
+          
           class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
         >
           <Modal @btnClose="Closemodal" title="Add new item">
-            <div class="w-full flex items-center gap-2">
+            <!-- <div class="w-full flex items-center gap-2">
               <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.." />
               <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
             </div>
@@ -30,7 +30,8 @@
                 <option value="">Printer</option>
               </InputSelect>
             </div>
-            <InputTextarea label="Description" placeholder="Input Description Here.." />
+            <InputTextarea label="Description" placeholder="Input Description Here.." /> -->
+            <InputFile />
           </Modal>
         </div>
       </Transition>
