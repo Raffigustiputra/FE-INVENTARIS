@@ -46,20 +46,20 @@
       class="w-2/10 fixed h-screen bg-white border border-r border-black/10 overflow-y-auto"
     >
       <!-- LOGO ATAS -->
-      <div class="flex items-center w-[189px] ml-5 mt-6 mb-4">
+      <div class="select-none flex items-center w-[189px] ml-5 mt-6 mb-4">
         <img src="../../public/images/wv-logo.png" alt="" />
       </div>
       <div class="border-b border-black/10 mx-4"></div>
 
       <!-- HEADER SMK -->
       <div
-        class="bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
+        class="select-none bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
       >
         <img
           v-if="$route.path.includes('/admin')"
           src="../../public/images/wikrama-logo.png"
           alt="Wikrama Logo"
-          class="w-[45px]"
+          class="select-none w-[45px]"
         />
         <img
           v-else
@@ -68,16 +68,18 @@
           class="w-[45px]"
         />
         <div class="flex-col gap-1">
-          <h1 class="text-sm font-bold">SMK Wikrama Bogor</h1>
+          <h1 class=" text-sm font-bold">SMK Wikrama Bogor</h1>
           <p class="text-xs text-black/60">Inventory Management System</p>
         </div>
       </div>
 
       <!-- MENU -->
-      <div class="">
+      <div
+      v-if="authStore.role === 'superadmin'"
+      class="">
         <div>
           <h1
-            class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
+            class="select-none font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
           >
             GENERAL MENU
           </h1>
@@ -143,7 +145,90 @@
                       <component
                         :class="[
                           'size-4 transition-colors duration-300',
-                          isActive ? 'text-white' : 'text-[#727272]',
+                          isActive ? 'fill-white' : 'fill-[#727272]',
+                        ]"
+                        :is="child.icon"
+                      />
+                    </div>
+                  </template>
+                </NavLink>
+              </div>
+            </transition>
+          </template>
+        </div>
+      </div>
+            <div
+      v-if="authStore.role === 'admin'"
+      class="">
+        <div>
+          <h1
+            class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
+          >
+            GENERAL MENU
+          </h1>
+        </div>
+        <div>
+          <template v-for="menu in allMenus" :key="menu.name">
+            <div>
+              <NavLink
+                v-if="
+                  $route &&
+                  menu &&
+                  $route.path.split('/')[1] === menu.path.split('/')[1]
+                "
+                :childMenu="menu.childMenu"
+                :navigationItem="menu.name"
+                :navigateTo="menu.childMenu ? '' : menu.path"
+                :isOpen="expandedMenu === menu.name"
+                @click="
+                  menu.childMenu
+                    ? toggleMenu(menu.name)
+                    : $router.push(menu.path)
+                "
+              >
+                <template #default="{ isActive }">
+                  <div
+                    @click="
+                      menu.adminMenu
+                        ? toggleMenu(menu.name)
+                        : $router.push(menu.path)
+                    "
+                    class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
+                  >
+                    <div class="flex items-center gap-2">
+                      <component
+                        :is="menu.icon"
+                        :class="[
+                          'size-4 transition-colors duration-300',
+                          isActive ? 'fill-white' : 'fill-[#727272]',
+                        ]"
+                      />
+                    </div>
+                  </div>
+                </template>
+              </NavLink>
+            </div>
+
+            <!-- CHILD MENU -->
+            <transition name="fade">
+              <div
+                v-if="expandedMenu === menu.name"
+                class="pl-8 mt-1 space-y-1"
+              >
+                <NavLink
+                  v-for="child in menu.childMenu"
+                  :key="child.name"
+                  :navigationItem="child.name"
+                  :navigateTo="child.path"
+                >
+                  <template #default="{ isActive }">
+                    <div
+                      class="flex items-center gap-2 px-3 py-1 rounded-md cursor-pointer transition-colors duration-300"
+                    >
+                      <component
+                        :class="[
+                          'size-4 transition-colors duration-300',
+                          isActive ? 'fill-white' : 'fill-[#727272]',
                         ]"
                         :is="child.icon"
                       />
@@ -159,7 +244,7 @@
       <div class="border-b border-black/10 mx-4"></div>
 
       <!-- MAJOR SECTION -->
-      <div v-if="$route.path.includes('/admin')">
+      <div v-if="authStore.role === 'superadmin'">
         <div class="flex justify-between items-center px-6 my-4">
           <h1 class="font-bold text-sm text-[#BAB8B8]">MAJOR</h1>
           <div
@@ -353,7 +438,7 @@ const allMenus = [
         path: "/admin/manage/students",
         icon: IconsAccounts,
       },
-    ]
+    ],
   },
   {
     name: "Inventory",

@@ -10,7 +10,7 @@
         </nav>
 
         <div class="flex items-center gap-3">
-          <div class="text-right">
+          <div class="select-none text-right">
             <p class="font-medium text-gray-800">{{ authStore.name || 'User' }}</p>
             <p class="text-sm text-gray-600">{{ authStore.role || 'Role' }}</p>
           </div>
@@ -24,7 +24,7 @@
 
       <div
         v-if="breadcrumbs && breadcrumbs.length > 0"
-        class="w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-9"
+        class="select-none w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-9"
       >
         <div class="container mx-auto flex items-center gap-5">
           <div
