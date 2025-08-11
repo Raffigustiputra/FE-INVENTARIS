@@ -6,6 +6,9 @@
     <!-- <AlertSuccess /> -->
 
     <h1 @click="OpenModal">test buat klik modal</h1>
+    <!-- <AlertError /> -->
+    <!-- <AlertSuccess /> -->
+    <!-- <AlertWarning /> -->
 
     <div class="w-full">
       <!-- Tambahkan Transition di sini -->
