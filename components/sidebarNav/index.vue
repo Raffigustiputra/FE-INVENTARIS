@@ -12,6 +12,26 @@
 </style>
 
 <template>
+  <Transition name="fade">
+    <div
+    v-if="createModal"
+    class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+    >
+    <Modal
+    @btnSubmit="submitCreateMajor"
+    @btnClose="closeCreateModal"
+    >
+      <InputText
+      v-model="majorStore.input.name"
+      label="Major Name" placeholder="Enter Major Name Here.." />
+      <input
+      v-model="majorStore.input.color"
+      type="color" name="" id="" class="w-full mt-2" />
+
+    </Modal>
+    </div>
+  </Transition>
+
   <div class="">
     <div class="w-2/10 fixed h-screen bg-white border border-r border-black/10">
       <div class="flex items-center w-[189px] ml-5 mt-6 mb-4">
@@ -89,6 +109,11 @@
         <div>
           <div class="flex justify-between items-center px-6 my-4">
             <h1 class="font-bold text-sm text-[#BAB8B8]">MAJOR</h1>
+            <div class="font-semibold"
+            @click="openCreateModal"
+            >
+              +
+            </div>
           </div>
         </div>
         <div>
@@ -102,11 +127,8 @@
       <div>
         <IconsLogoutIcon
           class="size-4 fill-[#727272] cursor-pointer hover:fill-white transition-colors duration-300 mx-6 mt-4"
-          @click="$router.push('/admin/logout')" />
+          @click="submitLogout" />
       </div>
-    </div>
-    <div class="fixed h-16 flex items-center bottom-0 bg-white">
-      <div class="mx-6"></div>
     </div>
   </div>
 </template>
@@ -124,9 +146,71 @@ import {
 
 } from "#components";
 
+const authStore = useAuthStore();
+const url = useRuntimeConfig().public.authUrl;
+const router = useRouter();
+const majorStore = useMajorStore();
+
+
+const createModal = ref(false);
+const openCreateModal = () => {
+  createModal.value = true
+}
+const closeCreateModal = () => {
+  createModal.value = false
+}
+
 const props = defineProps({
   countKaprog: Number,
 });
+
+
+const GetMajor = async () => {
+  const response = await $fetch(`${url}/major`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
+  if (response.status === 200) {
+    majorStore.dataMajor = response.data
+  }
+}
+
+const submitCreateMajor = async () => {
+  const response = await $fetch(`${url}/major`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    }, body : {
+      name: majorStore.input.name,
+      icon : majorStore.input.icon,
+      color : majorStore.input.color
+    }
+  });
+  if (response.status === 200) {
+  }
+  majorStore.$patch({
+    name: '',
+  })
+}
+
+const submitLogout = async () => {
+  const response = await $fetch(`${url}/logout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
+  if (response.status === 200) {
+    authStore.$reset();
+    localStorage.clear();
+    router.push("/");
+  }
+}
 
 // menu yang ini dipake nya nanti pas udah connect api biar dinamis
 // const allMenus = [
@@ -239,4 +323,8 @@ const allMenus = [
     icon: IconsActivity,
   },
 ];
+
+onMounted(() => {
+  GetMajor()
+});
 </script>

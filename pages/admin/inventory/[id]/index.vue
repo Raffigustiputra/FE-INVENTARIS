@@ -1,127 +1,138 @@
 <template>
-    <div>
-        <Navbar :breadcrumbs="breadcrumbs" />
-        <div class="flex items-center justify-between mt-12 mb-4">
-            <h1 class="font-semibold text-2xl">
-                <NuxtLink to="/admin/inventory/">Inventory / {{ item?.name || 'Name not found...' }}</NuxtLink>
-            </h1>
-            <SearchBox />
-        </div>
-
-        <div class="overflow-x-auto mt-7 rounded-lg bg-[#F7F8F9]">
-            <table class="min-w-full text-sm text-left">
-                <thead class="bg-[#F7F8F9]">
-                    <tr class="text-sm font-medium text-gray-700">
-                        <th class="px-4 py-2 w-1">
-                            <input type="checkbox" v-model="selectAll" @change="toggleAll"
-                                class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500" />
-                        </th>
-                        <th class="px-6 py-2 text-center">Type</th>
-                        <th class="px-6 py-2 text-center">Brand</th>
-                        <th class="px-6 py-2">Stock</th>
-                        <th class="px-6 py-2 text-center">Major</th>
-                        <th class="px-4 py-2 text-right">
-                            <div class="mr-2">Action</div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white">
-                    <tr v-for="(item, index) in items" :key="item.id"
-                        class="border-b border-[#EEEEEE] hover:bg-gray-50">
-                        <td class="px-4 py-4">
-                            <input type="checkbox" v-model="selectedItems" :value="item.id"
-                                class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500" />
-                        </td>
-                        <td class="px-6 py-4 text-center">{{ item.type }}</td>
-                        <td class="px-6 py-4 text-center">
-                            <NuxtLink :to="`/admin/inventory/${item.id}`" class="text-black text-xs font-medium">
-                                {{ item.brand }}
-                            </NuxtLink>
-                        </td>
-                        <td class="px-6 py-4">{{ item.stock }}</td>
-                        <td class="px-6 py-4 text-center">
-                            <div class="bg-blue-300 w-24 py-0.5 rounded-md inline-block">
-                                <span class="text-white text-xs font-medium">{{ item.major }}</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-4 text-right">
-                            <div class="inline-flex gap-1 items-center">
-                                <ButtonEdit />
-                                <ButtonDelete />
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  <div>
+    <Navbar :breadcrumbs="breadcrumbs" />
+    <div class="flex items-center justify-between mt-12 mb-4">
+      <h1 class="font-semibold text-2xl">
+        <NuxtLink to="/admin/inventory/">
+          Inventory 
+        </NuxtLink>
+        <span class="text-lg mx-1.5"> /</span> {{ subItemStore.subItems[0]?.item?.name }}
+      </h1>
+      <SearchBox />
     </div>
+
+    <div class="overflow-x-auto mt-7 rounded-lg bg-[#F7F8F9]">
+      <table class="min-w-full text-sm text-left">
+        <thead class="bg-[#F7F8F9]">
+          <tr class="text-sm font-medium text-gray-700">
+            <th class="px-4 py-2 w-1">
+              <input
+                type="checkbox"
+                v-model="selectAll"
+                @change="toggleAll"
+                class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500"
+              />
+            </th>
+            <th class="px-6 py-2 text-center">Type</th>
+            <th class="px-6 py-2 text-center">Brand</th>
+            <th class="px-6 py-2 text-center">Stock</th>
+            <th class="px-6 py-2 text-center">Major</th>
+          </tr>
+        </thead>
+        <tbody
+          class="bg-white"
+          v-for="item in subItemStore.subItems"
+          :key="item.id"
+        >
+          <tr class="border-b border-[#EEEEEE] hover:bg-gray-50">
+            <td class="px-4 py-4">
+              <input
+                type="checkbox"
+                v-model="selectedItems"
+                :value="item.id"
+                class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500"
+              />
+            </td>
+            <td class="px-6 py-4 text-center">{{ item.item.name }}</td>
+            <td class="px-6 py-4 text-center">
+              <NuxtLink
+                :to="`/admin/inventory/${item.item.id}/${item.id}`"
+                class="text-black text-xs font-medium"
+              >
+                {{ item.merk }}
+              </NuxtLink>
+            </td>
+            <td class="px-6 py-4 text-center">{{ item.stock }}</td>
+            <td class="px-6 py-4 text-center">
+              <div class="bg-blue-300 w-24 py-0.5 rounded-md inline-block">
+                <span class="text-white text-xs font-medium">{{
+                  item.major.name
+                }}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 
-
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import {
-    IconsNavbarIconsFile,
-    IconsNavbarIconsFilterMajor,
-    IconsNavbarIconsFilterRole,
-    IconsNavbarIconsPrint,
-} from '#components'
+  IconsNavbarIconsFile,
+  IconsNavbarIconsFilterMajor,
+  IconsNavbarIconsFilterRole,
+  IconsNavbarIconsPrint,
+} from "#components";
 
 definePageMeta({
-    title: 'Inventory',
-})
+  title: "Inventory",
+});
 
-const route = useRoute()
-const id = parseInt(route.params.id) // Ini HARUS di atas itemm
+const selectedItems = ref([]);
+const authStore = useAuthStore();
+const subItemStore = useSubItemStore();
+const url = useRuntimeConfig().public.authUrl;
 
-const items = ref([
-    { id: 1, type: 'Laptop', brand: 'Lenovo', stock: 15, major: 'RPL' },
-    { id: 2, type: 'Laptop', brand: 'Acer', stock: 10, major: 'TKJ' },
-    { id: 3, type: 'Laptop', brand: 'Asus', stock: 8, major: 'RPL' },
-    { id: 4, type: 'Laptop', brand: 'HP', stock: 12, major: 'MM' },
-    { id: 5, type: 'Laptop', brand: 'Dell', stock: 7, major: 'DKV' },
-    { id: 6, type: 'Laptop', brand: 'MSI', stock: 5, major: 'TKJ' },
-    { id: 7, type: 'Laptop', brand: 'Macbook', stock: 3, major: 'RPL' },
-])
+const getSubItemInventory = async () => {
+  const response = await $fetch(`${url}/subitem`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
 
-const itemNames = ref([
-    { id: 1, name: "Laptop" },
-    { id: 2, name: "Mouse" },
-    { id: 3, name: "Keyboard" },
-    { id: 4, name: "Earphone" },
-]);
+  if (response.status === 200) {
+    const id = route.params.id;
+    subItemStore.subItems = response.data.filter(item => item.item && String(item.item.id) === id);
+    subItemStore.parentItems = response.data;
+  }
+};
 
-// Ambil item yang sedang dibuka
-const item = computed(() => itemNames.value.find(i => i.id === id))
+onMounted(() => {
+  getSubItemInventory();
+});
 
-const selectedItems = ref([])
-const selectAll = ref(false)
+const route = useRoute();
+const selectAll = ref(false);
 
 const breadcrumbs = [
-    {
-        label: 'Manage Inventory',
-        icon: IconsNavbarIconsFile,
-    },
-    {
-        label: 'Print Selected',
-        icon: IconsNavbarIconsPrint,
-    },
-    {
-        label: 'Sort by Major',
-        icon: IconsNavbarIconsFilterMajor,
-    },
-    {
-        label: 'Sort by Stock',
-        icon: IconsNavbarIconsFilterRole,
-    },
-]
+  {
+    label: "Manage Inventory",
+    icon: IconsNavbarIconsFile,
+  },
+  {
+    label: "Print Selected",
+    icon: IconsNavbarIconsPrint,
+  },
+  {
+    label: "Sort by Major",
+    icon: IconsNavbarIconsFilterMajor,
+  },
+  {
+    label: "Sort by Stock",
+    icon: IconsNavbarIconsFilterRole,
+  },
+];
 
 const toggleAll = () => {
-    if (selectAll.value) {
-        selectedItems.value = items.value.map((item) => item.id)
-    } else {
-        selectedItems.value = []
-    }
-}
+  if (selectAll.value) {
+    selectedItems.value = subItemStore.subItems.map((item) => item.id);
+  } else {
+    selectedItems.value = [];
+  }
+};
 </script>
