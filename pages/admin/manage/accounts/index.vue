@@ -234,7 +234,7 @@ const OpenModalCreate = () => {
 const CloseModalCreate = () => {
     modalCreate.value = false;
     modalEdit.value = false;
-    modalEdit.value = false;
+    modalDelete.value = false;
     accountStore.input.name = '';
     accountStore.input.username = '';
     accountStore.input.role = '';
