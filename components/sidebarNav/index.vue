@@ -439,23 +439,6 @@ const allMenus = [
         icon: IconsAccounts,
       },
     ],
-    adminMenu : [
-      {
-        name: "Accounts",
-        path: "/admin/manage/accounts",
-        icon: IconsAccounts,
-      },
-      {
-        name: "Teachers",
-        path: "/admin/manage/teachers",
-        icon: IconsAccounts,
-      },
-      {
-        name: "Students",
-        path: "/admin/manage/students",
-        icon: IconsAccounts,
-      },
-    ]
   },
   {
     name: "Inventory",
