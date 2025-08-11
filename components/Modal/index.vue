@@ -41,7 +41,10 @@
             class="border-2 hover:cursor-pointer hover:bg-black/10 duration-200 border-[#D2D2D2] px-3 py-1 text-sm rounded-md font-medium">Cancel</button>
             <button
             @click="$emit('btnSubmit')"
-            class="bg-[#3A6CC2] hover:cursor-pointer duration-200 hover:bg-[#335fac] text-white px-3 py-1 text-sm rounded-md font-medium">Submit</button>
+            :disabled="isSubmitting"
+            class="bg-[#3A6CC2] hover:cursor-pointer duration-200 hover:bg-[#335fac] text-white px-3 py-1 text-sm rounded-md font-medium"
+            :class="{ 'opacity-60 cursor-not-allowed': isSubmitting }"
+            >Submit</button>
         </div>
     </div>
 </template>
@@ -52,13 +55,17 @@ const emits = defineEmits([
 ]);
 
 const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  showActions: {
-    type: Boolean,
-    default: true
-  }
-})
+    title: {
+        type: String,
+        required: true
+    },
+    showActions: {
+        type: Boolean,
+        default: true
+    },
+    isSubmitting: {
+        type: Boolean,
+        default: false
+    }
+});
 </script>
