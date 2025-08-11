@@ -20,13 +20,20 @@
     <div>
         <transition name="alert">
             <AlertError
-            class="z-50"
-            v-if="alertError" :title="alertMessage" @hide="alertError = false" />
+                class="z-50"
+                v-if="alertError"
+                :title="alertMessage"
+                @hide="alertError = false" />
         </transition>
         <transition name="alert">
             <AlertSuccess
-            class="z-50"
-            v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
+                class="z-50"
+                v-if="alertSuccess"
+                :title="alertMessage"
+                @hide="alertSuccess = false" />
+        </transition>
+        <transition name="alert">
+            <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
         </transition>
         <Transition name="fade">
             <div
@@ -233,21 +240,28 @@ definePageMeta({
 const alertError = ref(false);
 const alertMessage = ref('');
 const alertSuccess = ref(false);
+const alertWarning = ref(false);
 
 const showAlert = (type, message) => {
+    alertMessage.value = message;
+
     if (type === 'error') {
-        alertMessage.value = message;
         alertError.value = true;
         setTimeout(() => {
             alertError.value = false;
-            alertMessage.value = null;
+            alertMessage.value = '';
         }, 3000);
+    } else if (type === 'warning') {
+        alertWarning.value = true;
+        setTimeout(() => {
+            alertWarning.value = false;
+            alertMessage.value = '';
+        }, 2500);
     } else if (type === 'success') {
-        alertMessage.value = message;
         alertSuccess.value = true;
         setTimeout(() => {
             alertSuccess.value = false;
-            alertMessage.value = null;
+            alertMessage.value = '';
         }, 2500);
     } else {
         alert(message);
@@ -324,6 +338,22 @@ const fetchUsers = async () => {
 };
 
 const submitCreateAccount = async () => {
+    if (accountStore.input.name === '') {
+        showAlert('warning', 'Name cannot be empty');
+        return;
+    } else if (accountStore.input.username === '') {
+        showAlert('warning', 'Username cannot be empty');
+        return;
+    } else if (accountStore.input.role === '') {
+        showAlert('warning', 'Role cannot be empty');
+        return;
+    } else if (accountStore.input.password === '') {
+        showAlert('warning', 'Password cannot be empty');
+        return;
+    } else if (accountStore.input.major_id === '') {
+        showAlert('warning', 'Major cannot be empty');
+        return;
+    }
     const response = await $fetch(`${url}/user`, {
         method: 'POST',
         headers: {
@@ -348,6 +378,19 @@ const submitCreateAccount = async () => {
 };
 
 const submitEditAccount = async () => {
+    if (accountStore.input.name === '') {
+        showAlert('warning', 'Name cannot be empty');
+        return;
+    } else if (accountStore.input.username === '') {
+        showAlert('warning', 'Username cannot be empty');
+        return;
+    } else if (accountStore.input.role === '') {
+        showAlert('warning', 'Role cannot be empty');
+        return;
+    } else if (accountStore.input.major_id === '') {
+        showAlert('warning', 'Major cannot be empty');
+        return;
+    }
     const response = await $fetch(`${url}/user/${accountStore.input.id}`, {
         method: 'PUT',
         headers: {
