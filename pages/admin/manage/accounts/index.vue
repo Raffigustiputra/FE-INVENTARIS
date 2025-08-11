@@ -1,5 +1,33 @@
+<style scoped>
+.alert-enter-from,
+.alert-leave-to {
+    opacity: 0;
+    transform: translateX(50%);
+}
+
+.alert-enter-to,
+.alert-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.alert-enter-active,
+.alert-leave-active {
+    transition: all 350ms ease;
+}
+</style>
 <template>
     <div>
+        <transition name="alert">
+            <AlertError
+            class="z-50"
+            v-if="alertError" :title="alertMessage" @hide="alertError = false" />
+        </transition>
+        <transition name="alert">
+            <AlertSuccess
+            class="z-50"
+            v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
+        </transition>
         <Transition name="fade">
             <div
                 v-if="modalCreate"
@@ -99,27 +127,27 @@
             </div>
         </Transition>
         <Transition name="fade">
-          <div
-            v-if="modalDelete"  
-            class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
-            <Modal
-                @btnClose="CloseModalCreate"
-                @btnSubmit="submitDeleteAccount"
-                title="Delete Type"
-                :isSubmitting="isSubmitting">
-                <div class="w-full flex flex-col items-center py-4">
-                    <div class="text-red-500 mb-3"></div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-2">Confirm Deletion</h3>
-                    <p class="text-center text-gray-600">
-                        Are you sure you want to delete
-                        <span class="font-semibold">{{ accountStore.input.name }}</span>
-                        ?
-                        <br />
-                        <span class="text-sm text-red-500">This action cannot be undone.</span>
-                    </p>
-                </div>
-            </Modal>
-          </div>
+            <div
+                v-if="modalDelete"
+                class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+                <Modal
+                    @btnClose="CloseModalCreate"
+                    @btnSubmit="submitDeleteAccount"
+                    title="Delete Type"
+                    :isSubmitting="isSubmitting">
+                    <div class="w-full flex flex-col items-center py-4">
+                        <div class="text-red-500 mb-3"></div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">Confirm Deletion</h3>
+                        <p class="text-center text-gray-600">
+                            Are you sure you want to delete
+                            <span class="font-semibold">{{ accountStore.input.name }}</span>
+                            ?
+                            <br />
+                            <span class="text-sm text-red-500">This action cannot be undone.</span>
+                        </p>
+                    </div>
+                </Modal>
+            </div>
         </Transition>
 
         <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="handleBreadcrumbClick" />
@@ -202,6 +230,30 @@ definePageMeta({
     title: 'Accounts',
 });
 
+const alertError = ref(false);
+const alertMessage = ref('');
+const alertSuccess = ref(false);
+
+const showAlert = (type, message) => {
+    if (type === 'error') {
+        alertMessage.value = message;
+        alertError.value = true;
+        setTimeout(() => {
+            alertError.value = false;
+            alertMessage.value = null;
+        }, 3000);
+    } else if (type === 'success') {
+        alertMessage.value = message;
+        alertSuccess.value = true;
+        setTimeout(() => {
+            alertSuccess.value = false;
+            alertMessage.value = null;
+        }, 2500);
+    } else {
+        alert(message);
+    }
+};
+
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const accountStore = useAccountsStore();
@@ -212,7 +264,6 @@ let modalEdit = ref(false);
 let modalDelete = ref(false);
 
 const openModalEdit = (item) => {
-    
     modalEdit.value = true;
     accountStore.input.id = item.id;
     accountStore.input.name = item.name;
@@ -225,7 +276,7 @@ const openModalDelete = (item) => {
     accountStore.input.id = item.id;
     accountStore.input.name = item.name;
     modalDelete.value = true;
-}
+};
 const OpenModalCreate = () => {
     modalCreate.value = true;
     getMajor();
@@ -288,10 +339,11 @@ const submitCreateAccount = async () => {
         },
     });
     if (response.status === 200 || response.status === 201) {
+        showAlert('success', 'Account Successfully Created');
         fetchUsers();
         CloseModalCreate();
     } else {
-        console.log(response);
+        showAlert('error', 'Something went wrong while creating account');
     }
 };
 
@@ -310,12 +362,13 @@ const submitEditAccount = async () => {
         },
     });
     if (response.status === 200 || response.status === 201) {
+        showAlert('success', 'Account Successfully Updated');
         fetchUsers();
         CloseModalCreate();
     } else {
-        console.log(response);
+        showAlert('error', 'Something went wrong while updating account');
     }
-}
+};
 
 const submitDeleteAccount = async () => {
     const response = await $fetch(`${url}/user/${accountStore.input.id}`, {
@@ -326,10 +379,13 @@ const submitDeleteAccount = async () => {
         },
     });
     if (response.status === 200 || response.status === 201) {
+        showAlert('success', 'Account Successfully Deleted');
         fetchUsers();
         CloseModalCreate();
+    } else {
+        showAlert('error', 'Something went wrong while deleting account');
     }
-}
+};
 
 function darkenColor(hex, percent) {
     if (!hex) return '#000';
