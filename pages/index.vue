@@ -27,7 +27,7 @@ const switchVisibility = () => {
 };
 
 const router = useRouter();
-const url = useRuntimeConfig().public.localUrl;
+const url = useRuntimeConfig().public.authUrl;
 
 const alertError = ref(false);
 const alertMessage = ref('');

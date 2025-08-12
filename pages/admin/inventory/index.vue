@@ -89,7 +89,7 @@
 
   const authStore = useAuthStore();
   const items = ref([]);
-  const url = useRuntimeConfig().public.localUrl;
+  const url = useRuntimeConfig().public.authUrl;
   const pending = ref(true);
   const error = ref(null);
 
@@ -100,6 +100,7 @@
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authStore.token}`,
+          'ngrok-skip-browser-warning': 'true'
         },
       });
 
