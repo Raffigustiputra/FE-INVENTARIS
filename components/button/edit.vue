@@ -1,6 +1,6 @@
 <template>
     <div
-    class="bg-blue-400 p-1 rounded-md flex justify-center items-center"
+    class="bg-[#619CFF] p-1 rounded-md flex justify-center items-center"
     :class="props.size"
     >
         <svg

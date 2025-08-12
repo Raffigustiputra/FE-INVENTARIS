@@ -1,6 +1,6 @@
 <template>
     <div
-    class="bg-red-500 p-1 rounded-md flex justify-center items-center"
+    class="bg-[#DF0000E5] p-1 rounded-md flex justify-center items-center"
     :class="props.size"
     >
         <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

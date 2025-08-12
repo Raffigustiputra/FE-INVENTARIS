@@ -10,8 +10,13 @@
       </div>
       <h1
         :class="[
+<<<<<<< HEAD
           'text-sm font-semibold select-none',
           isActive ? 'text-white' : 'text-black/60',
+=======
+          'text-sm font-medium',
+          isActive ? 'text-white' : 'text-black/60'
+>>>>>>> 4a0d519aee222149bc56d09d89cf6ebfef761e29
         ]"
       >
         {{ props.navigationItem }}
