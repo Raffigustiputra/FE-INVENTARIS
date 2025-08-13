@@ -1,4 +1,3 @@
-
 <style scoped>
 .alert-enter-from,
 .alert-leave-to {
@@ -71,10 +70,18 @@ const login = async () => {
             username: response.data.username
         });
 
-        router.push('/admin/dashboard');
+        if (response.data.role === 'superadmin') {
+            router.push('/admin/dashboard');
+        } else if (response.data.role === 'admin') {
+            router.push('/kaprog/dashboard');
+        } else if (response.data.role === 'user') {
+            router.push('/user/dashboard');
+        } else {
+            showAlert('error', 'Unknown role');
+        }
     } catch (err) {
         console.error('Login gagal:', err);
-        showAlert('error', 'Terjadi kesalahan saat login.');
+        showAlert('error', 'Failed to login');
     }
 };
 

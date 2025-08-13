@@ -3,19 +3,19 @@
         <div class="w-full flex justify-end items-start">
             <div
                 @click="$emit('hide')"
-                class="cursor-pointer bg-[#FCEFE9] border-[#E2CFC8] mt-2 mr-2 w-full h-auto flex justify-start items-center p-3 gap-4 rounded-md shadow-md border">
+                class="cursor-pointer bg-[#FFF7EA] border-[#EFDECA] mt-2 mr-2 w-full h-auto flex justify-start items-center p-3 gap-4 rounded-md shadow-md border">
                 <div>
                     <svg
                         class="size-8"
                         viewBox="0 0 58 58"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="29" cy="29" r="29" fill="#F85351" />
+                        <circle cx="29" cy="29" r="29" fill="#FDBD1A" />
                         <circle cx="29" cy="29" r="20" fill="white" />
                         <path
-                            d="M36 36L29.125 29.125M29.125 29.125L22.25 22.25M29.125 29.125L36 22.25M29.125 29.125L22.25 36"
-                            stroke="#F85351"
-                            stroke-width="2.943"
+                            d="M28.5004 17.75V32.0833M28.5896 39.25V39.4292L28.4111 39.4295V39.25H28.5896Z"
+                            stroke="#FDBD1A"
+                            stroke-width="4.698"
                             stroke-linecap="round"
                             stroke-linejoin="round" />
                     </svg>
