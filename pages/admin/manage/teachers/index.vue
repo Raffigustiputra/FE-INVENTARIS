@@ -6,7 +6,12 @@
             <SearchBox text="Search teachers..." />
         </div>
 
-        <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+        <TableSkeleton v-if="pending"
+            :rows="5"
+            :columns="4"
+        />
+
+        <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
             <table class="min-w-full text-sm text-left">
                 <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
                     <tr class="text-sm font-medium text-gray-700">
@@ -72,6 +77,7 @@ const pending = ref(true);
 const error = ref(null);
 
 const fetchUsers = async () => {
+    setTimeout(() => pending(true), 10000);
     try {
         pending.value = true;
         const res = await $fetch(`${url}/user`, {

@@ -155,8 +155,14 @@
       </div>
     </Transition>
 
+    <!-- SKELETON -->
+     <TableSkeleton v-if="pending"
+        :rows="3"
+        :columns="5"
+     />
+
     <!-- Tabel -->
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="bg-[#F7F8F9]">
           <tr class="text-sm font-medium text-gray-700">
@@ -299,6 +305,7 @@ const closeModalDelete = () => {
 };
 
 const getMainInvetoryItems = async () => {
+    setTimeout(() => setLoading(false), 2000);
   const response = await $fetch(`${url}/item`, {
     method: "GET",
     headers: {
