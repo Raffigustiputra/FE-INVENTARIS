@@ -4,8 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: [
-    '~/assets/css/main.css',
-    '@vuepic/vue-datepicker/dist/main.css' // tambahin CSS datepicker biar langsung global
+    '~/assets/css/main.css', 
   ],
 
   vite: {
