@@ -15,7 +15,12 @@
         </div>
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-white">
+     <TableSkeleton v-if="pending"
+        :rows="4"
+        :columns="6"
+     />
+
+    <div v-else class="overflow-x-auto rounded-lg bg-white">
         <table class="min-w-full text-sm text-left">
             <thead class="bg-gray-100">
                 <tr class="text-sm font-semibold text-gray-700">
@@ -102,6 +107,7 @@ const unitItemStore = useUnitItemStore();
 const route = useRoute();
 
 const getUnitItemsInventory = async () => {
+    setTimeout(() => setLoading(false), 2000);
     const response = await $fetch(`${url}/unit-items`, {
         method: "GET",
         headers: {

@@ -66,13 +66,18 @@
       </div>
     </Transition>
 
-    <!-- Table -->
+    
     <div class="flex items-center justify-between mt-12 mb-7">
-      <h1 class="font-semibold text-2xl">List Teachers</h1>
-      <SearchBox text="Search teachers..." />
+        <h1 class="font-semibold text-2xl">List Teachers</h1>
+        <SearchBox text="Search teachers..." />
     </div>
-
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    
+    <TableSkeleton v-if="pending"
+    :rows="3"
+    :columns="5"
+    />
+    <!-- Table -->
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
           <tr class="text-sm font-medium text-gray-700">
@@ -204,6 +209,9 @@ const submitImportTeacher = async () => {
     closeModalImport();
   }
 };
+
+const pending = ref(true);
+const error = ref(null);
 
 const getTeachers = async () => {
   const response = await $fetch(`${url}/teacher`, {

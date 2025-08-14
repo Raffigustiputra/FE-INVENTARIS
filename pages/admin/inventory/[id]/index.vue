@@ -11,7 +11,12 @@
       <SearchBox />
     </div>
 
-    <div class="overflow-x-auto mt-7 rounded-lg bg-[#F7F8F9]">
+     <TableSkeleton v-if="pending"
+        :rows="4"
+        :columns="4"
+     />
+
+    <div v-else class="overflow-x-auto mt-7 rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="bg-[#F7F8F9]">
           <tr class="text-sm font-medium text-gray-700">
@@ -87,6 +92,7 @@ const subItemStore = useSubItemStore();
 const url = useRuntimeConfig().public.authUrl;
 
 const getSubItemInventory = async () => {
+  setTimeout(() => setLoading(false), 2000);
   const response = await $fetch(`${url}/subitem`, {
     method: "GET",
     headers: {

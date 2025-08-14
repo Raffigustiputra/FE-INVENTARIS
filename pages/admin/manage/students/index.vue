@@ -88,7 +88,12 @@
             <SearchBox text="Search students..." />
         </div>
 
-        <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+         <TableSkeleton v-if="pending"
+        :rows="5"
+        :columns="5"
+     />
+
+        <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
             <table class="min-w-full text-sm">
                 <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
                     <tr class="text-sm font-medium text-gray-700">
@@ -282,6 +287,7 @@ const submitImportStudent = async () => {
 };
 
 const getStudent = async () => {
+    setTimeout(() => setLoading(false), 5000);
     const response = await $fetch(`${url}/student`, {
         method: 'GET',
         headers: {

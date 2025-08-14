@@ -185,8 +185,13 @@
         </Modal>
       </div>
     </Transition>
+    
+     <TableSkeleton v-if="pending"
+        :rows="4"
+        :columns="7"
+     />
 
-  <div class="overflow-x-auto rounded-lg bg-white">
+  <div v-else class="overflow-x-auto rounded-lg bg-white">
     <table class="min-w-full text-sm text-left">
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
@@ -408,6 +413,9 @@ const closeModalDelete = () => {
   modalDelete.value = false;
   deleteItemData.value = null;
 };
+
+const pending = ref(true);
+const error = ref(null);
 
 const getMainInventoryItems = async () => {
   const response = await $fetch(`${url}/item`, {

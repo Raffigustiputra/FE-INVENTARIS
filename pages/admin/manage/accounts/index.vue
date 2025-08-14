@@ -188,7 +188,13 @@
       <SearchBox text="Search account..." />
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <!-- skeleton -->
+      <TableSkeleton v-if="pending"
+        :rows="4"
+        :columns="4"
+     />
+
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
           <tr class="text-sm font-medium text-gray-700">
@@ -340,6 +346,7 @@ const pending = ref(true);
 const error = ref(null);
 
 const GetMajor = async () => {
+    setTimeout(() => setLoading(false), 5000);
   const response = await $fetch(`${url}/major`, {
     method: "GET",
     headers: {

@@ -1,20 +1,19 @@
 import { defineStore } from "pinia";
-// Tambahkan import useCookie dari Nuxt
-import { useCookie } from "#app";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuth: false,
+
     input: {
       username: "",
       password: "",
     },
+
     token: null as string | null,
     username: null as string | null,
     role: null as string | null,
     name: null as string | null,
     usid: null as string | null,
-    loginTime: 0 as number,
   }),
 
     getters: {
@@ -60,7 +59,6 @@ export const useAuthStore = defineStore("auth", {
           this.usid = usid;
           this.username = username;
           this.isAuth = isAuth === "true";
-          this.loginTime = loginTime ? parseInt(loginTime) : 0;
         }
       }
     },
