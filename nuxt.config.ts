@@ -14,10 +14,6 @@ export default defineNuxtConfig({
     ],
   },
 
-  build: {
-    transpile: ['@vuepic/vue-datepicker'] // WAJIB buat Vue Date Picker
-  },
-
   ssr: false,
 
   runtimeConfig: {
