@@ -82,6 +82,66 @@
                 </Modal>
             </div>
         </Transition>
+        <Transition name="fade">
+            <div
+                v-if="modalEdit"
+                class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30">
+                <Modal title="Edit Student" @btnSubmit="submitEditStudent" @btnClose="closeModal">
+                    <div class="w-full flex items-center gap-2">
+                        <InputText
+                            label="Name"
+                            placeholder="Enter Name Here.."
+                            v-model="studentStore.input.name"
+                            class="w-1/2" />
+                        <InputNumber
+                            label="NIS"
+                            placeholder="Enter NIS Here.."
+                            v-model="studentStore.input.nis"
+                            class="w-1/2" />
+                          </div>
+                          <div class="w-full flex items-center gap-2">
+                              <InputText
+                                  label="Rayon"
+                                  placeholder="Enter Rayon Here.."
+                                  v-model="studentStore.input.rayon"
+                                  class="w-1/2" />
+                              <InputSelect
+                                  label="Major"
+                                  placeholder="Select Major"
+                                  v-model="studentStore.input.major_id"
+                                  class="w-1/2">
+                                  <option v-for="i in majorStore.dataMajor" :key="i.id" :value="i.id">
+                                      {{ i.name }}
+                                  </option>
+                              </InputSelect>
+                          </div>
+                </Modal>
+            </div>
+        </Transition>
+        <Transition name="fade">
+          <div 
+          v-if="modalDelete"
+          class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+          >
+            <Modal
+              @btnSubmit="submitDeleteStudent"
+              @btnClose="closeModal"
+              title="Delete Student">
+              <div class="w-full flex flex-col items-center py-4">
+                <div class="text-red-500 mb-3"></div>
+                <h3 class="text-lg font-medium text-gray-700 mb-2">
+                  Confirm Deletion
+                </h3>
+                <p class="text-center text-gray-600">
+                  Are you sure you want to delete
+                  <span class="font-semibold">{{ studentStore.input.name }}</span>
+                  ?
+                  <br />
+                </p>
+              </div>
+            </Modal>
+          </div>
+        </Transition>
         <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="handleBreadcrumbClick" />
         <div class="flex items-center justify-between mt-12 mb-7">
             <h1 class="font-semibold text-2xl">List Students</h1>
@@ -155,56 +215,55 @@
                         <!-- Action -->
                         <td class="px-4 py-4 text-right">
                             <div class="inline-flex gap-1 items-center">
-                                <ButtonEdit />
-                                <ButtonDelete />
+                                <ButtonEdit @click="openModalEdit(i)" />
+                                <ButtonDelete @click="openModalDelete(i)" />
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-<div class="flex items-center justify-between mt-4">
-    <!-- Info jumlah -->
-    <p class="text-xs text-gray-500">
-        Showing {{ studentStore.students.length }} of {{ allStudentCount }} Accounts
-    </p>
+        <div class="flex items-center justify-between mt-4">
+            <!-- Info jumlah -->
+            <p class="text-xs text-gray-500">
+                Showing {{ studentStore.students.length }} of {{ allStudentCount }} Accounts
+            </p>
 
-    <!-- Pagination -->
-    <div class="flex items-center gap-1">
-        <!-- Prev -->
-        <button
-            @click="prevPage"
-            :disabled="currentPage === 1"
-            class="w-8 h-8 flex items-center justify-center rounded text-gray-500 disabled:opacity-40 hover:bg-gray-200 transition">
-            ‹
-        </button>
+            <!-- Pagination -->
+            <div class="flex items-center gap-1">
+                <!-- Prev -->
+                <button
+                    @click="prevPage"
+                    :disabled="currentPage === 1"
+                    class="w-8 h-8 flex items-center justify-center rounded text-gray-500 disabled:opacity-40 hover:bg-gray-200 transition">
+                    ‹
+                </button>
 
-        <!-- Numbers -->
-        <template v-for="page in paginationItems" :key="page">
-            <button
-                v-if="page !== '...'"
-                @click="changePage(page)"
-                :class="[
-                    'w-8 h-8 flex items-center justify-center rounded transition',
-                    currentPage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                ]">
-                {{ page }}
-            </button>
-            <span v-else class="px-2 text-gray-500">...</span>
-        </template>
+                <!-- Numbers -->
+                <template v-for="page in paginationItems" :key="page">
+                    <button
+                        v-if="page !== '...'"
+                        @click="changePage(page)"
+                        :class="[
+                            'w-8 h-8 flex items-center justify-center rounded transition',
+                            currentPage === page
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                        ]">
+                        {{ page }}
+                    </button>
+                    <span v-else class="px-2 text-gray-500">...</span>
+                </template>
 
-        <!-- Next -->
-        <button
-            @click="nextPage"
-            :disabled="currentPage === lastPage"
-            class="w-8 h-8 flex items-center justify-center rounded text-gray-500 disabled:opacity-40 hover:bg-gray-200 transition">
-            ›
-        </button>
-    </div>
-</div>
-
+                <!-- Next -->
+                <button
+                    @click="nextPage"
+                    :disabled="currentPage === lastPage"
+                    class="w-8 h-8 flex items-center justify-center rounded text-gray-500 disabled:opacity-40 hover:bg-gray-200 transition">
+                    ›
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -225,6 +284,7 @@ definePageMeta({
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const studentStore = useStudentStore();
+const majorStore = useMajorStore();
 
 const lastPage = ref(0);
 const currentPage = ref(1);
@@ -333,10 +393,29 @@ const handleSearch = () => {
 let modalCreate = ref(false);
 let modalEdit = ref(false);
 let modalDelete = ref(false);
-let Closemodal = () => {
+let closeModal = () => {
     modalCreate.value = false;
     modalEdit.value = false;
     modalDelete.value = false;
+    studentStore.input.name = '';
+    studentStore.input.major_id = '';
+    studentStore.input.nis = '';
+    studentStore.input.rayon = '';
+};
+
+const openModalEdit = (item) => {
+    modalEdit.value = true;
+    studentStore.input.id = item.id;
+    studentStore.input.name = item.name;
+    studentStore.input.major_id = item.major_id;
+    studentStore.input.nis = item.nis;
+    studentStore.input.rayon = item.rayon;
+};
+
+const openModalDelete = (item) => {
+    studentStore.input.id = item.id;
+    studentStore.input.name = item.name;
+    modalDelete.value = true;
 };
 
 const modalImport = ref(false);
@@ -436,6 +515,19 @@ const submitImportStudent = async () => {
 };
 
 const allStudentCount = ref(0);
+
+const getMajor = async () => {
+    const response = await $fetch(`${url}/major`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.token}`,
+        },
+    });
+    if (response.status === 200) {
+        majorStore.dataMajor = response.data;
+    }
+};
 
 const getStudent = async () => {
     const response = await $fetch(
