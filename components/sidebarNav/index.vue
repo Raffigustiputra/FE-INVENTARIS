@@ -80,16 +80,14 @@
       </div>
 
       <!-- MENU -->
-      <div v-if="authStore.role === 'superadmin'" class="">
+      <div v-if="menuByRole[authStore.role]" class="">
         <div>
-          <h1
-            class="select-none font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]"
-          >
+          <h1 class="select-none font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">
             GENERAL MENU
           </h1>
         </div>
         <div>
-          <template v-for="menu in allMenus" :key="menu.name">
+          <template v-for="menu in menuByRole[authStore.role]" :key="menu.path">
             <div>
               <NavLink
                 v-if="
@@ -100,10 +98,10 @@
                 :childMenu="menu.childMenu"
                 :navigationItem="menu.name"
                 :navigateTo="menu.childMenu ? '' : menu.path"
-                :isOpen="expandedMenu === menu.name"
+                :isOpen="expandedMenu === menu.path"
                 @click="
                   menu.childMenu
-                    ? toggleMenu(menu.name)
+                    ? toggleMenu(menu.path)
                     : $router.push(menu.path)
                 "
               >
@@ -111,7 +109,7 @@
                   <div
                     @click="
                       menu.childMenu
-                        ? toggleMenu(menu.name)
+                        ? toggleMenu(menu.path)
                         : $router.push(menu.path)
                     "
                     class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
@@ -133,91 +131,12 @@
             <!-- CHILD MENU -->
             <transition name="fade">
               <div
-                v-if="expandedMenu === menu.name"
+                v-if="expandedMenu === menu.path"
                 class="pl-8 mt-1 space-y-1"
               >
                 <NavLink
                   v-for="child in menu.childMenu"
-                  :key="child.name"
-                  :navigationItem="child.name"
-                  :navigateTo="child.path"
-                >
-                  <template #default="{ isActive }">
-                    <div
-                      class="flex items-center gap-2 px-3 py-1 rounded-md cursor-pointer transition-colors duration-300"
-                    >
-                      <component
-                        :class="[
-                          'size-4 transition-colors duration-300',
-                          isActive ? 'fill-white' : 'fill-[#727272]',
-                        ]"
-                        :is="child.icon"
-                      />
-                    </div>
-                  </template>
-                </NavLink>
-              </div>
-            </transition>
-          </template>
-        </div>
-      </div>
-      <div v-if="authStore.role === 'admin'" class="">
-        <div>
-          <h1 class="font-bold text-sm mx-6 mt-4 mb-2 text-[#BAB8B8]">
-            GENERAL MENU
-          </h1>
-        </div>
-        <div>
-          <template v-for="menu in allMenus" :key="menu.name">
-            <div>
-              <NavLink
-                v-if="
-                  $route &&
-                  menu &&
-                  $route.path.split('/')[1] === menu.path.split('/')[1]
-                "
-                :childMenu="menu.childMenu"
-                :navigationItem="menu.name"
-                :navigateTo="menu.childMenu ? '' : menu.path"
-                :isOpen="expandedMenu === menu.name"
-                @click="
-                  menu.childMenu
-                    ? toggleMenu(menu.name)
-                    : $router.push(menu.path)
-                "
-              >
-                <template #default="{ isActive }">
-                  <div
-                    @click="
-                      menu.adminMenu
-                        ? toggleMenu(menu.name)
-                        : $router.push(menu.path)
-                    "
-                    class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
-                  >
-                    <div class="flex items-center gap-2">
-                      <component
-                        :is="menu.icon"
-                        :class="[
-                          'size-4 transition-colors duration-300',
-                          isActive ? 'fill-white' : 'fill-[#727272]',
-                        ]"
-                      />
-                    </div>
-                  </div>
-                </template>
-              </NavLink>
-            </div>
-
-            <!-- CHILD MENU -->
-            <transition name="fade">
-              <div
-                v-if="expandedMenu === menu.name"
-                class="pl-8 mt-1 space-y-1"
-              >
-                <NavLink
-                  v-for="child in menu.childMenu"
-                  :key="child.name"
+                  :key="child.path"
                   :navigationItem="child.name"
                   :navigateTo="child.path"
                 >
@@ -282,6 +201,7 @@ import {
   IconsHistory,
   IconsInventory,
   NavLink,
+  NavMajor,
 } from "#components";
 
 const authStore = useAuthStore();
@@ -354,117 +274,107 @@ const submitLogout = async () => {
   }
 };
 
-// menu yang ini dipake nya nanti pas udah connect api biar dinamis
-// const allMenus = [
-//     {
-//     name: 'Dashboard',
-//     path: role => `/${role}/dashboard`,
-//     icon: IconsDashboard,
-//     roles: ['superadmin', 'admin', 'user']
-//   },
-//   {
-//     name: 'Accounts',
-//     path: () => '/superadmin/accounts',
-//     icon: IconsAccounts,
-//     roles: ['superadmin']
-//   },
-//   {
-//     name: 'Inventory',
-//     path: role => `/${role}/inventory`,
-//     icon: IconsInventory,
-//     roles: ['superadmin', 'admin', 'user']
-//   },
-//   {
-//     name: 'Activity',
-//     path: () => '/admin/activity',
-//     icon: IconsDashboard,
-//     roles: ['admin', 'user']
-//   }
-// ];
-
 const expandedMenu = ref(null);
 
-function toggleMenu(name) {
-  expandedMenu.value = expandedMenu.value === name ? null : name;
+function toggleMenu(path) {
+  expandedMenu.value = expandedMenu.value === path ? null : path;
 }
 
-// kita pake yang static dulu
-const allMenus = [
-  {
-    name: "Dashboard",
-    path: "/admin/dashboard",
-    icon: IconsDashboard,
-  },
-  {
-    name: "Dashboard",
-    path: "/kaprog/dashboard",
-    icon: IconsDashboard,
-  },
-  {
-    name: "Dashboard",
-    path: "/user/dashboard",
-    icon: IconsDashboard,
-  },
-  {
-    name: "Inventory",
-    path: "/admin/inventory",
-    icon: IconsInventory,
-  },
-  {
-    name: "Manage Data",
-    path: "/admin/manage",
-    icon: IconsManage,
-    childMenu: [
-      {
-        name: "Accounts",
-        path: "/admin/manage/accounts",
-        icon: IconsAccounts,
-      },
-      {
-        name: "Teachers",
-        path: "/admin/manage/teachers",
-        icon: IconsAccounts,
-      },
-      {
-        name: "Students",
-        path: "/admin/manage/students",
-        icon: IconsAccounts,
-      },
-    ],
-  },
-  {
-    name: "Inventory",
-    path: "/kaprog/inventory",
-    icon: IconsInventory,
-  },
-  {
-    name: "Inventory",
-    path: "/user/inventory",
-    icon: IconsInventory,
-  },
-  {
-    name: "Activity",
-    icon: IconsActivity,
-    path: "/kaprog/activity",
-    childMenu: [
-      {
-        name: "Borrowed",
-        icon: IconsBorrowed,
-        path: "/kaprog/activity/borrowed",
-      },
-      {
-        name: "History",
-        icon: IconsHistory,
-        path: "/kaprog/activity/history",
-      },
-    ],
-  },
-  {
-    name: "Activity",
-    path: "/user/activity",
-    icon: IconsActivity,
-  },
-];
+// Menu dinamis berdasarkan role
+const menuByRole = {
+  superadmin: [
+    {
+      name: "Dashboard",
+      path: "/admin/dashboard",
+      icon: IconsDashboard,
+    },
+    {
+      name: "Inventory",
+      path: "/admin/inventory",
+      icon: IconsInventory,
+    },
+    {
+      name: "Manage Data",
+      path: "/admin/manage",
+      icon: IconsManage,
+      childMenu: [
+        {
+          name: "Accounts",
+          path: "/admin/manage/accounts",
+          icon: IconsAccounts,
+        },
+        {
+          name: "Teachers",
+          path: "/admin/manage/teachers",
+          icon: IconsAccounts,
+        },
+        {
+          name: "Students",
+          path: "/admin/manage/students",
+          icon: IconsAccounts,
+        },
+      ],
+    },
+  ],
+  admin: [
+    {
+      name: "Dashboard",
+      path: "/kaprog/dashboard",
+      icon: IconsDashboard,
+    },
+    {
+      name: "Inventory",
+      path: "/kaprog/inventory",
+      icon: IconsInventory,
+    },
+    {
+      name: "Activity",
+      path: "/kaprog/activity",
+      icon: IconsActivity,
+      childMenu: [
+        {
+          name: "Borrowed",
+          path: "/kaprog/activity/borrowed",
+          icon: IconsBorrowed,
+        },
+        {
+          name: "History",
+          path: "/kaprog/activity/history",
+          icon: IconsHistory,
+        },
+      ],
+    },
+  ],
+  user: [
+    {
+      name: "Dashboard",
+      path: "/user/dashboard",
+      icon: IconsDashboard,
+    },
+    {
+      name: "Inventory",
+      path: "/user/inventory",
+      icon: IconsInventory,
+    },
+    {
+      name: "Activity",
+      path: "/user/activity",
+      icon: IconsActivity,
+      childMenu: [
+        {
+          name: "Borrowed",
+          path: "/user/activity/borrowed",
+          icon: IconsBorrowed,
+        },
+        {
+          name: "History",
+          path: "/user/activity/history",
+          icon: IconsHistory,
+        },
+      ],
+    },
+  ],
+};
 
 onMounted(() => {
   GetMajor();

@@ -442,6 +442,7 @@ const getUnitItemsInventory = async () => {
 
   if (response.status === 200) {
     unitItemStore.unitItems = response.data;
+    pending.value = false;
   }
 };
 
