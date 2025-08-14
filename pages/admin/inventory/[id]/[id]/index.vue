@@ -72,6 +72,7 @@
 <script setup>
 import { IconsNavbarIconsFile, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsPrint } from '#components';
 import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 
 definePageMeta({
   title: "Inventory",
@@ -98,6 +99,7 @@ const breadcrumbs = [
 
 const url = useRuntimeConfig().public.authUrl;
 const unitItemStore = useUnitItemStore();
+const route = useRoute();
 
 const getUnitItemsInventory = async () => {
     const response = await $fetch(`${url}/unit-items`, {
@@ -109,7 +111,10 @@ const getUnitItemsInventory = async () => {
     });
 
     if (response.status === 200) {
-        unitItemStore.unitItems = response.data;
+        const id = route.params.id;
+        unitItemStore.unitItems = response.data.filter(
+            item => item.sub_item && String(item.sub_item.id) === id
+        );
     }
 }
 

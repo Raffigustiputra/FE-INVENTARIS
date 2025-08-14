@@ -21,3 +21,16 @@ export const useUnitItemStore = defineStore("unit-item", {
         subItems: useSubItemStore()
     })
 });
+
+export const useAdminInventoryStore = defineStore("admin-inventory", {
+    state: () => ({
+        input: {
+            id: '',
+            item_id: '',
+            merk: '',
+            procurement_date: '',
+            description: '',
+        },
+        inventory: [],
+    })
+});
