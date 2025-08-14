@@ -95,7 +95,10 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Students</h1>
-      <SearchBox text="Search students..." />
+      <SearchBox 
+      @input="handleSearch"
+      v-model="studentStore.filter.search"
+      text="Search students..." />
     </div>
 
          <TableSkeleton v-if="pending"
@@ -192,6 +195,19 @@ definePageMeta({
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const studentStore = useStudentStore();
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+    pending.value = true;
+    if (timeoutFiltering) {
+        clearTimeout(timeoutFiltering);
+    }
+
+    timeoutFiltering = setTimeout(() => {
+        getStudent();
+    }, 500);
+};
 
 let modalCreate = ref(false);
 let modalEdit = ref(false);
@@ -298,8 +314,9 @@ const submitImportStudent = async () => {
   }
 };
 
+
 const getStudent = async () => {
-    const response = await $fetch(`${url}/student/data`, {
+    const response = await $fetch(`${url}/student/data?search=${studentStore.filter.search}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
