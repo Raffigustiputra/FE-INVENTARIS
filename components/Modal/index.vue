@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="pt-2 pb-4 px-5 max-h-96 min-h-32 rounded-sm overflow-y-auto">
+    <div class="pt-2  px-5 max-h min-h-32 rounded-sm overflow-y-auto">
       <slot></slot>
     </div>
     <div

@@ -104,7 +104,6 @@ const getSubItemInventory = async () => {
   if (response.status === 200) {
     const id = route.params.id;
     subItemStore.subItems = response.data.filter(item => item.item && String(item.item.id) === id);
-    subItemStore.parentItems = response.data;
   }
 };
 
