@@ -98,20 +98,20 @@ definePageMeta({
         <AlertSuccess v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
     </transition>
 
-    <div class="relative w-full h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute right-8 top-10">
-            <div class="flex items-center relative">
+    <div class="relative w-full h-screen flex flex-col lg:flex-row items-center justify-center overflow-hidden px-4 sm:px-8">
+        <div class="absolute right-4 top-6 sm:right-8 sm:top-10">
+            <div class="flex items-center relative gap-2">
                 <img
                     src="/public/images/wv-blue.png"
                     alt="Logo wv-blue"
-                    class="size-18 object-contain" />
-                <img src="/images/wikrama-logo.png" alt="Logo Wikrama" class="size-20 object-contain" />
+                    class="size-18 sm:size-20 object-contain" />
+                <img src="/images/wikrama-logo.png" alt="Logo Wikrama" class="size-20 sm:size-18 object-contain" />
             </div>
         </div>
 
         <!-- Background Image Layer -->
         <div
-            class="absolute inset-0 bg-cover bg-center"
+            class="absolute inset-0 bg-cover bg-center opacity-30"
             style="background-image: url('/images/Banner-Web.jpg'); opacity: 0.3"></div>
 
         <!-- Konten utama -->
@@ -121,7 +121,7 @@ definePageMeta({
                     <div></div>
                     <h1>Welcome to WikVentory</h1>
                 </div>
-                <div class="w-5/12 mt-2">
+                <div class="w-full sm:w-8/12 lg:w-5/12 mt-2 text-sm sm:text-base">
                     <p>
                         A Data and Management System for Inventory Management. Monitor, manage, and
                         integrate all inventory data more easily and quickly. Please log in to start
@@ -130,7 +130,7 @@ definePageMeta({
                 </div>
             </div>
 
-            <form @submit.prevent="login" class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
+            <form @submit.prevent="login" class="w-full sm:w-8/12 md:w-6/12 lg:w-5/12 pt-4 pb-8 rounded-xl bg-white">
                 <div class="w-full text-center">
                     <h1 class="font-semibold">Log in to start using WikVentory</h1>
                 </div>
@@ -194,7 +194,7 @@ definePageMeta({
                 </div>
             </form>
          <!--copy right-->
-            <p class="text-xs font-semibold mt-10">
+            <p class="text-xs font-semibold mt-10 text-center sm:text-left">
                 © PPLG XII-V 2025. All Rights Reservedd
             </p>
         </div>
