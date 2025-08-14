@@ -347,6 +347,7 @@ const error = ref(null);
 
 const GetMajor = async () => {
     setTimeout(() => setLoading(false), 5000);
+    setTimeout(() => setLoading(false), 5000);
   const response = await $fetch(`${url}/major`, {
     method: "GET",
     headers: {
