@@ -163,7 +163,48 @@
                 </tbody>
             </table>
         </div>
-        <p class="text-xs text-gray-500 mt-3 ml-2">Showing to of Accounts</p>
+<div class="flex items-center justify-between mt-4">
+    <!-- Info jumlah -->
+    <p class="text-xs text-gray-500">
+        Showing {{ studentStore.students.length }} of {{ allStudentCount }} Accounts
+    </p>
+
+    <!-- Pagination -->
+    <div class="flex items-center gap-1">
+        <!-- Prev -->
+        <button
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="w-8 h-8 flex items-center justify-center rounded text-gray-500 disabled:opacity-40 hover:bg-gray-200 transition">
+            ‹
+        </button>
+
+        <!-- Numbers -->
+        <template v-for="page in paginationItems" :key="page">
+            <button
+                v-if="page !== '...'"
+                @click="changePage(page)"
+                :class="[
+                    'w-8 h-8 flex items-center justify-center rounded transition',
+                    currentPage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ]">
+                {{ page }}
+            </button>
+            <span v-else class="px-2 text-gray-500">...</span>
+        </template>
+
+        <!-- Next -->
+        <button
+            @click="nextPage"
+            :disabled="currentPage === lastPage"
+            class="w-8 h-8 flex items-center justify-center rounded text-gray-500 disabled:opacity-40 hover:bg-gray-200 transition">
+            ›
+        </button>
+    </div>
+</div>
+
     </div>
 </template>
 
@@ -184,6 +225,97 @@ definePageMeta({
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const studentStore = useStudentStore();
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+
+const paginationItems = computed(() => {
+    const pages = [];
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+
+    if (currentPage.value > lastPage.value) {
+        currentPage.value = 1;
+    }
+
+    if (lastPage.value <= maxVisiblePages) {
+        for (let i = 1; i <= lastPage.value; i++) {
+            pages.push(i);
+        }
+    } else {
+        if (currentPage.value <= halfVisible + 1) {
+            for (let i = 1; i <= maxVisiblePages - 1; i++) {
+                pages.push(i);
+            }
+            pages.push('...');
+            pages.push(lastPage.value);
+        } else if (currentPage.value >= lastPage.value - halfVisible) {
+            pages.push(1);
+            pages.push('...');
+            for (let i = lastPage.value - (maxVisiblePages - 2); i <= lastPage.value; i++) {
+                pages.push(i);
+            }
+        } else {
+            pages.push(1);
+            pages.push('...');
+            for (
+                let i = currentPage.value - halfVisible + 1;
+                i <= currentPage.value + halfVisible - 1;
+                i++
+            ) {
+                pages.push(i);
+            }
+            pages.push('...');
+            pages.push(lastPage.value);
+        }
+    }
+    return pages;
+});
+
+const nextPage = async () => {
+    if (currentPage.value < lastPage.value) {
+        currentPage.value++;
+        pending.value = true;
+        console.log(currentPage.value);
+        nextTick(() => {
+            getStudent();
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth',
+            });
+        });
+    }
+};
+
+const prevPage = async () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+        pending.value = true;
+        console.log(currentPage.value);
+        nextTick(() => {
+            getStudent();
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth',
+            });
+        });
+    }
+};
+
+const changePage = async (page) => {
+    if (page !== '...') {
+        currentPage.value = page;
+        pending.value = true;
+        console.log(currentPage.value);
+    }
+    nextTick(() => {
+        getStudent();
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+        });
+    });
+};
 
 let timeoutFiltering = null;
 
@@ -303,17 +435,24 @@ const submitImportStudent = async () => {
     }
 };
 
+const allStudentCount = ref(0);
+
 const getStudent = async () => {
-    const response = await $fetch(`${url}/student/data?search=${studentStore.filter.search}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-        },
-    });
+    const response = await $fetch(
+        `${url}/student/data?search=${studentStore.filter.search}&page=${currentPage.value}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authStore.token}`,
+            },
+        }
+    );
 
     if (response.status === 200 || response.status === 201) {
         studentStore.students = response.data;
+        lastPage.value = response.meta.last_page;
+        allStudentCount.value = response.meta.total;
         pending.value = false;
     }
 };
