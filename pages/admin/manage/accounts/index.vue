@@ -370,6 +370,7 @@ const fetchUsers = async () => {
 
   if (response.status === 200) {
     accountStore.Accounts = response.data;
+    pending.value = false;
   }
 };
 

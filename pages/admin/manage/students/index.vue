@@ -299,8 +299,7 @@ const submitImportStudent = async () => {
 };
 
 const getStudent = async () => {
-    setTimeout(() => setLoading(false), 5000);
-    const response = await $fetch(`${url}/student`, {
+    const response = await $fetch(`${url}/student/data`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -310,6 +309,7 @@ const getStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     studentStore.students = response.data;
+    pending.value = false;
   }
 };
 
