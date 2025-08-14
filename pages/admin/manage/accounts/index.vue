@@ -173,9 +173,6 @@
               <span class="font-semibold">{{ accountStore.input.name }}</span>
               ?
               <br />
-              <span class="text-sm text-red-500"
-                >This action cannot be undone.</span
-              >
             </p>
           </div>
         </Modal>
