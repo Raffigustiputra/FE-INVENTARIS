@@ -11,7 +11,7 @@
                 @input="$emit('update:modelValue', $event.target.value)"
                 class="outline-none mt-2 block w-full px-4 py-2 rounded-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC]  focus:border-blue-500 focus:ring focus:ring-blue-200"
                 :placeholder="props.placeholder" 
-                :disabled="disabled" 
+                :disabled="props.isDisabled" 
             />
         </div>
     </div>
@@ -19,10 +19,21 @@
 
 <script setup>
 const props = defineProps({
-    label: String,
-    placeholder: String,
-    disabled: Boolean,
-    modelValue: String
+    label: {
+        type: String,
+        default : 'Enter Label Here'
+    },
+    placeholder: {
+        type: String,
+        default : 'Enter Placeholder Here'
+    },
+    isDisabled: {
+        type: Boolean,
+        default : false
+    },
+    modelValue: {
+        type: String
+    }
 })
 
 const emit = defineEmits(['update:modelValue']);
