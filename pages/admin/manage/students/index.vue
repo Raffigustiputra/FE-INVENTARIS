@@ -35,7 +35,54 @@
         <transition name="alert">
             <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
         </transition>
-        <Navbar :breadcrumbs="breadcrumbs" />
+        <Transition name="fade">
+            <div
+                v-if="modalImport"
+                class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30">
+                <Modal
+                    @btnSubmit="submitImportStudent"
+                    @btnClose="closeModalImport"
+                    title="Import Student">
+                    <div
+                        class="w-full border-2 border-gray-300 rounded-lg p-8 min-h-[180px] flex flex-col items-center justify-center text-gray-500">
+                        <IconsUpload class="w-10 h-10 mb-3 text-gray-400" />
+
+                        <!-- Kalau belum ada file -->
+                        <template v-if="!fileImport">
+                            <p>
+                                Drag & Drop or
+                                <label class="text-blue-500 cursor-pointer">
+                                    Choose File
+                                    <input
+                                        type="file"
+                                        accept=".csv,.xlsx"
+                                        class="hidden"
+                                        @change="handleFileUpload" />
+                                </label>
+                                to upload
+                            </p>
+                            <p class="text-xs mt-1">CSV or XLSX</p>
+                        </template>
+
+                        <!-- Kalau sudah ada file -->
+                        <template v-else>
+                            <p class="mt-3 text-sm text-gray-700 font-medium">
+                                📄 {{ fileImport.name }}
+                            </p>
+                            <label class="mt-2 text-blue-500 cursor-pointer text-sm">
+                                Change File
+                                <input
+                                    type="file"
+                                    accept=".csv,.xlsx"
+                                    class="hidden"
+                                    @change="handleFileUpload" />
+                            </label>
+                        </template>
+                    </div>
+                </Modal>
+            </div>
+        </Transition>
+        <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="handleBreadcrumbClick" />
         <div class="flex items-center justify-between mt-12 mb-7">
             <h1 class="font-semibold text-2xl">List Students</h1>
             <SearchBox text="Search students..." />
@@ -47,7 +94,7 @@
                     <tr class="text-sm font-medium text-gray-700">
                         <th class="px-8 py-2 w-3/12 text-left">Name</th>
                         <th class="px-4 py-2 w-3/12 text-center">NIS</th>
-                        <th class="px-4 py-2 w-3/12 text-center">Rayon</th>
+                        <th class="px-4 py-2 w-2/12 text-center">Rayon</th>
                         <th class="px-4 py-2 w-3/12 text-center">Major</th>
                         <th class="px-4 py-2 w-3/12 text-right">
                             <div class="mr-2">Action</div>
@@ -55,26 +102,45 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white">
-                    <tr v-for="i in 7" :key="i" class="border-b border-[#EEEEEE] hover:bg-gray-50">
+                    <tr
+                        v-for="i in studentStore.students"
+                        :key="i"
+                        class="border-b border-[#EEEEEE] hover:bg-gray-50">
                         <!-- Name -->
                         <td class="flex items-center gap-2 px-8 py-4 text-left">
                             <IconsUserIcon />
-                            <span class="text-xs font-medium">John Doe {{ i }}</span>
+                            <span class="text-xs font-medium">{{ i.name }}</span>
                         </td>
 
                         <!-- NIS -->
                         <td class="px-4 py-4 text-center">
-                            <span class="text-xs font-medium">1234567{{ i }}</span>
+                            <span class="text-xs font-medium">{{ i.nis }}</span>
                         </td>
 
                         <!-- Rayon -->
                         <td class="px-4 py-4 text-center">
-                            <span class="text-xs font-medium">Rayon {{ i }}</span>
+                            <span class="text-xs font-medium">{{ i.rayon }}</span>
                         </td>
 
                         <!-- Major -->
                         <td class="px-4 py-4 text-center">
-                            <span class="text-xs font-medium">Major {{ i }}</span>
+                            <div
+                                :style="{
+                                    backgroundColor: `rgba(${parseInt(
+                                        i.major?.color.slice(1, 3),
+                                        16
+                                    )}, ${parseInt(i.major?.color.slice(3, 5), 16)}, ${parseInt(
+                                        i.major?.color.slice(5, 7),
+                                        16
+                                    )}, 0.8)`,
+                                }"
+                                class="w-24 flex justify-center items-center rounded-md py-1 mx-auto">
+                                <span
+                                    :style="{ color: darkenColor(i.major?.color, 70) }"
+                                    class="text-xs font-medium">
+                                    {{ i.major?.name || 'N/A' }}
+                                </span>
+                            </div>
                         </td>
 
                         <!-- Action -->
@@ -88,10 +154,7 @@
                 </tbody>
             </table>
         </div>
-        <p class="text-xs text-gray-500 mt-3 ml-2">
-            Showing  to  of
-             Accounts
-        </p>
+        <p class="text-xs text-gray-500 mt-3 ml-2">Showing to of Accounts</p>
     </div>
 </template>
 
@@ -120,6 +183,22 @@ let Closemodal = () => {
     modalCreate.value = false;
     modalEdit.value = false;
     modalDelete.value = false;
+};
+
+const modalImport = ref(false);
+const fileImport = ref(null);
+
+const handleFileUpload = (event) => {
+    fileImport.value = event.target.files[0];
+};
+
+const openModalImport = () => {
+    modalImport.value = true;
+};
+
+const closeModalImport = () => {
+    modalImport.value = false;
+    fileImport.value = null;
 };
 
 const alertError = ref(false);
@@ -156,6 +235,52 @@ const showAlert = (type, message) => {
 const pending = ref(true);
 const error = ref(null);
 
+const submitImportStudent = async () => {
+    if (!fileImport.value) {
+        alert('Please select a file');
+        return;
+    }
+    const formData = new FormData();
+    formData.append('file', fileImport.value);
+
+    try {
+        const response = await $fetch(`${url}/student/import`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${authStore.token}`,
+            },
+            body: formData,
+        });
+
+        if (response.status === 'success') {
+            alertTitle.value = 'Import successful';
+            alertSubtitle.value = response.message;
+            alertShow.value = true;
+
+            setTimeout(() => {
+                alertShow.value = false;
+            }, 3000);
+
+            getStudent();
+        } else {
+            alertTitle.value = 'Import failed';
+            alertSubtitle.value = response.message || 'Please try again';
+            alertShow.value = true;
+
+            setTimeout(() => {
+                alertShow.value = false;
+            }, 3000);
+        }
+    } catch (err) {
+        console.error(err);
+        alertTitle.value = 'Error';
+        alertSubtitle.value = 'Error while importing file';
+        alertShow.value = true;
+    } finally {
+        closeModalImport();
+    }
+};
+
 const getStudent = async () => {
     const response = await $fetch(`${url}/student`, {
         method: 'GET',
@@ -171,16 +296,16 @@ const getStudent = async () => {
 };
 
 const submitCreateStudent = async () => {
-    if ( studentStore.input.name === ''){
+    if (studentStore.input.name === '') {
         showAlert('warning', 'Name cannot be empty');
         return;
-    } else if ( studentStore.input.nis === '') {
+    } else if (studentStore.input.nis === '') {
         showAlert('warning', 'NIS cannot be empty');
         return;
-    } else if ( studentStore.input.rayon === '') {
+    } else if (studentStore.input.rayon === '') {
         showAlert('warning', 'Rayon cannot be empty');
         return;
-    } else if ( studentStore.input.major_id === '') {
+    } else if (studentStore.input.major_id === '') {
         showAlert('warning', 'Major cannot be empty');
         return;
     }
@@ -261,6 +386,20 @@ const submitDeleteStudent = async () => {
     }
 };
 
+function darkenColor(hex, percent) {
+    if (!hex) return '#000';
+    let num = parseInt(hex.slice(1), 16),
+        r = (num >> 16) - percent,
+        g = ((num >> 8) & 0x00ff) - percent,
+        b = (num & 0x0000ff) - percent;
+    return (
+        '#' +
+        (0x1000000 + (r < 0 ? 0 : r) * 0x10000 + (g < 0 ? 0 : g) * 0x100 + (b < 0 ? 0 : b))
+            .toString(16)
+            .slice(1)
+    );
+}
+
 onMounted(() => {
     getStudent();
 });
@@ -273,10 +412,15 @@ const breadcrumbs = [
     {
         label: 'Import Student',
         icon: IconsNavbarIconsAddUser,
+        onClick: openModalImport,
     },
     {
         label: 'Sort by Major',
         icon: IconsNavbarIconsFilterMajor,
     },
 ];
+
+function handleBreadcrumbClick(item) {
+    if (item.onClick) item.onClick();
+}
 </script>

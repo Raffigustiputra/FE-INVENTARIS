@@ -31,6 +31,9 @@
                         value="pepeg"
                         />
                       </div>
+                      <InputDate
+                      v-model="studentStore.input.date"
+                      />
                         <!-- <div class="w-full flex items-center gap-2">
               <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.." />
               <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
@@ -53,6 +56,9 @@
 </template>
 
 <script setup>
+
+const studentStore = useStudentStore();
+
 let modal = ref(false);
 let OpenModal = () => {
     modal.value = true;
