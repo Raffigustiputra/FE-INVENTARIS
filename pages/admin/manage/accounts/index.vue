@@ -185,7 +185,10 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Account</h1>
-      <SearchBox text="Search account..." />
+      <SearchBox 
+      @input="handleSearch"
+      v-model="accountStore.filter.search"
+      text="Search account..." />
     </div>
 
     <!-- skeleton -->
@@ -271,6 +274,19 @@ definePageMeta({
   layout: "default",
   title: "Accounts",
 });
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+    pending.value = true;
+    if (timeoutFiltering) {
+        clearTimeout(timeoutFiltering);
+    }
+
+    timeoutFiltering = setTimeout(() => {
+        fetchUsers();
+    }, 500);
+};
 
 const alertError = ref(false);
 const alertMessage = ref("");
@@ -360,7 +376,7 @@ const GetMajor = async () => {
 };
 
 const fetchUsers = async () => {
-  const response = await $fetch(`${url}/user`, {
+  const response = await $fetch(`${url}/user?search=${accountStore.filter.search}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
