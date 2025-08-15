@@ -30,17 +30,30 @@
 
 <template>
   <transition name="alert">
-    <AlertError class="z-50" v-if="alertError" :title="alertMessage" @hide="alertError = false" />
+    <AlertError
+      class="z-50"
+      v-if="alertError"
+      :title="alertMessage"
+      @hide="alertError = false"
+    />
   </transition>
   <transition name="alert">
-    <AlertSuccess class="z-50" v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
+    <AlertSuccess
+      class="z-50"
+      v-if="alertSuccess"
+      :title="alertMessage"
+      @hide="alertSuccess = false"
+    />
   </transition>
   <transition name="alert">
     <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
   </transition>
-  
+
   <div>
-    <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="openModalFromBreadcrumb" />
+    <Navbar
+      :breadcrumbs="breadcrumbs"
+      @breadcrumbClick="openModalFromBreadcrumb"
+    />
     <div class="flex items-center justify-between mt-12 mb-4">
       <h1 class="font-semibold text-2xl">
         Activity
@@ -65,7 +78,9 @@
           :isSubmitting="isSubmitting"
         >
           <div>
-            <label class="ml-0.5 mt-3 block text-sm font-medium text-[#727272]">Item Type</label>
+            <label class="ml-0.5 mt-3 block text-sm font-medium text-[#727272]"
+              >Item Type</label
+            >
             <div class="w-full flex items-center gap-2">
               <InputRadio
                 class="w-1/2"
@@ -82,10 +97,14 @@
                 v-model="selectedItemType"
               />
             </div>
-            <p v-if="formErrors.itemType" class="text-red-500 text-xs mt-1">{{ formErrors.itemType }}</p>
+            <p v-if="formErrors.itemType" class="text-red-500 text-xs mt-1">
+              {{ formErrors.itemType }}
+            </p>
           </div>
           <div class="mb-3">
-            <label class="ml-0.5 mt-5 block text-sm font-medium text-[#727272]">Select Borrow's</label>
+            <label class="ml-0.5 mt-5 block text-sm font-medium text-[#727272]"
+              >Select Borrow's</label
+            >
             <div class="w-full flex items-center gap-2">
               <InputRadio
                 class="w-1/2"
@@ -102,7 +121,9 @@
                 v-model="selectedBorrowerType"
               />
             </div>
-            <p v-if="formErrors.borrowerType" class="text-red-500 text-xs mt-1">{{ formErrors.borrowerType }}</p>
+            <p v-if="formErrors.borrowerType" class="text-red-500 text-xs mt-1">
+              {{ formErrors.borrowerType }}
+            </p>
           </div>
           <div v-if="formErrors.general" class="text-red-500 text-sm mb-3">
             {{ formErrors.general }}
@@ -190,7 +211,11 @@
                   />
                 </div>
                 <div class="w-1/2">
-                  <InputText label="Room" placeholder="Enter Room" class="mb-2"/>
+                  <InputText
+                    label="Room"
+                    placeholder="Enter Room"
+                    class="mb-2"
+                  />
                   <InputTextarea
                     label="Description"
                     valueName="Student Card"
@@ -230,7 +255,9 @@
         >
           <div class="space-y-4">
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Teacher Name</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Teacher Name</label
+              >
               <input
                 type="text"
                 v-model="borrowableTeacherForm.teacherName"
@@ -239,7 +266,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Employee ID</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Employee ID</label
+              >
               <input
                 type="text"
                 v-model="borrowableTeacherForm.employeeId"
@@ -248,7 +277,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Department</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Department</label
+              >
               <input
                 type="text"
                 v-model="borrowableTeacherForm.department"
@@ -257,7 +288,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Borrow Date</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Borrow Date</label
+              >
               <input
                 type="date"
                 v-model="borrowableTeacherForm.borrowDate"
@@ -265,7 +298,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Return Date</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Return Date</label
+              >
               <input
                 type="date"
                 v-model="borrowableTeacherForm.returnDate"
@@ -293,7 +328,9 @@
         >
           <div class="space-y-4">
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Student Name</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Student Name</label
+              >
               <input
                 type="text"
                 v-model="consumableStudentForm.studentName"
@@ -302,7 +339,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Student ID</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Student ID</label
+              >
               <input
                 type="text"
                 v-model="consumableStudentForm.studentId"
@@ -311,7 +350,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Class</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Class</label
+              >
               <input
                 type="text"
                 v-model="consumableStudentForm.class"
@@ -320,7 +361,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Quantity</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Quantity</label
+              >
               <input
                 type="number"
                 v-model="consumableStudentForm.quantity"
@@ -330,7 +373,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Usage Date</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Usage Date</label
+              >
               <input
                 type="date"
                 v-model="consumableStudentForm.usageDate"
@@ -358,7 +403,9 @@
         >
           <div class="space-y-4">
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Teacher Name</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Teacher Name</label
+              >
               <input
                 type="text"
                 v-model="consumableTeacherForm.teacherName"
@@ -367,7 +414,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Employee ID</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Employee ID</label
+              >
               <input
                 type="text"
                 v-model="consumableTeacherForm.employeeId"
@@ -376,7 +425,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Department</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Department</label
+              >
               <input
                 type="text"
                 v-model="consumableTeacherForm.department"
@@ -385,7 +436,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Quantity</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Quantity</label
+              >
               <input
                 type="number"
                 v-model="consumableTeacherForm.quantity"
@@ -395,7 +448,9 @@
               />
             </div>
             <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]">Usage Date</label>
+              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
+                >Usage Date</label
+              >
               <input
                 type="date"
                 v-model="consumableTeacherForm.usageDate"
@@ -417,7 +472,9 @@
             <input type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="py-3 px-4 text-center">Type</th>
-          <th class="px-4 py-3 text-center first:!px-2 first:!text-left nth-2:!px-2 nth-2:!text-center">
+          <th
+            class="px-4 py-3 text-center first:!px-2 first:!text-left nth-2:!px-2 nth-2:!text-center"
+          >
             Unit Code
           </th>
           <th class="px-4 py-3 text-center">Brand</th>
@@ -426,15 +483,30 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="item in unitItemStore.unitItems" :key="item.id" class="hover:bg-gray-50">
+        <tr v-if="pending">
+          <td colspan="6" class="px-4 py-3 text-center">Loading...</td>
+        </tr>
+        <tr v-else-if="!loanStore.loan || loanStore.loan.length === 0">
+          <td colspan="6" class="px-4 py-3 text-center">No loan data available</td>
+        </tr>
+        <tr
+          v-else
+          v-for="item in loanStore.loan"
+          :key="item.id"
+          class="hover:bg-gray-50"
+        >
           <td class="px-4 py-3">
             <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
-          <td class="py-3 text-center">{{ item.sub_item.item.name }}</td>
-          <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
-          <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
+          <td class="py-3 text-center">
+            {{ item.unit_item.sub_item.item.name }}
+          </td>
+          <td class="px-4 py-3 text-center">{{ item.unit_item.code_unit }}</td>
           <td class="px-4 py-3 text-center">
-            {{ formatDate(item.procurement_date) }}
+            {{ item.unit_item.sub_item.merk }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            {{ formatDate(item.borrowed_at) }}
           </td>
           <td class="px-4 py-3 flex justify-center gap-2">
             <ButtonEdit @click="openModalUpdate(item)" />
@@ -456,62 +528,17 @@ import {
   IconsNavbarIconsPrint,
 } from "#components";
 import { ref } from "vue";
+import { useLoanStore } from "~/stores/loan";
+import { useAuthStore } from "~/stores/auth";
 
-const mainInventoryStore = {
-  inventory: [
-    { id: 1, name: "Laptop" },
-    { id: 2, name: "Desktop" },
-    { id: 3, name: "Printer" },
-  ],
-};
-
-const unitItemStore = {
-  unitItems: [
-    {
-      id: 1,
-      sub_item: {
-        item: { id: 1, name: "Laptop" },
-        merk: "Lenovo",
-      },
-      code_unit: "LPT-001",
-      procurement_date: "2024-06-01",
-      status: 1,
-      condition: 1,
-      description: "Laptop Lenovo Thinkpad",
-    },
-    {
-      id: 2,
-      sub_item: {
-        item: { id: 2, name: "Desktop" },
-        merk: "HP",
-      },
-      code_unit: "DST-002",
-      procurement_date: "2024-05-15",
-      status: 0,
-      condition: 1,
-      description: "Desktop HP Elite",
-    },
-    {
-      id: 3,
-      sub_item: {
-        item: { id: 3, name: "Printer" },
-        merk: "Canon",
-      },
-      code_unit: "PRN-003",
-      procurement_date: "2024-04-20",
-      status: 2,
-      condition: 0,
-      description: "Printer Canon Pixma",
-    },
-  ],
-};
-
-// Modal states
 const modalFormBorrowing = ref(false);
 const modalBorrowableStudent = ref(false);
 const modalBorrowableTeacher = ref(false);
 const modalConsumableStudent = ref(false);
 const modalConsumableTeacher = ref(false);
+const loanStore = useLoanStore();
+const url = useRuntimeConfig().public.authUrl;
+const authStore = useAuthStore();
 
 // Form states
 const selectedItemType = ref("");
@@ -552,9 +579,9 @@ const consumableTeacherForm = ref({
 
 // Form validation state
 const formErrors = ref({
-  itemType: '',
-  borrowerType: '',
-  general: ''
+  itemType: "",
+  borrowerType: "",
+  general: "",
 });
 
 // Modal functions
@@ -572,46 +599,58 @@ const closeModalCreate = () => {
 const handleFormBorrowingSubmit = () => {
   // Reset form errors
   formErrors.value = {
-    itemType: '',
-    borrowerType: '',
-    general: ''
+    itemType: "",
+    borrowerType: "",
+    general: "",
   };
-  
+
   // Validate both fields are selected
   let hasError = false;
-  
+
   if (!selectedItemType.value) {
-    formErrors.value.itemType = 'Please select an item type';
+    formErrors.value.itemType = "Please select an item type";
     hasError = true;
   }
-  
+
   if (!selectedBorrowerType.value) {
-    formErrors.value.borrowerType = 'Please select a borrower type';
+    formErrors.value.borrowerType = "Please select a borrower type";
     hasError = true;
   }
-  
+
   if (hasError) {
-    formErrors.value.general = 'Please select both Item Type and Borrower Type';
+    formErrors.value.general = "Please select both Item Type and Borrower Type";
     return;
   }
 
   // Proceed with form submission since validation passed
   console.log("Form submission with:", {
     itemType: selectedItemType.value,
-    borrowerType: selectedBorrowerType.value
+    borrowerType: selectedBorrowerType.value,
   });
 
   // Close the first modal
   modalFormBorrowing.value = false;
 
   // Open appropriate modal based on selections
-  if (selectedItemType.value === "borrowable" && selectedBorrowerType.value === "student") {
+  if (
+    selectedItemType.value === "borrowable" &&
+    selectedBorrowerType.value === "student"
+  ) {
     modalBorrowableStudent.value = true;
-  } else if (selectedItemType.value === "borrowable" && selectedBorrowerType.value === "teacher") {
+  } else if (
+    selectedItemType.value === "borrowable" &&
+    selectedBorrowerType.value === "teacher"
+  ) {
     modalBorrowableTeacher.value = true;
-  } else if (selectedItemType.value === "consumable" && selectedBorrowerType.value === "student") {
+  } else if (
+    selectedItemType.value === "consumable" &&
+    selectedBorrowerType.value === "student"
+  ) {
     modalConsumableStudent.value = true;
-  } else if (selectedItemType.value === "consumable" && selectedBorrowerType.value === "teacher") {
+  } else if (
+    selectedItemType.value === "consumable" &&
+    selectedBorrowerType.value === "teacher"
+  ) {
     modalConsumableTeacher.value = true;
   }
 };
@@ -622,28 +661,66 @@ const closeModalBorrowableStudent = () => {
   resetBorrowableStudentForm();
 };
 
+const getUnitLoan = async () => {
+  try {
+    pending.value = true;
+    const response = await fetch(`${url}/unit-loan`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      
+      // Check if the data structure has a 'data' property
+      if (result.data) {
+        loanStore.loan = result.data;
+        console.log("Loan data loaded successfully:", result.data);
+      } else {
+        loanStore.loan = result;
+        console.log("Loan data loaded with fallback structure:", result);
+      }
+    } else {
+      console.error("Error response:", response.status, response.statusText);
+      alertError.value = true;
+      alertMessage.value = "Failed to fetch loan data";
+    }
+  } catch (error) {
+    console.error("Error fetching unit loan data:", error);
+    alertError.value = true;
+    alertMessage.value = "Network error while fetching loan data";
+  } finally {
+    pending.value = false;
+  }
+};
+
+onMounted(() => {
+  getUnitLoan();
+});
+
 const submitBorrowableStudent = async () => {
   isSubmitting.value = true;
-  
+
   try {
-    // Validate form
-    if (!borrowableStudentForm.value.studentName || !borrowableStudentForm.value.studentId) {
+    if (
+      !borrowableStudentForm.value.studentName ||
+      !borrowableStudentForm.value.studentId
+    ) {
       alertError.value = true;
       alertMessage.value = "Please fill in required fields";
       return;
     }
 
-    // Here you would typically send data to your API
     console.log("Borrowable Student Form Data:", borrowableStudentForm.value);
-    
-    // Show success message
+
     alertSuccess.value = true;
     alertMessage.value = "Borrowable form for student submitted successfully!";
-    
-    // Close modal and reset form
+
     closeModalBorrowableStudent();
     resetSelections();
-    
   } catch (error) {
     alertError.value = true;
     alertMessage.value = "An error occurred while submitting the form";
@@ -652,7 +729,6 @@ const submitBorrowableStudent = async () => {
   }
 };
 
-// Borrowable Teacher Modal functions
 const closeModalBorrowableTeacher = () => {
   modalBorrowableTeacher.value = false;
   resetBorrowableTeacherForm();
@@ -660,26 +736,24 @@ const closeModalBorrowableTeacher = () => {
 
 const submitBorrowableTeacher = async () => {
   isSubmitting.value = true;
-  
+
   try {
-    // Validate form
-    if (!borrowableTeacherForm.value.teacherName || !borrowableTeacherForm.value.employeeId) {
+    if (
+      !borrowableTeacherForm.value.teacherName ||
+      !borrowableTeacherForm.value.employeeId
+    ) {
       alertError.value = true;
       alertMessage.value = "Please fill in required fields";
       return;
     }
 
-    // Here you would typically send data to your API
     console.log("Borrowable Teacher Form Data:", borrowableTeacherForm.value);
-    
-    // Show success message
+
     alertSuccess.value = true;
     alertMessage.value = "Borrowable form for teacher submitted successfully!";
-    
-    // Close modal and reset form
+
     closeModalBorrowableTeacher();
     resetSelections();
-    
   } catch (error) {
     alertError.value = true;
     alertMessage.value = "An error occurred while submitting the form";
@@ -688,7 +762,6 @@ const submitBorrowableTeacher = async () => {
   }
 };
 
-// Consumable Student Modal functions
 const closeModalConsumableStudent = () => {
   modalConsumableStudent.value = false;
   resetConsumableStudentForm();
@@ -696,26 +769,24 @@ const closeModalConsumableStudent = () => {
 
 const submitConsumableStudent = async () => {
   isSubmitting.value = true;
-  
+
   try {
-    // Validate form
-    if (!consumableStudentForm.value.studentName || !consumableStudentForm.value.studentId) {
+    if (
+      !consumableStudentForm.value.studentName ||
+      !consumableStudentForm.value.studentId
+    ) {
       alertError.value = true;
       alertMessage.value = "Please fill in required fields";
       return;
     }
 
-    // Here you would typically send data to your API
     console.log("Consumable Student Form Data:", consumableStudentForm.value);
-    
-    // Show success message
+
     alertSuccess.value = true;
     alertMessage.value = "Consumable form for student submitted successfully!";
-    
-    // Close modal and reset form
+
     closeModalConsumableStudent();
     resetSelections();
-    
   } catch (error) {
     alertError.value = true;
     alertMessage.value = "An error occurred while submitting the form";
@@ -724,7 +795,6 @@ const submitConsumableStudent = async () => {
   }
 };
 
-// Consumable Teacher Modal functions
 const closeModalConsumableTeacher = () => {
   modalConsumableTeacher.value = false;
   resetConsumableTeacherForm();
@@ -732,26 +802,24 @@ const closeModalConsumableTeacher = () => {
 
 const submitConsumableTeacher = async () => {
   isSubmitting.value = true;
-  
+
   try {
-    // Validate form
-    if (!consumableTeacherForm.value.teacherName || !consumableTeacherForm.value.employeeId) {
+    if (
+      !consumableTeacherForm.value.teacherName ||
+      !consumableTeacherForm.value.employeeId
+    ) {
       alertError.value = true;
       alertMessage.value = "Please fill in required fields";
       return;
     }
 
-    // Here you would typically send data to your API
     console.log("Consumable Teacher Form Data:", consumableTeacherForm.value);
-    
-    // Show success message
+
     alertSuccess.value = true;
     alertMessage.value = "Consumable form for teacher submitted successfully!";
-    
-    // Close modal and reset form
+
     closeModalConsumableTeacher();
     resetSelections();
-    
   } catch (error) {
     alertError.value = true;
     alertMessage.value = "An error occurred while submitting the form";
@@ -760,7 +828,6 @@ const submitConsumableTeacher = async () => {
   }
 };
 
-// Reset functions
 const resetBorrowableStudentForm = () => {
   borrowableStudentForm.value = {
     studentName: "",
@@ -818,7 +885,7 @@ const pending = ref(false);
 
 const toggleAll = () => {
   if (selectAll.value) {
-    selectedItems.value = unitItemStore.unitItems.map(item => item.id);
+    selectedItems.value = unitItemStore.unitItems.map((item) => item.id);
   } else {
     selectedItems.value = [];
   }
