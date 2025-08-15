@@ -125,7 +125,7 @@
                           :is="menu.icon"
                           :class="[
                             'size-4 transition-colors duration-300',
-                            isActive ? 'text-white bg-white' : 'fill-[#727272]',
+                            isActive ? 'text-white fill-white' : 'fill-[#727272]',
                           ]"
                         />
                       </div>
