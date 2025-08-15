@@ -29,25 +29,25 @@
 </style>
 
 <template>
-    <transition name="alert">
-      <AlertError
-        class="z-50"
-        v-if="alertError"
-        :title="alertMessage"
-        @hide="alertError = false"
-      />
-    </transition>
-    <transition name="alert">
-      <AlertSuccess
-        class="z-50"
-        v-if="alertSuccess"
-        :title="alertMessage"
-        @hide="alertSuccess = false"
-      />
-    </transition>
-    <transition name="alert">
-      <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
-    </transition>
+  <transition name="alert">
+    <AlertError
+      class="z-50"
+      v-if="alertError"
+      :title="alertMessage"
+      @hide="alertError = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertSuccess
+      class="z-50"
+      v-if="alertSuccess"
+      :title="alertMessage"
+      @hide="alertSuccess = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
+  </transition>
   <div>
     <Navbar
       :breadcrumbs="breadcrumbs"
@@ -66,12 +66,13 @@
         v-if="modalCreate"
         class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
-        <Modal
-          @btnClose="closeModalCreate"
-          title="Add New Item"
-          @btnSubmit="createUnitItem"
-          :isSubmitting="isSubmitting"
-        >
+      <Modal
+      @btnClose="closeModalCreate"
+      title="Add New Item"
+      @btnSubmit="createUnitItem"
+      :isSubmitting="isSubmitting"
+      >
+      <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
             <InputSelect
               class="w-1/2"
@@ -129,7 +130,10 @@
               class="w-1/2"
               label="Item Type"
               v-model="adminInventoryStore.input.item_id"
-              @change="(event) => console.log('Selected item type:', event.target.value)"
+              @change="
+                (event) =>
+                  console.log('Selected item type:', event.target.value)
+              "
             >
               <option
                 v-for="type in mainInventoryStore.inventory"
@@ -165,42 +169,41 @@
 
   <!-- Modal Delete -->
   <Transition name="fade">
-      <div
-        v-if="modalDelete"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
+    <div
+      v-if="modalDelete"
+      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
+    >
+      <Modal
+        @btnSubmit="deleteUnitItem"
+        @btnClose="closeModalDelete"
+        title="Confirm Deletion"
+        :isSubmitting="isSubmitting"
       >
-        <Modal
-          @btnSubmit="deleteUnitItem"
-          @btnClose="closeModalDelete"
-          title="Confirm Deletion"
-          :isSubmitting="isSubmitting"
-        >
-          <div class="">
-            <p class=" text-gray-600">
-              Are you sure you want to delete
-              <span class="font-semibold">{{ deleteItemData?.sub_item.item.name }}</span> with item code
-              <span class="block"><span class="font-semibold">{{ deleteItemData?.code_unit }}</span>?</span>
-            </p>
-          </div>
-        </Modal>
-      </div>
-    </Transition>
-    
-     <TableSkeleton v-if="pending"
-        :rows="4"
-        :columns="7"
-     />
+        <div class="">
+          <p class="text-gray-600">
+            Are you sure you want to delete
+            <span class="font-semibold">{{
+              deleteItemData?.sub_item.item.name
+            }}</span>
+            with item code
+            <span class="block"
+              ><span class="font-semibold">{{ deleteItemData?.code_unit }}</span
+              >?</span
+            >
+          </p>
+        </div>
+      </Modal>
+    </div>
+  </Transition>
+
+  <TableSkeleton v-if="pending" :rows="4" :columns="7" />
 
   <div v-else class="overflow-x-auto rounded-lg bg-white">
     <table class="min-w-full text-sm text-left">
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3">
-            <input 
-              type="checkbox" 
-              v-model="selectAll"
-              @change="toggleAll" 
-            />
+            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="px-4 py-3 text-center">Type</th>
           <th class="px-4 py-3 text-center">Unit Code</th>
@@ -218,11 +221,7 @@
           class="hover:bg-gray-50"
         >
           <td class="px-4 py-3">
-            <input 
-              type="checkbox"
-              v-model="selectedItems" 
-              :value="item.id"
-            />
+            <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
           <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
@@ -254,7 +253,8 @@
       </tbody>
     </table>
     <p class="text-xs text-gray-500 mt-3 ml-2">
-      Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to {{ unitItemStore.unitItems.length }} of
+      Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
+      {{ unitItemStore.unitItems.length }} of
       {{ unitItemStore.unitItems.length }} Laptop Lenovo
     </p>
   </div>
@@ -340,12 +340,14 @@ function toggleAll() {
 }
 
 watch(selectedItems, (newVal) => {
-  selectAll.value = newVal.length === unitItemStore.unitItems.length && unitItemStore.unitItems.length > 0;
+  selectAll.value =
+    newVal.length === unitItemStore.unitItems.length &&
+    unitItemStore.unitItems.length > 0;
 });
 
 const showAlert = (type, message) => {
   alertMessage.value = message;
-  
+
   if (type === "error") {
     alertError.value = true;
     setTimeout(() => {
@@ -372,7 +374,7 @@ const showAlert = (type, message) => {
 const openModalCreate = (title) => {
   modalTitle.value = title;
   modalCreate.value = true;
-  isSubmitting.value = false; 
+  isSubmitting.value = false;
   adminInventoryStore.input = {
     item_id: "",
     merk: "",
@@ -395,7 +397,7 @@ const openModalUpdate = (item) => {
     item_id: item.sub_item?.item?.id || "",
     merk: item.sub_item?.merk || "",
     procurement_date: item.procurement_date || "",
-    description: item.description || "", 
+    description: item.description || "",
   };
 };
 
@@ -448,21 +450,25 @@ const getUnitItemsInventory = async () => {
 
 const createUnitItem = async () => {
   if (isSubmitting.value) return;
-  const { item_id, merk, description, procurement_date } = adminInventoryStore.input;
+  const { item_id, merk, description, procurement_date } =
+    adminInventoryStore.input;
   console.log("Form values:", adminInventoryStore.input);
-  
+
   if (!item_id || !merk) {
     showAlert("warning", "Item type and brand name must be filled");
     return;
   }
-  
+
   isSubmitting.value = true;
   const formData = new FormData();
-  
+
   formData.append("item_id", item_id);
   formData.append("merk", merk);
   formData.append("description", description || "");
-  formData.append("procurement_date", procurement_date || new Date().toISOString().split('T')[0]);
+  formData.append(
+    "procurement_date",
+    procurement_date || new Date().toISOString().split("T")[0]
+  );
 
   try {
     const response = await $fetch(`${url}/unit-items`, {
@@ -473,7 +479,6 @@ const createUnitItem = async () => {
       },
     });
 
-    
     if (response.status === 201 || response.status === 200) {
       getUnitItemsInventory();
       closeModalCreate();
@@ -489,7 +494,8 @@ const createUnitItem = async () => {
 
 const updateUnitItem = async () => {
   if (isSubmitting.value) return;
-  const { id, item_id, merk, description, procurement_date } = adminInventoryStore.input;
+  const { id, item_id, merk, description, procurement_date } =
+    adminInventoryStore.input;
 
   if (!item_id || !merk) {
     showAlert("warning", "Item type and brand name must be filled");
@@ -501,7 +507,8 @@ const updateUnitItem = async () => {
     item_id,
     merk,
     description: description || "",
-    procurement_date: procurement_date || new Date().toISOString().split('T')[0],
+    procurement_date:
+      procurement_date || new Date().toISOString().split("T")[0],
   };
 
   try {
@@ -530,13 +537,16 @@ const updateUnitItem = async () => {
 const deleteUnitItem = async () => {
   isSubmitting.value = true;
   try {
-    const response = await $fetch(`${url}/unit-items/${deleteItemData.value.id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
+    const response = await $fetch(
+      `${url}/unit-items/${deleteItemData.value.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }
+    );
 
     if (response.status === 200) {
       getUnitItemsInventory();
@@ -549,7 +559,7 @@ const deleteUnitItem = async () => {
   } finally {
     isSubmitting.value = false;
   }
-}
+};
 
 onMounted(() => {
   getMainInventoryItems();

@@ -1,5 +1,5 @@
 <template>
-  <div class="border bg-white border-[#D2D2D2] w-5/12 rounded-sm">
+  <div class="border bg-white border-[#D2D2D2] w-6/12 rounded-sm">
     <div class="border-b bg-white rounded-sm border-[#D2D2D2] py-2 px-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center p-1.5 gap-2">
@@ -39,7 +39,7 @@
     </div>
     <div
       v-if="showActions"
-      class="border-t w-full justify-end flex gap-3 px-4 py-2 bg-white rounded-sm border-[#D2D2D2]"
+      class="mt-2.5 justify-end flex gap-3 px-4 py-2 bg-white rounded-sm border-[#D2D2D2]"
     >
       <button
         @click="$emit('btnClose')"
