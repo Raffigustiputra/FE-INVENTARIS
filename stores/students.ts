@@ -8,6 +8,8 @@ export const useStudentStore = defineStore("students", {
             nis : '',
             rayon : '',
             major_id : '',
+        }, filter : {
+            search : ''
         },
         students: [],
     }),
