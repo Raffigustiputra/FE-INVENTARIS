@@ -1,4 +1,3 @@
-
 <style scoped>
 .alert-enter-from,
 .alert-leave-to {
@@ -52,7 +51,7 @@ const showAlert = (type, message) => {
         alert(message);
     }
 };
-
+    
 const login = async () => {
     try {
         const response = await $fetch(`${url}/login`, {
@@ -62,18 +61,27 @@ const login = async () => {
                 password: authStore.input.password,
             },
         });
-        console.log(response.data);
 
-        authStore.token = response.token;
-        authStore.role = response.data.role;
-        authStore.name = response.data.name;
-        authStore.usid = response.data.usid;
-        authStore.username = response.data.username;
+        authStore.setAuthData({
+            token: response.token,
+            role: response.data.role,
+            name: response.data.name,
+            usid: response.data.usid,
+            username: response.data.username
+        });
 
-        router.push('/admin/dashboard');
+        if (response.data.role === 'superadmin') {
+            router.push('/admin/dashboard');
+        } else if (response.data.role === 'admin') {
+            router.push('/kaprog/dashboard');
+        } else if (response.data.role === 'user') {
+            router.push('/user/dashboard');
+        } else {
+            showAlert('error', 'Unknown role');
+        }
     } catch (err) {
         console.error('Login gagal:', err);
-        showAlert('error', 'Terjadi kesalahan saat login.');
+        showAlert('error', 'Failed to login');
     }
 };
 
@@ -122,7 +130,7 @@ definePageMeta({
                 </div>
             </div>
 
-            <div class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
+            <form @submit.prevent="login" class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
                 <div class="w-full text-center">
                     <h1 class="font-semibold">Log in to start using WikVentory</h1>
                 </div>
@@ -144,7 +152,7 @@ definePageMeta({
                     <button
                         type="button"
                         @click="switchVisibility"
-                        class="absolute right-3 top-11 transform -translate-y-1/2">
+                        class="absolute right-3 top-11 transform -translate-y-1/2 hover:cursor-pointer">
                         <svg
                             v-if="switchEye === true"
                             xmlns="http://www.w3.org/2000/svg"
@@ -180,14 +188,14 @@ definePageMeta({
                 <div class="mx-4 mt-6">
                     <button
                         @click="login"
-                        class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-md">
+                        class="w-full bg-[#0844A4] text-white py-2 text-sm hover:cursor-pointer font-medium rounded-md">
                         LOGIN
                     </button>
                 </div>
-            </div>
+            </form>
          <!--copy right-->
-            <p class="text-xs mt-10">
-                © PPLG XII-V 2025. All Rights Reservedd.
+            <p class="text-xs font-semibold mt-10">
+                © PPLG XII-V 2025. All Rights Reservedd
             </p>
         </div>
     </div>

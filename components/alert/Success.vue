@@ -1,14 +1,27 @@
 <template>
     <div class="fixed top-0 right-0 z-10 w-2/12">
         <div class="w-full flex justify-end items-start">
-            <div @click="$emit('hide')" class="cursor-pointer bg-[#ffffff]  border-[#02df09] mt-2 mr-2 w-full h-auto flex justify-start items-center p-3 gap-4 rounded-md shadow-md border ">
+            <div
+                @click="$emit('hide')"
+                class="cursor-pointer bg-[#F0F9F4] border-[#D4E4DA] mt-2 mr-2 w-full h-auto flex justify-start items-center p-3 gap-4 rounded-md shadow-md border">
                 <div>
-                    <svg width="22" height="22" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" class=" size-7">
-                        <path d="M13 1.625C16.0168 1.625 18.9101 2.82343 21.0433 4.95666C23.1766 7.08989 24.375 9.98316 24.375 13C24.375 16.0168 23.1766 18.9101 21.0433 21.0433C18.9101 23.1766 16.0168 24.375 13 24.375C9.98316 24.375 7.08989 23.1766 4.95666 21.0433C2.82343 18.9101 1.625 16.0168 1.625 13C1.625 9.98316 2.82343 7.08989 4.95666 4.95666C7.08989 2.82343 9.98316 1.625 13 1.625ZM11.583 15.2441L9.05612 12.7156C8.96554 12.625 8.85799 12.5532 8.73964 12.5042C8.62128 12.4551 8.49442 12.4299 8.36631 12.4299C8.2382 12.4299 8.11135 12.4551 7.99299 12.5042C7.87463 12.5532 7.76709 12.625 7.6765 12.7156C7.49355 12.8986 7.39077 13.1467 7.39077 13.4054C7.39077 13.6642 7.49355 13.9123 7.6765 14.0952L10.894 17.3128C10.9843 17.4038 11.0918 17.4761 11.2102 17.5254C11.3286 17.5747 11.4556 17.6001 11.5838 17.6001C11.7121 17.6001 11.839 17.5747 11.9574 17.5254C12.0758 17.4761 12.1833 17.4038 12.2736 17.3128L18.9361 10.6486C19.0279 10.5584 19.101 10.4509 19.151 10.3323C19.201 10.2138 19.2271 10.0865 19.2277 9.95775C19.2283 9.82905 19.2034 9.7015 19.1545 9.58246C19.1055 9.46342 19.0335 9.35526 18.9426 9.26419C18.8516 9.17313 18.7435 9.10098 18.6245 9.0519C18.5056 9.00281 18.378 8.97778 18.2493 8.97822C18.1206 8.97867 17.9933 9.00459 17.8747 9.0545C17.756 9.10441 17.6484 9.17731 17.5581 9.269L11.583 15.2441Z" fill="#259F46"/>
+                    <svg
+                        class="size-8"
+                        viewBox="0 0 58 58"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="29" cy="29" r="29" fill="#4CD760" />
+                        <circle cx="29" cy="29" r="20" fill="white" />
+                        <path
+                            d="M19.667 30.7131L25.4106 36.4168L38.3337 23.5835"
+                            stroke="#4CD760"
+                            stroke-width="4.142"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
                 </div>
                 <div class="text-left">
-                    <h1 class="font-medium text-xs text-black">{{title}}</h1>
+                    <h1 class="font-medium text-xs text-black">{{ title }}</h1>
                     <span class="font-normal text-xs text-black/90">{{ subtitle }}</span>
                 </div>
             </div>
@@ -16,6 +29,6 @@
     </div>
 </template>
 <script setup>
-const props = defineProps(['title', 'subtitle'])
-const emits = defineEmits('hide')
+const props = defineProps(['title', 'subtitle']);
+const emits = defineEmits('hide');
 </script>

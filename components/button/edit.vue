@@ -1,6 +1,7 @@
 <template>
     <div
-    class="bg-blue-400 p-1 rounded-md flex justify-center items-center"
+    @click="$emit('click')"
+    class="bg-blue-400 p-1 rounded-md flex justify-center items-center hover:cursor-pointer"
     :class="props.size"
     >
         <svg
@@ -41,4 +42,5 @@ const props = withDefaults(defineProps<{
   size: 'size-7',
 })
 
+const emit = defineEmits(['click'])
 </script>
