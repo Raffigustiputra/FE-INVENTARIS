@@ -78,6 +78,7 @@
 import { IconsNavbarIconsFile, IconsNavbarIconsFilterMajor, IconsNavbarIconsFilterRole, IconsNavbarIconsPrint } from '#components';
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
+import { statusClass, conditionClass, conditionText, statusText } from '@/lib/helper';
 
 definePageMeta({
   title: "Inventory",
@@ -127,48 +128,6 @@ const getUnitItemsInventory = async () => {
 onMounted(() => {
     getUnitItemsInventory();
 });
-
-const statusClass = (status) => {
-    switch (status) {
-        case 'AVAILABLE':
-            return 'bg-green-200 text-green-700';
-        case 'BORROWED':
-            return 'bg-yellow-200 text-yellow-800';
-        case 'UNAVAILABLE':
-            return 'bg-red-200 text-red-700';
-        default:
-            return 'bg-gray-200 text-gray-700';
-    }
-};
-
-const conditionClass = (condition) => {
-    switch (condition) {
-        case 'GOOD':
-            return 'bg-green-200 text-green-700';
-        case 'DAMAGED':
-            return 'bg-red-200 text-red-700';
-        default:
-            return 'bg-gray-100 text-gray-700';
-    }
-};
-
-const conditionText = (condition) => {
-    switch (condition) {
-        case 0: return 'DAMAGED';
-        case 1: return 'GOOD';
-        default: return 'UNKNOWN';
-    }
-};
-
-const statusText = (status, condition) => {
-    if (condition === 0) return 'UNAVAILABLE';
-    switch (status) {
-        case 0: return 'BORROWED';
-        case 1: return 'AVAILABLE';
-        case 2: return 'UNAVAILABLE';
-        default: return 'UNKNOWN';
-    }
-};
 
 const selectedItems = ref([]);
 const selectAll = ref(false);

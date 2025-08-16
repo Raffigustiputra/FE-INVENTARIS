@@ -160,7 +160,7 @@
         <Modal
           @btnClose="CloseModalCreate"
           @btnSubmit="submitDeleteAccount"
-          title="Delete Type"
+          title="Delete Account"
           :isSubmitting="isSubmitting"
         >
           <div class="w-full flex flex-col items-center py-4">
