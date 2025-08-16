@@ -189,10 +189,12 @@
       <!-- LOGOUT -->
       <div>
         <div class="border-b border-black/10 mx-4"></div>
-        <IconsLogoutIcon
-          class="size-6 fill-[#A9A9A9] hover:fill-[#727272] cursor-pointer transition-colors duration-300 mx-6 mb-4 mt-4"
-          @click="submitLogout"
-        />
+        <Tooltip text="Logout" position="top">
+          <IconsLogoutIcon
+            class="size-6 fill-[#8e8e8e] hover:fill-[#5c5c5c] cursor-pointer transition-colors duration-300 mx-6 mb-4 mt-4"
+            @click="submitLogout"
+          />
+        </Tooltip>
       </div>
     </div>
   </div>
@@ -210,6 +212,8 @@ import {
   NavLink,
   NavMajor,
 } from "#components";
+
+import Tooltip from "@/components/Tooltip/index.vue";
 
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;

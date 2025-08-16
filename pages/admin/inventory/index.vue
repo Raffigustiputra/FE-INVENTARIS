@@ -179,7 +179,10 @@
         </thead>
 
         <tbody class="bg-white" v-for="item in mainInventoryStore.inventory">
-          <tr :key="item.id">
+          <tr 
+              :key="item.id"
+              class="hover:bg-gray-100 transition-colors duration-200"
+            >
             <!-- Checkbox -->
             <td class="px-4 py-4">
               <input
@@ -187,24 +190,20 @@
                 v-model="selectedItems"
                 :value="item.id"
                 class="w-4 h-4 rounded-md border-2 border-gray-400 cursor-pointer"
+                @click.stop
               />
             </td>
 
             <!-- Name -->
-            <td class="px-10 py-4">
-              <NuxtLink
-                :to="`/admin/inventory/${item.id}`"
-                class="text-black text-xs font-medium"
-              >
+            <td class="px-10 w-full py-4 cursor-pointer" @click="viewItem(item.id)">
                 {{ item.name }}
-              </NuxtLink>
             </td>
 
             <!-- Action -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
-                <ButtonEdit @click="openModalUpdate(item)" />
-                <ButtonDelete @click="openModalDelete(item)" />
+                <ButtonEdit @click.stop="openModalUpdate(item)" />
+                <ButtonDelete @click.stop="openModalDelete(item)" />
               </div>
             </td>
           </tr>
@@ -241,6 +240,10 @@ const alertError = ref(false);
 const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
+
+const viewItem = (id) => {
+  navigateTo(`/admin/inventory/${id}`);
+};
 
 const showAlert = (type, message) => {
   alertMessage.value = message;
