@@ -55,7 +55,7 @@
     />
     <div class="flex items-center justify-between mt-12 mb-4">
       <h1 class="font-semibold text-2xl">Inventory</h1>
-      <SearchBox />
+      <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
     </div>
   </div>
 
@@ -198,9 +198,9 @@
 
   <TableSkeleton v-if="pending" :rows="4" :columns="7" />
 
-  <div v-else class="overflow-x-auto rounded-lg bg-white">
-    <table class="min-w-full text-sm text-left">
-      <thead class="bg-gray-100">
+  <div v-else class="overflow-x-auto overflow-y-auto rounded-lg bg-white max-h-[65vh]">
+    <table class="min-w-full text-sm text-left relative">
+      <thead class="bg-gray-100 sticky top-0 z-10">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3">
             <input type="checkbox" v-model="selectAll" @change="toggleAll" />
@@ -231,18 +231,18 @@
           </td>
           <td class="px-4 py-3 text-center">
             <span
-              :class="statusClass(statusText(item.status, item.condition))"
+              :class="statusClass(item.status)"
               class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium"
             >
-              {{ statusText(item.status, item.condition) }}
+              {{ toUpperCase(item.status) }}
             </span>
           </td>
           <td class="px-4 py-3 text-center">
             <span
-              :class="conditionClass(conditionText(item.condition))"
+              :class="conditionClass(item.condition)"
               class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium"
             >
-              {{ conditionText(item.condition) }}
+              {{ toUpperCase(item.condition) }}
             </span>
           </td>
           <td class="px-4 py-3 flex justify-center gap-2">
@@ -252,11 +252,22 @@
         </tr>
       </tbody>
     </table>
-    <p class="text-xs text-gray-500 mt-3 ml-2">
+  </div>
+  
+  <div class="flex items-center justify-between mt-4">
+    <p class="text-xs text-gray-500">
       Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
       {{ unitItemStore.unitItems.length }} of
-      {{ unitItemStore.unitItems.length }} Laptop Lenovo
+      {{ allItemCount }} Inventory Items
     </p>
+    <Pagination
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      :paginationItems="paginationItems"
+      @prev="prevPage"
+      @next="nextPage"
+      @change="changePage"
+    />
   </div>
 </template>
 <script setup>
@@ -268,6 +279,7 @@ import {
   IconsNavbarIconsAddItem,
 } from "#components";
 import { ref, onMounted, watch } from "vue";
+import Pagination from '@/components/pagination/index.vue';
 
 definePageMeta({
   title: "Inventory",
@@ -338,6 +350,116 @@ function toggleAll() {
     selectedItems.value = [];
   }
 }
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const allItemCount = ref(0);
+const maxVisiblePages = 3;
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getUnitItemsInventory();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getUnitItemsInventory();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    getUnitItemsInventory();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
+
+  timeoutFiltering = setTimeout(() => {
+    currentPage.value = 1; // Reset to first page when searching
+    getUnitItemsInventory();
+  }, 500);
+};
 
 watch(selectedItems, (newVal) => {
   selectAll.value =
@@ -420,7 +542,7 @@ const pending = ref(true);
 const error = ref(null);
 
 const getMainInventoryItems = async () => {
-  const response = await $fetch(`${url}/item`, {
+  const response = await $fetch(`${url}/item?search=${unitItemStore.filter.search}&page=${currentPage.value}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -434,16 +556,32 @@ const getMainInventoryItems = async () => {
 };
 
 const getUnitItemsInventory = async () => {
-  const response = await $fetch(`${url}/unit-items`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  });
+  pending.value = true;
+  try {
+    const response = await $fetch(
+      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
 
-  if (response.status === 200) {
-    unitItemStore.unitItems = response.data;
+    if (response.status === 200) {
+      unitItemStore.unitItems = response.data;
+      
+      // Update pagination data if meta is available
+      if (response.meta) {
+        lastPage.value = response.meta.last_page;
+        allItemCount.value = response.meta.total;
+      }
+      
+      pending.value = false;
+    }
+  } catch (error) {
+    console.error("Error fetching unit items:", error);
+    alertError.value = true;
+    alertMessage.value = "Error loading inventory items";
     pending.value = false;
   }
 };
@@ -567,11 +705,11 @@ onMounted(() => {
 });
 
 const statusClass = (status) => {
-  switch (status) {
+  switch ((status || "").toUpperCase()) {
     case "AVAILABLE":
       return "bg-green-200 text-green-700";
     case "BORROWED":
-      return "bg-yellow-200 text-yellow-800";
+      return "bg-[#FFF3A4] text-[#978611]";
     case "UNAVAILABLE":
       return "bg-red-200 text-red-700";
     default:
@@ -580,9 +718,9 @@ const statusClass = (status) => {
 };
 
 const conditionClass = (condition) => {
-  switch (condition) {
+  switch ((condition || "").toUpperCase()) {
     case "GOOD":
-      return "bg-green-200 text-green-700";
+      return "bg-[#D2F3D8] text-[#59AE75]";
     case "DAMAGED":
       return "bg-red-200 text-red-700";
     default:
@@ -590,28 +728,5 @@ const conditionClass = (condition) => {
   }
 };
 
-const conditionText = (condition) => {
-  switch (condition) {
-    case 0:
-      return "DAMAGED";
-    case 1:
-      return "GOOD";
-    default:
-      return "UNKNOWN";
-  }
-};
-
-const statusText = (status, condition) => {
-  if (condition === 0) return "UNAVAILABLE";
-  switch (status) {
-    case 0:
-      return "BORROWED";
-    case 1:
-      return "AVAILABLE";
-    case 2:
-      return "UNAVAILABLE";
-    default:
-      return "UNKNOWN";
-  }
-};
+const toUpperCase = (str) => (str ? String(str).toUpperCase() : "");
 </script>

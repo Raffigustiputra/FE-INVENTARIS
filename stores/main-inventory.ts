@@ -18,7 +18,10 @@ export const useSubItemStore = defineStore("sub-item", {
 export const useUnitItemStore = defineStore("unit-item", {
     state: () => ({
         unitItems: [],
-        subItems: useSubItemStore()
+        subItems: useSubItemStore(),
+        filter: {
+            search: '',
+        },
     })
 });
 

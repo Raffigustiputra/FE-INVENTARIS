@@ -4,8 +4,12 @@
   >
     <IconsSearchIcon class="w-6 h-6 text-gray-500" />
     <input
-    :v-model="props.value"
-    type="text" :placeholder="text" class="outline-none w-full" />
+      :value="modelValue"
+      type="text"
+      :placeholder="text"
+      class="outline-none w-full"
+      @input="$emit('update:modelValue', $event.target.value)"
+    />
   </div>
 </template>
 <script setup>
@@ -16,9 +20,7 @@ const props = defineProps({
     type: String,
     default: "Search Inventory...",
     required: true,
-  }, value : {
-    type: String,
-    required: true
-  }
+  },
+  modelValue: String,
 });
 </script>
