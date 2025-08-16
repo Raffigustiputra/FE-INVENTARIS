@@ -69,7 +69,8 @@ const login = async () => {
             role: response.data.role,
             name: response.data.name,
             usid: response.data.usid,
-            username: response.data.username
+            username: response.data.username,
+            major: response.data.major // Store the complete major object
         });
 
         if (response.data.role === 'superadmin') {

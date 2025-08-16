@@ -34,6 +34,11 @@ export const useAdminInventoryStore = defineStore("admin-inventory", {
             procurement_date: '',
             description: '',
         },
+        inputConsumable: {
+            name: '',
+            quantity: '',
+            unit: '',
+        },
         inventory: [],
     })
 });

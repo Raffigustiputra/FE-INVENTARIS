@@ -1,43 +1,28 @@
 export const statusClass = (status: string) => {
-    switch (status) {
-        case 'AVAILABLE':
-            return 'bg-green-200 text-green-700';
-        case 'BORROWED':
-            return 'bg-yellow-200 text-yellow-800';
-        case 'UNAVAILABLE':
-            return 'bg-red-200 text-red-700';
-        default:
-            return 'bg-gray-200 text-gray-700';
-    }
+  switch ((status || "").toUpperCase()) {
+    case "AVAILABLE":
+      return "bg-green-200 text-green-700";
+    case "BORROWED":
+      return "bg-[#FFF3A4] text-[#978611]";
+    case "UNAVAILABLE":
+      return "bg-red-200 text-red-700";
+    default:
+      return "bg-gray-200 text-gray-700";
+  }
 };
 
 export const conditionClass = (condition: string) => {
-    switch (condition) {
-        case 'GOOD':
-            return 'bg-green-200 text-green-700';
-        case 'DAMAGED':
-            return 'bg-red-200 text-red-700';
-        default:
-            return 'bg-gray-100 text-gray-700';
-    }
+  switch ((condition || "").toUpperCase()) {
+    case "GOOD":
+      return "bg-[#D2F3D8] text-[#59AE75]";
+    case "DAMAGED":
+      return "bg-red-200 text-red-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
 };
 
-export const conditionText = (condition: string) => {
-    switch (condition) {
-        case 'damaged': return 'DAMAGED';
-        case 'good': return 'GOOD';
-        default: return 'UNKNOWN';
-    }
-};
-
-export const statusText = (status: string, condition: string) => {
-    if (condition === 'damaged') return 'UNAVAILABLE';
-    switch (status) {
-        case 'unavailable': return 'BORROWED';
-        case 'available': return 'AVAILABLE';
-        default: return 'UNKNOWN';
-    }
-};
+export const toUpperCase = (str: string) => (str ? String(str).toUpperCase() : "");
 
 export function darkenColor(hex: string, percent: number) {
   if (!hex) return "#000";

@@ -14,6 +14,7 @@ export const useAuthStore = defineStore("auth", {
     role: null as string | null,
     name: null as string | null,
     usid: null as string | null,
+    major: null as any | null, // Changed to any type to support full major object structure
   }),
 
     getters: {
@@ -22,6 +23,7 @@ export const useAuthStore = defineStore("auth", {
         getName: (state) => state.name,
         getUsid: (state) => state.usid,
         getUsername: (state) => state.username,
+        getMajor: (state) => state.major,
         isAuthenticated: (state) => !!state.token,
     },
 
@@ -32,12 +34,20 @@ export const useAuthStore = defineStore("auth", {
             this.name = data.name;
             this.usid = data.usid;
             this.username = data.username;
+            this.major = data.major; // This will now store the full major object
             this.isAuth = true;
             
             if (process.client) {
                 localStorage.setItem('auth-token', data.token);
                 localStorage.setItem('auth-usid', data.usid);
                 localStorage.setItem('auth-isAuth', 'true');
+                
+                // Store major as JSON if it's an object
+                if (data.major && typeof data.major === 'object') {
+                    localStorage.setItem('auth-major', JSON.stringify(data.major));
+                } else {
+                    localStorage.setItem('auth-major', data.major || '');
+                }
             }
         },
 
@@ -49,8 +59,18 @@ export const useAuthStore = defineStore("auth", {
         const name = useCookie("auth-name").value ?? null;
         const usid = useCookie("auth-usid").value ?? null;
         const username = useCookie("auth-username").value ?? null;
+        const majorStr = localStorage.getItem('auth-major');
         const isAuth = useCookie("auth-isAuth").value ?? null;
-        const loginTime = useCookie("auth-login-time").value ?? null;
+        
+        // Parse major object if it exists
+        let major = null;
+        if (majorStr) {
+          try {
+            major = JSON.parse(majorStr);
+          } catch (e) {
+            major = majorStr;
+          }
+        }
 
         if (token) {
           this.token = token;
@@ -58,6 +78,7 @@ export const useAuthStore = defineStore("auth", {
           this.name = name;
           this.usid = usid;
           this.username = username;
+          this.major = major;
           this.isAuth = isAuth === "true";
         }
       }
@@ -69,6 +90,7 @@ export const useAuthStore = defineStore("auth", {
             this.name = null;
             this.usid = null;
             this.username = null;
+            this.major = null;
             this.isAuth = false;
             this.input.username = '';
             this.input.password = '';
@@ -79,7 +101,25 @@ export const useAuthStore = defineStore("auth", {
                 localStorage.removeItem('auth-name');
                 localStorage.removeItem('auth-usid');
                 localStorage.removeItem('auth-username');
+                localStorage.removeItem('auth-major');
                 localStorage.removeItem('auth-isAuth');
+                
+                // Also clear cookies if they exist
+                const tokenCookie = useCookie("auth-token");
+                const roleCookie = useCookie("auth-role");
+                const nameCookie = useCookie("auth-name");
+                const usidCookie = useCookie("auth-usid");
+                const usernameCookie = useCookie("auth-username");
+                const majorCookie = useCookie("auth-major");
+                const isAuthCookie = useCookie("auth-isAuth");
+                
+                if (tokenCookie.value) tokenCookie.value = null;
+                if (roleCookie.value) roleCookie.value = null;
+                if (nameCookie.value) nameCookie.value = null;
+                if (usidCookie.value) usidCookie.value = null;
+                if (usernameCookie.value) usernameCookie.value = null;
+                if (majorCookie.value) majorCookie.value = null;
+                if (isAuthCookie.value) isAuthCookie.value = null;
             }
         }
     },

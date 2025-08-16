@@ -145,6 +145,7 @@
           title="Form Borrowing"
           @btnSubmit="createUnitItem"
           :isSubmitting="isSubmitting"
+          :disableSubmit="!termsAccepted"
           class="max-h-[90vh] overflow-y-auto"
         >
           <div class="space-y-6">
@@ -235,6 +236,20 @@
               </div>
             </div>
           </div>
+            <div class="mt-6 flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="confirmDataBorrowableStudent"
+              v-model="termsAccepted"
+              class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+            />
+            <label
+              for="confirmDataBorrowableStudent"
+              class="text-sm text-gray-700 select-none"
+            >
+              Make sure the data is correct
+            </label>
+            </div>
         </Modal>
       </div>
     </Transition>
@@ -543,6 +558,8 @@ const authStore = useAuthStore();
 // Form states
 const selectedItemType = ref("");
 const selectedBorrowerType = ref("");
+const selectedCollateralType = ref("");
+const termsAccepted = ref(false);
 
 // Form data
 const borrowableStudentForm = ref({
@@ -659,6 +676,7 @@ const handleFormBorrowingSubmit = () => {
 const closeModalBorrowableStudent = () => {
   modalBorrowableStudent.value = false;
   resetBorrowableStudentForm();
+  termsAccepted.value = false; // Reset the checkbox when closing the modal
 };
 
 const getUnitLoan = async () => {
@@ -836,6 +854,8 @@ const resetBorrowableStudentForm = () => {
     borrowDate: "",
     returnDate: "",
   };
+  selectedCollateralType.value = ""; // Reset collateral type selection
+  termsAccepted.value = false; // Reset terms checkbox
 };
 
 const resetBorrowableTeacherForm = () => {

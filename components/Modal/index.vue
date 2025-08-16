@@ -49,9 +49,9 @@
       </button>
       <button
         @click="$emit('btnSubmit')"
-        :disabled="isSubmitting"
+        :disabled="isSubmitting || disableSubmit"
         class="bg-[#3A6CC2] hover:cursor-pointer duration-200 hover:bg-[#335fac] text-white px-3 py-1 text-sm rounded-md font-medium"
-        :class="{ 'opacity-60 cursor-not-allowed': isSubmitting }"
+        :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || disableSubmit }"
       >
         Submit
       </button>
@@ -71,6 +71,10 @@ const props = defineProps({
     default: true,
   },
   isSubmitting: {
+    type: Boolean,
+    default: false,
+  },
+  disableSubmit: {
     type: Boolean,
     default: false,
   },
