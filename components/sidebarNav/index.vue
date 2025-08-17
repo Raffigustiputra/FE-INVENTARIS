@@ -189,7 +189,7 @@
       <!-- LOGOUT -->
       <div>
         <div class="border-b border-black/10 mx-4"></div>
-        <Tooltip text="Logout" position="top">
+        <Tooltip text="Logout" position="top" class="">
           <IconsLogoutIcon
             class="size-6 fill-[#8e8e8e] hover:fill-[#5c5c5c] cursor-pointer transition-colors duration-300 mx-6 mb-4 mt-4"
             @click="submitLogout"
