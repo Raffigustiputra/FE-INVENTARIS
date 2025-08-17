@@ -73,6 +73,7 @@
           title="Add New Item"
           @btnSubmit="createUnitItem"
           :isSubmitting="isSubmitting"
+          labelButton="Add Item"
         >
           <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
@@ -129,6 +130,7 @@
           @btnClose="closeModalUpdate"
           title="Update Item"
           :isSubmitting="isSubmitting"
+          labelButton="Update Item"
         >
           <div class="w-full flex items-center gap-2">
             <InputSelect
@@ -183,6 +185,7 @@
         @btnClose="closeModalDelete"
         title="Confirm Deletion"
         :isSubmitting="isSubmitting"
+        labelButton="Delete"
       >
         <div class="">
           <p class="text-gray-600">
@@ -215,7 +218,7 @@
           </th>
           <th class="px-4 py-3 text-center">Type</th>
           <th class="px-4 py-3 text-center">Unit Code</th>
-          <th class="px-4 py-3">Brand</th>
+          <th class="px-4 py-3 text-center">Brand</th>
           <th class="px-4 py-3 text-center">Borrowed Time</th>
           <th class="px-4 py-3 text-center">Status</th>
           <th class="px-4 py-3 text-center">Condition</th>
@@ -233,7 +236,7 @@
           </td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
           <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
-          <td class="px-4 py-3">{{ item.sub_item.merk }}</td>
+          <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
           <td class="px-4 py-3 text-center">
             {{ formatDate(item.procurement_date) }}
           </td>
@@ -254,8 +257,12 @@
             </span>
           </td>
           <td class="px-4 py-3 flex justify-center gap-2">
-            <ButtonEdit @click="openModalUpdate(item)" />
-            <ButtonDelete @click="openModalDelete(item)" />
+            <Tooltip text="Edit" position="top">
+              <ButtonEdit @click="openModalUpdate(item)" />
+            </Tooltip>
+            <Tooltip text="Delete" position="top">
+              <ButtonDelete @click="openModalDelete(item)" />
+            </Tooltip>
           </td>
         </tr>
       </tbody>

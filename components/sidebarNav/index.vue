@@ -125,7 +125,9 @@
                           :is="menu.icon"
                           :class="[
                             'size-4 transition-colors duration-300',
-                            isActive ? 'text-white fill-white' : 'fill-[#727272]',
+                            isActive
+                              ? 'text-white fill-white'
+                              : 'fill-[#727272]',
                           ]"
                         />
                       </div>
@@ -181,9 +183,8 @@
             <NavMajor :majorColor="major.color" :majorName="major.name" />
           </div>
         </div>
-
       </div>
-      
+
       <!-- LOGOUT -->
       <div>
         <div class="border-b border-black/10 mx-4"></div>
@@ -345,8 +346,8 @@ const menuByRole = {
           name: "Consumable",
           path: "/kaprog/inventory/consumable",
           icon: IconsHistory,
-        }
-      ]
+        },
+      ],
     },
     {
       name: "Activity",

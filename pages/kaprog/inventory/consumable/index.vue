@@ -56,12 +56,12 @@
     <div class="flex items-center justify-between mt-12 mb-4">
       <h1 class="font-semibold text-2xl">Inventory
         <div class="inline text-lg">/</div>
-        Borrowed Items</h1>
+        Consumable Items</h1>
       <SearchBox v-model="consumableItemStore.filter.search" @input="handleSearch" />
     </div>
   </div>
 
-  <!-- Modal Create Borrowable -->
+  <!-- Modal Create Consumable -->
   <div class="w-full">
     <Transition name="fade">
       <div
@@ -71,53 +71,28 @@
         <Modal
           @btnClose="closeModalCreate"
           title="Add New Item"
-          @btnSubmit="createUnitItem"
+          @btnSubmit="createConsumableItem"
+          labelButton="Add Item"
           :isSubmitting="isSubmitting"
         >
           <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
-            <InputSelect
-              class="w-1/2"
-              label="Item Type"
-              v-model="adminInventoryStore.input.item_id"
-              @change="
-                (event) =>
-                  console.log('Selected item type:', event.target.value)
-              "
-            >
-              <option
-                v-for="type in mainInventoryStore.inventory"
-                :key="type.id"
-                :value="type.id"
-              >
-                {{ type.name }}
-              </option>
-            </InputSelect>
+            <InputText label="Item Name" placeholder="Enter Item Name" v-model="consumableItemStore.input.name" />
           </div>
           <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-1/2"
-              label="Brand Name"
-              placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk"
+            <InputNumber
+              label="QTY"
+              placeholder="Enter Quantity"
+              v-model="consumableItemStore.input.quantity"
             />
-            <InputDate
-              class="w-1/2"
-              label="Added Date"
-              v-model="adminInventoryStore.input.procurement_date"
-            />
+            <InputText label="QTY(pcs/pack)" v-model="consumableItemStore.input.unit" placeholder="Enter Unit"/>
           </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
         </Modal>
       </div>
     </Transition>
   </div>
 
-  <!-- Modal Update Borrowable -->
+  <!-- Modal Update Consumable -->
   <div class="w-full">
     <Transition name="fade">
       <div
@@ -125,76 +100,49 @@
         class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
-          @btnSubmit="updateUnitItem"
+          @btnSubmit="updateConsumableItem"
           @btnClose="closeModalUpdate"
           title="Update Item"
           :isSubmitting="isSubmitting"
         >
           <div class="w-full flex items-center gap-2">
-            <InputSelect
-              class="w-1/2"
-              label="Item Type"
-              v-model="adminInventoryStore.input.item_id"
-              @change="
-                (event) =>
-                  console.log('Selected item type:', event.target.value)
-              "
-            >
-              <option
-                v-for="type in mainInventoryStore.inventory"
-                :key="type.id"
-                :value="type.id"
-              >
-                {{ type.name }}
-              </option>
-            </InputSelect>
+            
           </div>
           <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-1/2"
-              label="Brand Name"
-              placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk"
-            />
-            <InputDate
-              class="w-1/2"
-              label="Added Date"
-              v-model="adminInventoryStore.input.procurement_date"
-            />
+            <InputText label="Item Name" placeholder="Enter Item Name" v-model="consumableItemStore.input.name" />
           </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
+          <div class="w-full flex items-center gap-2">
+            <InputNumber
+              label="QTY"
+              placeholder="Enter Quantity"
+              v-model="consumableItemStore.input.quantity"
+            />
+            <InputText label="QTY(pcs/pack)" v-model="consumableItemStore.input.unit" placeholder="Enter Unit"/>
+          </div>
         </Modal>
       </div>
     </Transition>
   </div>
 
-  <!-- Modal Delete Borrowable -->
+  <!-- Modal Delete Consumable -->
   <Transition name="fade">
     <div
       v-if="modalDelete"
       class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
     >
       <Modal
-        @btnSubmit="deleteUnitItem"
+        @btnSubmit="deleteConsumableItem"
         @btnClose="closeModalDelete"
         title="Confirm Deletion"
         :isSubmitting="isSubmitting"
+        labelButton="Delete"
       >
         <div class="">
           <p class="text-gray-600">
             Are you sure you want to delete
             <span class="font-semibold">{{
-              deleteItemData?.sub_item.item.name
-            }}</span>
-            with item code
-            <span class="block"
-              ><span class="font-semibold">{{ deleteItemData?.code_unit }}</span
-              >?</span
-            >
+              deleteItemData?.name
+            }}</span>?
           </p>
         </div>
       </Modal>
@@ -215,7 +163,7 @@
           </th>
           <th class="px-4 py-3 text-center">Name</th>
           <th class="px-4 py-3 text-center">Quantity</th>
-          <th class="px-4 py-3">Unit</th>
+          <th class="px-4 py-3 text-center">Unit</th>
           <th class="px-4 py-3 text-center">Action</th>
         </tr>
       </thead>
@@ -232,8 +180,12 @@
           <td class="px-4 py-3 text-center">{{ item.quantity }}</td>
           <td class="px-4 py-3 text-center">{{ item.unit }}</td>
           <td class="px-4 py-3 flex justify-center gap-2">
-            <ButtonEdit @click="openModalUpdate(item)" />
-            <ButtonDelete @click="openModalDelete(item)" />
+            <Tooltip text="Edit" position="top">
+              <ButtonEdit @click="openModalUpdate(item)" />
+            </Tooltip>
+            <Tooltip text="Delete" position="top">
+              <ButtonDelete @click="openModalDelete(item)" />
+            </Tooltip>
           </td>
         </tr>
       </tbody>
@@ -262,6 +214,7 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
   IconsNavbarIconsAddItem,
+  InputNumber,
 } from "#components";
 import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
@@ -289,7 +242,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsPrint,
   },
   {
-    label: "Add Item Borrowable",
+    label: "Add Item Consumable",
     icon: IconsNavbarIconsAddItem,
   },
   {
@@ -309,7 +262,7 @@ const mainInventoryStore = useMainInventoryStore();
 const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
-  if (item.label === "Add Item Borrowable") {
+  if (item.label === "Add Item Consumable") {
     modalCreate.value = true;
   }
 };
@@ -497,26 +450,27 @@ const openModalUpdate = (item) => {
   modalUpdate.value = true;
   isSubmitting.value = false;
 
-  adminInventoryStore.input = {
-    id: item.id,
-    item_id: item.sub_item?.item?.id || "",
-    merk: item.sub_item?.merk || "",
-    procurement_date: item.procurement_date || "",
-    description: item.description || "",
+  consumableItemStore.input = {
+    id: item.id, // Add the id field
+    name: item.name,
+    quantity: item.quantity || 0,
+    unit: item.unit || "",
   };
 };
 
 const closeModalUpdate = () => {
   modalUpdate.value = false;
-  adminInventoryStore.input = {};
+  consumableItemStore.input = {};
 };
 
 const openModalDelete = (item) => {
+  console.log("Opening delete modal for item:", item);
   deleteItemData.value = item;
   modalDelete.value = true;
 };
 
 const closeModalDelete = () => {
+  console.log("Closing delete modal");
   modalDelete.value = false;
   deleteItemData.value = null;
 };
@@ -572,30 +526,27 @@ const getConsumableItems = async () => {
   }
 };
 
-const createUnitItem = async () => {
+const createConsumableItem = async () => {
   if (isSubmitting.value) return;
-  const { item_id, merk, description, procurement_date } =
-    adminInventoryStore.input;
-  console.log("Borrowable Item Form values:", adminInventoryStore.input);
+  const {name, quantity, unit, major_id} = consumableItemStore.input;
+  console.log("Consumable Item Form values:", consumableItemStore.input);
 
-  if (!item_id || !merk) {
-    showAlert("warning", "Item type and brand name must be filled");
+  if (!name || !quantity || !unit || !major_id) {
+    showAlert("warning", "All fields must be filled");
     return;
   }
 
   isSubmitting.value = true;
   const formData = new FormData();
 
-  formData.append("item_id", item_id);
-  formData.append("merk", merk);
-  formData.append("description", description || "");
-  formData.append(
-    "procurement_date",
-    procurement_date || new Date().toISOString().split("T")[0]
-  );
+  formData.append("name", name);
+  formData.append("quantity", quantity);
+  formData.append("unit", unit);
+  // Get major_id from the currently logged in user
+  formData.append("major_id", major_id);
 
   try {
-    const response = await $fetch(`${url}/unit-items`, {
+    const response = await $fetch(`${url}/consumable-item`, {
       method: "POST",
       body: formData,
       headers: {
@@ -618,27 +569,29 @@ const createUnitItem = async () => {
   }
 };
 
-const updateUnitItem = async () => {
+const updateConsumableItem = async () => {
   if (isSubmitting.value) return;
-  const { id, item_id, merk, description, procurement_date } =
-    adminInventoryStore.input;
+  const { id, name, quantity, unit } = consumableItemStore.input;
 
-  if (!item_id || !merk) {
-    showAlert("warning", "Item type and brand name must be filled");
+  if (!id) {
+    showAlert("error", "Item ID is missing");
+    return;
+  }
+
+  if (!name || !quantity || !unit) {
+    showAlert("warning", "All fields must be filled");
     return;
   }
 
   isSubmitting.value = true;
   const payload = {
-    item_id,
-    merk,
-    description: description || "",
-    procurement_date:
-      procurement_date || new Date().toISOString().split("T")[0],
+    name,
+    quantity,
+    unit,
   };
 
   try {
-    const response = await $fetch(`${url}/unit-items/${id}`, {
+    const response = await $fetch(`${url}/consumable-item/${id}`, {
       method: "PUT",
       body: payload,
       headers: {
@@ -650,21 +603,28 @@ const updateUnitItem = async () => {
     if (response.status === 200) {
       getConsumableItems();
       closeModalUpdate();
-      showAlert("success", "Unit item updated successfully!");
+      showAlert("success", "Consumable item updated successfully!");
     }
   } catch (e) {
-    console.error("Error updating unit item:", e);
-    showAlert("error", "Failed to update unit item");
+    console.error("Error updating consumable item:", e);
+    showAlert("error", `Failed to update consumable item: ${e.message || "Unknown error"}`);
   } finally {
     isSubmitting.value = false;
   }
 };
 
-const deleteUnitItem = async () => {
+const deleteConsumableItem = async () => {
+  if (!deleteItemData.value || !deleteItemData.value.id) {
+    showAlert("error", "Item ID is missing");
+    return;
+  }
+  
   isSubmitting.value = true;
   try {
+    console.log("Deleting consumable item with ID:", deleteItemData.value.id);
+    
     const response = await $fetch(
-      `${url}/unit-items/${deleteItemData.value.id}`,
+      `${url}/consumable-item/${deleteItemData.value.id}`,
       {
         method: "DELETE",
         headers: {
@@ -674,14 +634,16 @@ const deleteUnitItem = async () => {
       }
     );
 
+    console.log("Delete response:", response);
+
     if (response.status === 200) {
       getConsumableItems();
       closeModalDelete();
-      showAlert("success", "Unit item deleted successfully!");
+      showAlert("success", "Consumable item deleted successfully!");
     }
   } catch (e) {
-    console.error("Error deleting unit item:", e);
-    showAlert("error", "Failed to delete unit item");
+    console.error("Error deleting consumable item:", e);
+    showAlert("error", `Failed to delete consumable item: ${e.message || "Unknown error"}`);
   } finally {
     isSubmitting.value = false;
   }

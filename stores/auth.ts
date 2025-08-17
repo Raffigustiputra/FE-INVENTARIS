@@ -14,7 +14,7 @@ export const useAuthStore = defineStore("auth", {
     role: null as string | null,
     name: null as string | null,
     usid: null as string | null,
-    major: null as any | null, // Changed to any type to support full major object structure
+    major_id: null as any | null, // Changed to any type to support full major object structure
   }),
 
     getters: {
@@ -23,7 +23,7 @@ export const useAuthStore = defineStore("auth", {
         getName: (state) => state.name,
         getUsid: (state) => state.usid,
         getUsername: (state) => state.username,
-        getMajor: (state) => state.major,
+        getMajor: (state) => state.major_id,
         isAuthenticated: (state) => !!state.token,
     },
 
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore("auth", {
             this.name = data.name;
             this.usid = data.usid;
             this.username = data.username;
-            this.major = data.major; // This will now store the full major object
+            this.major_id = data.major_id; // This will now store the full major object
             this.isAuth = true;
             
             if (process.client) {
@@ -43,10 +43,10 @@ export const useAuthStore = defineStore("auth", {
                 localStorage.setItem('auth-isAuth', 'true');
                 
                 // Store major as JSON if it's an object
-                if (data.major && typeof data.major === 'object') {
-                    localStorage.setItem('auth-major', JSON.stringify(data.major));
+                if (data.major_id && typeof data.major_id === 'object') {
+                    localStorage.setItem('auth-major', JSON.stringify(data.major_id));
                 } else {
-                    localStorage.setItem('auth-major', data.major || '');
+                    localStorage.setItem('auth-major', data.major_id || '');
                 }
             }
         },
@@ -78,7 +78,7 @@ export const useAuthStore = defineStore("auth", {
           this.name = name;
           this.usid = usid;
           this.username = username;
-          this.major = major;
+          this.major_id = major;
           this.isAuth = isAuth === "true";
         }
       }
@@ -90,7 +90,7 @@ export const useAuthStore = defineStore("auth", {
             this.name = null;
             this.usid = null;
             this.username = null;
-            this.major = null;
+            this.major_id = null;
             this.isAuth = false;
             this.input.username = '';
             this.input.password = '';
@@ -101,7 +101,7 @@ export const useAuthStore = defineStore("auth", {
                 localStorage.removeItem('auth-name');
                 localStorage.removeItem('auth-usid');
                 localStorage.removeItem('auth-username');
-                localStorage.removeItem('auth-major');
+                localStorage.removeItem('auth-major_id');
                 localStorage.removeItem('auth-isAuth');
                 
                 // Also clear cookies if they exist
@@ -110,7 +110,7 @@ export const useAuthStore = defineStore("auth", {
                 const nameCookie = useCookie("auth-name");
                 const usidCookie = useCookie("auth-usid");
                 const usernameCookie = useCookie("auth-username");
-                const majorCookie = useCookie("auth-major");
+                const majorCookie = useCookie("auth-major_id");
                 const isAuthCookie = useCookie("auth-isAuth");
                 
                 if (tokenCookie.value) tokenCookie.value = null;
