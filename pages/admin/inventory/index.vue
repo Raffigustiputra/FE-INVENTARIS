@@ -302,7 +302,6 @@ const closeModalDelete = () => {
 };
 
 const getMainInvetoryItems = async () => {
-    setTimeout(() => setLoading(false), 2000);
   const response = await $fetch(`${url}/item`, {
     method: "GET",
     headers: {
@@ -313,6 +312,7 @@ const getMainInvetoryItems = async () => {
 
   if (response.status === 200) {
     mainInventoryStore.inventory = response.data;
+    // pending.value = false;
   }
 };
 

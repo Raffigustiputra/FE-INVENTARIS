@@ -346,12 +346,12 @@ const pending = ref(true);
 const error = ref(null);
 
 const GetMajor = async () => {
-    setTimeout(() => setLoading(false), 5000);
   const response = await $fetch(`${url}/major`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
+      'ngrok-skip-browser-warning': true
     },
   });
   if (response.status === 200) {
@@ -365,11 +365,13 @@ const fetchUsers = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
+       'ngrok-skip-browser-warning': true
     },
   });
 
   if (response.status === 200) {
     accountStore.Accounts = response.data;
+    pending.value = false;
   }
 };
 

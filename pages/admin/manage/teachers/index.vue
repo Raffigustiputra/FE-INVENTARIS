@@ -225,6 +225,7 @@ const getTeachers = async () => {
 
   if (response.status === 200 || response.status === 201) {
     teacherStore.teachers = response.data;
+    pending.value = false;
   }
 };
 

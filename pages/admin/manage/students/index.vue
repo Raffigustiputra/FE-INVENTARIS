@@ -162,17 +162,18 @@ const pending = ref(true);
 const error = ref(null);
 
 const getStudent = async () => {
-    setTimeout(() => setLoading(false), 5000);
     const response = await $fetch(`${url}/student`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authStore.token}`,
+            'ngrok-skip-browser-warning': true
         },
     });
 
     if (response.status === 200 || response.status === 201) {
         studentStore.students = response.data;
+        pending.value = false;
     }
 };
 
