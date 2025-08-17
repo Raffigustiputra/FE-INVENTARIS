@@ -58,7 +58,7 @@ export default {
 }
 
 .tooltip.top {
-    bottom: 87%;
+    bottom: 100%;
     left: 70%;
     transform: translateX(-50%);
 }

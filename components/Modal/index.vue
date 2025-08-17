@@ -1,5 +1,5 @@
 <template>
-  <div class="border bg-white border-[#D2D2D2] w-6/12 rounded-sm">
+  <div class="border bg-white border-[#D2D2D2] w-6/12 rounded-sm pb-4">
     <div class="border-b bg-white rounded-sm border-[#D2D2D2] py-2 px-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center p-1.5 gap-2">
@@ -56,6 +56,7 @@
         Submit
       </button>
     </div>
+    <slot name="footer" />
   </div>
 </template>
 <script setup>

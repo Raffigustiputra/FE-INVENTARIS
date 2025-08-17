@@ -14,6 +14,7 @@
         placeholder="Enter brand name"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
+        :disabled="props.disabled"
       />
     </div>
   </div>
@@ -23,7 +24,11 @@
 const props = defineProps({
   label: String,
   modelValue: String,
-  type: String
+  type: String,
+  disabled: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(["update:modelValue"]);
