@@ -25,6 +25,21 @@ export const useUnitItemStore = defineStore("unit-item", {
     })
 });
 
+export const useConsumableStore = defineStore("consumable", {
+    state: () => ({
+        input: {
+            name: '',
+            quantity: '',
+            unit: '',
+            major_id: '',
+        },
+        filter: {
+            search: '',
+        },
+        consumables: [],
+    })
+});
+
 export const useAdminInventoryStore = defineStore("admin-inventory", {
     state: () => ({
         input: {

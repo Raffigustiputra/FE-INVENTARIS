@@ -54,54 +54,11 @@
       @breadcrumbClick="openModalFromBreadcrumb"
     />
     <div class="flex items-center justify-between mt-12 mb-4">
-      <h1 class="font-semibold text-2xl">Inventory</h1>
-      <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
+      <h1 class="font-semibold text-2xl">Inventory
+        <div class="inline text-lg">/</div>
+        Borrowed Items</h1>
+      <SearchBox v-model="consumableItemStore.filter.search" @input="handleSearch" />
     </div>
-  </div>
-
-  <!-- Modal Form Borrowing -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalFormBorrowing"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnSubmit="handleFormBorrowingSubmit"
-          @btnClose="closeModalCreate"
-          title="Form Borrowing"
-          :isSubmitting="isSubmitting"
-        >
-          <div>
-            <label class="ml-0.5 mt-3 block text-sm font-medium text-[#727272]"
-              >Item Type</label
-            >
-            <div class="w-full flex items-center gap-2">
-              <InputRadio
-                class="w-1/2"
-                valueName="Consumable Item"
-                name="itemType"
-                value="consumable"
-                v-model="selectedItemType"
-              />
-              <InputRadio
-                class="w-1/2"
-                valueName="Borrowable Item"
-                name="itemType"
-                value="borrowable"
-                v-model="selectedItemType"
-              />
-            </div>
-            <p v-if="formErrors.itemType" class="text-red-500 text-xs mt-1">
-              {{ formErrors.itemType }}
-            </p>
-          </div>
-          <div v-if="formErrors.general" class="text-red-500 text-sm mb-3">
-            {{ formErrors.general }}
-          </div>
-        </Modal>
-      </div>
-    </Transition>
   </div>
 
   <!-- Modal Create Borrowable -->
@@ -147,66 +104,6 @@
             <InputDate
               class="w-1/2"
               label="Added Date"
-              v-model="adminInventoryStore.input.procurement_date"
-            />
-          </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
-        </Modal>
-      </div>
-    </Transition>
-  </div>
-
-  <!-- Modal Create Consumable -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalConsumableItem"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnClose="closeModalCreate"
-          title="Add Consumable Item"
-          @btnSubmit="createConsumableItem"
-          :isSubmitting="isSubmitting"
-        >
-          <p class="text-sm font-medium text-[#727272] my-2">CONSUMABLE ITEM DETAILS</p>
-          <div class="w-full flex items-center gap-2">
-            <InputSelect
-              class="w-1/2"
-              label="Item Type"
-              v-model="adminInventoryStore.input.item_id"
-            >
-              <option
-                v-for="type in mainInventoryStore.inventory"
-                :key="type.id"
-                :value="type.id"
-              >
-                {{ type.name }}
-              </option>
-            </InputSelect>
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-1/2"
-              label="Brand Name"
-              placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk"
-            />
-            <InputNumber
-              class="w-1/2"
-              label="Quantity"
-              placeholder="Enter Quantity"
-              v-model="adminInventoryStore.input.quantity"
-            />
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputDate
-              class="w-full"
-              label="Purchase Date"
               v-model="adminInventoryStore.input.procurement_date"
             />
           </div>
@@ -316,46 +213,24 @@
           <th class="px-4 py-3">
             <input type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
-          <th class="px-4 py-3 text-center">Type</th>
-          <th class="px-4 py-3 text-center">Unit Code</th>
-          <th class="px-4 py-3">Brand</th>
-          <th class="px-4 py-3 text-center">Borrowed Time</th>
-          <th class="px-4 py-3 text-center">Status</th>
-          <th class="px-4 py-3 text-center">Condition</th>
+          <th class="px-4 py-3 text-center">Name</th>
+          <th class="px-4 py-3 text-center">Quantity</th>
+          <th class="px-4 py-3">Unit</th>
           <th class="px-4 py-3 text-center">Action</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr
-          v-for="item in unitItemStore.unitItems"
+          v-for="item in consumableItemStore.consumables"
           :key="item.id"
           class="hover:bg-gray-50"
         >
           <td class="px-4 py-3">
             <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
-          <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
-          <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
-          <td class="px-4 py-3">{{ item.sub_item.merk }}</td>
-          <td class="px-4 py-3 text-center">
-            {{ formatDate(item.procurement_date) }}
-          </td>
-          <td class="px-4 py-3 text-center">
-            <span
-              :class="statusClass(item.status)"
-              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium"
-            >
-              {{ toUpperCase(item.status) }}
-            </span>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <span
-              :class="conditionClass(item.condition)"
-              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium"
-            >
-              {{ toUpperCase(item.condition) }}
-            </span>
-          </td>
+          <td class="px-4 py-3 text-center">{{ item.name }}</td>
+          <td class="px-4 py-3 text-center">{{ item.quantity }}</td>
+          <td class="px-4 py-3 text-center">{{ item.unit }}</td>
           <td class="px-4 py-3 flex justify-center gap-2">
             <ButtonEdit @click="openModalUpdate(item)" />
             <ButtonDelete @click="openModalDelete(item)" />
@@ -367,8 +242,8 @@
 
   <div class="flex items-center justify-between mt-4">
     <p class="text-xs text-gray-500">
-      Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
-      {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
+      Showing {{ consumableItemStore.consumables.length > 0 ? 1 : 0 }} to
+      {{ consumableItemStore.consumables.length }} of {{ allItemCount }} Inventory Items
     </p>
     <Pagination
       :currentPage="currentPage"
@@ -414,7 +289,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsPrint,
   },
   {
-    label: "Add Item",
+    label: "Add Item Borrowable",
     icon: IconsNavbarIconsAddItem,
   },
   {
@@ -429,21 +304,18 @@ const breadcrumbs = [
 
 const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
-const unitItemStore = useUnitItemStore();
+const consumableItemStore = useConsumableStore();
 const mainInventoryStore = useMainInventoryStore();
 const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
-  if (item.label === "Add Item") {
-    // Show form borrowing modal first instead of directly opening create modal
-    modalFormBorrowing.value = true;
+  if (item.label === "Add Item Borrowable") {
+    modalCreate.value = true;
   }
 };
 
 // Modal states
-const modalFormBorrowing = ref(false);
 const modalCreate = ref(false);
-const modalConsumableItem = ref(false);
 const modalUpdate = ref(false);
 const modalDelete = ref(false);
 const deleteItemData = ref(null);
@@ -466,7 +338,7 @@ const alertMessage = ref("");
 
 function toggleAll() {
   if (selectAll.value) {
-    selectedItems.value = unitItemStore.unitItems.map((item) => item.id);
+    selectedItems.value = consumableItemStore.consumables.map((item) => item.id);
   } else {
     selectedItems.value = [];
   }
@@ -529,7 +401,7 @@ const nextPage = async () => {
     pending.value = true;
     console.log(currentPage.value);
     nextTick(() => {
-      getUnitItemsInventory();
+      getConsumableItems();
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: "smooth",
@@ -544,7 +416,7 @@ const prevPage = async () => {
     pending.value = true;
     console.log(currentPage.value);
     nextTick(() => {
-      getUnitItemsInventory();
+      getConsumableItems();
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: "smooth",
@@ -560,7 +432,7 @@ const changePage = async (page) => {
     console.log(currentPage.value);
   }
   nextTick(() => {
-    getUnitItemsInventory();
+    getConsumableItems();
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
@@ -578,14 +450,14 @@ const handleSearch = () => {
 
   timeoutFiltering = setTimeout(() => {
     currentPage.value = 1; // Reset to first page when searching
-    getUnitItemsInventory();
+    getConsumableItems();
   }, 500);
 };
 
 watch(selectedItems, (newVal) => {
   selectAll.value =
-    newVal.length === unitItemStore.unitItems.length &&
-    unitItemStore.unitItems.length > 0;
+    newVal.length === consumableItemStore.consumables.length &&
+    consumableItemStore.consumables.length > 0;
 });
 
 const showAlert = (type, message) => {
@@ -614,78 +486,11 @@ const showAlert = (type, message) => {
   }
 };
 
-// Handle form borrowing submit - conditional logic for showing different modals
-const handleFormBorrowingSubmit = () => {
-  // Reset form errors
-  formErrors.value = {
-    itemType: '',
-    general: ''
-  };
-  
-  // Validate item type is selected
-  if (!selectedItemType.value) {
-    formErrors.value.itemType = 'Please select an item type';
-    formErrors.value.general = 'Please select an item type to continue';
-    return;
-  }
-
-  // Close form borrowing modal
-  modalFormBorrowing.value = false;
-  
-  // Open appropriate modal based on selection
-  if (selectedItemType.value === "borrowable") {
-    openModalCreate("Add Borrowable Item");
-  } else if (selectedItemType.value === "consumable") {
-    openModalConsumableItem("Add Consumable Item");
-  }
-};
-
-const openModalConsumableItem = (title) => {
-  modalTitle.value = title;
-  modalConsumableItem.value = true;
-  isSubmitting.value = false;
-  // Initialize consumable item form
-  adminInventoryStore.input = {
-    item_id: "",
-    merk: "",
-    procurement_date: new Date().toISOString().split("T")[0],
-    description: "",
-    quantity: 1
-  };
-};
-
-const openModalCreate = (title) => {
-  modalTitle.value = title;
-  modalCreate.value = true;
-  isSubmitting.value = false;
-  adminInventoryStore.input = {
-    item_id: "",
-    merk: "",
-    procurement_date: new Date().toISOString().split("T")[0],
-    description: "",
-  };
-};
-
 const closeModalCreate = () => {
-  // Close all modals and reset form states
-  modalFormBorrowing.value = false;
   modalCreate.value = false;
-  modalConsumableItem.value = false;
-  selectedItemType.value = "";
-  adminInventoryStore.input = {
-    item_id: "",
-    merk: "",
-    procurement_date: "",
-    description: "",
-    quantity: null
-  };
-  
-  // Clear any form errors
-  formErrors.value = {
-    itemType: '',
-    general: ''
-  };
+  adminInventoryStore.input = {};
 };
+
 
 const openModalUpdate = (item) => {
   modalTitle.value = "Update Item";
@@ -717,11 +522,10 @@ const closeModalDelete = () => {
 };
 
 const pending = ref(true);
-const error = ref(null);
 
 const getMainInventoryItems = async () => {
   const response = await $fetch(
-    `${url}/item?search=${unitItemStore.filter.search}&page=${currentPage.value}`,
+    `${url}/item?search=${consumableItemStore.filter.search}&page=${currentPage.value}`,
     {
       method: "GET",
       headers: {
@@ -736,11 +540,11 @@ const getMainInventoryItems = async () => {
   }
 };
 
-const getUnitItemsInventory = async () => {
+const getConsumableItems = async () => {
   pending.value = true;
   try {
     const response = await $fetch(
-      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}`,
+      `${url}/consumable-item?search=${consumableItemStore.filter.search}&page=${currentPage.value}`,
       {
         method: "GET",
         headers: {
@@ -751,9 +555,8 @@ const getUnitItemsInventory = async () => {
     );
 
     if (response.status === 200) {
-      unitItemStore.unitItems = response.data;
+      consumableItemStore.consumables = response.data;
 
-      // Update pagination data if meta is available
       if (response.meta) {
         lastPage.value = response.meta.last_page;
         allItemCount.value = response.meta.total;
@@ -762,57 +565,10 @@ const getUnitItemsInventory = async () => {
       pending.value = false;
     }
   } catch (error) {
-    console.error("Error fetching unit items:", error);
+    console.error("Error fetching consumable items:", error);
     alertError.value = true;
-    alertMessage.value = "Error loading inventory items";
+    alertMessage.value = "Error loading consumable items";
     pending.value = false;
-  }
-};
-
-const createConsumableItem = async () => {
-  if (isSubmitting.value) return;
-  const { item_id, merk, description, procurement_date, quantity } =
-    adminInventoryStore.input;
-  console.log("Consumable Item Form values:", adminInventoryStore.input);
-
-  if (!item_id || !merk || !quantity) {
-    showAlert("warning", "Item type, brand name and quantity must be filled");
-    return;
-  }
-
-  isSubmitting.value = true;
-  const formData = new FormData();
-
-  formData.append("item_id", item_id);
-  formData.append("merk", merk);
-  formData.append("description", description || "");
-  formData.append("quantity", quantity || 1);
-  formData.append(
-    "procurement_date",
-    procurement_date || new Date().toISOString().split("T")[0]
-  );
-
-  try {
-    const response = await $fetch(`${url}/consumable-items`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-      body: formData,
-    });
-
-    if (response.status === 201 || response.status === 200) {
-      showAlert("success", "Consumable item created successfully!");
-      closeModalCreate();
-      getUnitItemsInventory();
-    } else {
-      showAlert("error", "Failed to create consumable item");
-    }
-  } catch (error) {
-    console.error("Error creating consumable item:", error);
-    showAlert("error", "An error occurred while creating the consumable item");
-  } finally {
-    isSubmitting.value = false;
   }
 };
 
@@ -847,8 +603,10 @@ const createUnitItem = async () => {
       },
     });
 
+    console.log(response);
+
     if (response.status === 201 || response.status === 200) {
-      getUnitItemsInventory();
+      getConsumableItems();
       closeModalCreate();
       showAlert("success", "Unit item created successfully!");
     }
@@ -890,7 +648,7 @@ const updateUnitItem = async () => {
     });
 
     if (response.status === 200) {
-      getUnitItemsInventory();
+      getConsumableItems();
       closeModalUpdate();
       showAlert("success", "Unit item updated successfully!");
     }
@@ -917,7 +675,7 @@ const deleteUnitItem = async () => {
     );
 
     if (response.status === 200) {
-      getUnitItemsInventory();
+      getConsumableItems();
       closeModalDelete();
       showAlert("success", "Unit item deleted successfully!");
     }
@@ -931,32 +689,6 @@ const deleteUnitItem = async () => {
 
 onMounted(() => {
   getMainInventoryItems();
-  getUnitItemsInventory();
+  getConsumableItems();
 });
-
-const statusClass = (status) => {
-  switch ((status || "").toUpperCase()) {
-    case "AVAILABLE":
-      return "bg-green-200 text-green-700";
-    case "BORROWED":
-      return "bg-[#FFF3A4] text-[#978611]";
-    case "UNAVAILABLE":
-      return "bg-red-200 text-red-700";
-    default:
-      return "bg-gray-200 text-gray-700";
-  }
-};
-
-const conditionClass = (condition) => {
-  switch ((condition || "").toUpperCase()) {
-    case "GOOD":
-      return "bg-[#D2F3D8] text-[#59AE75]";
-    case "DAMAGED":
-      return "bg-red-200 text-red-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-};
-
-const toUpperCase = (str) => (str ? String(str).toUpperCase() : "");
 </script>

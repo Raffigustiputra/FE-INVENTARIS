@@ -166,8 +166,6 @@
           </div>
         </div>
 
-        <!-- <div class="border-b border-black/10 mx-4"></div> -->
-
         <!-- MAJOR SECTION -->
         <div v-if="authStore.role === 'superadmin'">
           <div class="flex justify-between items-center px-6 my-4">
@@ -337,6 +335,18 @@ const menuByRole = {
       name: "Inventory",
       path: "/kaprog/inventory",
       icon: IconsInventory,
+      childMenu: [
+        {
+          name: "Borrowable",
+          path: "/kaprog/inventory/borrowable",
+          icon: IconsBorrowed,
+        },
+        {
+          name: "Consumable",
+          path: "/kaprog/inventory/consumable",
+          icon: IconsHistory,
+        }
+      ]
     },
     {
       name: "Activity",
