@@ -1,6 +1,6 @@
 <template>
     <div class="space-y-4 my-2 w-full">
-        <label for="">{{ props.label }}</label>
+        <label for="" class="text-sm font-medium text-[#727272]">{{ props.label }}</label>
         <div
             class="flex flex-col gap-3  items-center justify-center w-full p-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 transition"
             @click="triggerFileInput">
@@ -17,12 +17,11 @@
             </svg>
 
             <!-- Text -->
-            <p class="mt-2 text-sm text-gray-600">
+            <p class="mt-2 text-sm text-gray-600 text-center">
                 Drag & Drop or
                 <span class="text-blue-500 underline">Choose File</span>
                 to upload
             </p>
-            <p class="text-xs text-gray-400 mt-1">CSV or XLSX</p>
 
             <!-- Hidden input file -->
             <input ref="fileInput" type="file" class="hidden" @change="handleFileUpload" />

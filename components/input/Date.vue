@@ -7,10 +7,10 @@
         >{{ props.label }}</label
       >
       <input
-        type="date"
+        :type="props.type || 'date'"
         id="brand"
         name="brand"
-        class="mt-1 block w-full px-4 py-2 rounded-sm border border-[#D2D2D2] bg-[#F9FBFC] focus:border-blue-500 focus:ring focus:ring-blue-200 outline-none"
+        class="mt-2 block w-full px-4 py-1.5 rounded-sm border border-[#D2D2D2] bg-[#F9FBFC] focus:border-blue-500 focus:ring focus:ring-blue-200 outline-none"
         placeholder="Enter brand name"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
@@ -23,6 +23,7 @@
 const props = defineProps({
   label: String,
   modelValue: String,
+  type: String
 });
 
 const emit = defineEmits(["update:modelValue"]);
