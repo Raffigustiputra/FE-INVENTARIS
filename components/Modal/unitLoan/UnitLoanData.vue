@@ -34,12 +34,16 @@
         <ConsumableStudentForm
           v-else-if="modalType === 'consumable-student'"
           :formData="formData"
+          :consumableItem="consumableItem"
+          :studentData="studentData"
         />
 
         <!-- Consumable Teacher Form -->
         <ConsumableTeacherForm
           v-else-if="modalType === 'consumable-teacher'"
           :formData="formData"
+          :consumableItem="consumableItem"
+          :teacherData="teacherData"
         />
       </Modal>
     </div>
@@ -90,6 +94,10 @@ const props = defineProps({
   selectedCollateralType: {
     type: String,
     default: ''
+  },
+  consumableItem: {
+    type: Object,
+    default: () => ({})
   },
   imagePreview: {
     type: String,

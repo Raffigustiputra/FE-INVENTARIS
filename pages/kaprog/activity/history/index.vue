@@ -17,11 +17,7 @@
     />
   </transition>
   <transition name="alert">
-    <AlertWarning 
-      class="z-50" 
-      v-if="alertWarning" 
-      :title="alertMessage" 
-    />
+    <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
   </transition>
 
   <!-- Page Header -->
@@ -35,9 +31,11 @@
         Activity
         <div class="inline text-lg">/</div>
         History
+        <div class="inline text-lg">/</div>
+        {{ viewData === "borrowable" ? "Borrowable" : "Consumable" }}
       </h1>
       <SearchBox
-        :text="'Search Anything'"
+        :text="'Search History'"
         v-model="searchQuery"
         @input="handleSearch"
       />
@@ -49,6 +47,7 @@
     :isOpen="!!currentModal"
     :modalType="currentModal"
     :unitItem="unitItem"
+    :consumableItem="consumableItem"
     :studentData="studentData"
     :teacherData="teacherData"
     :formData="formData"
@@ -58,8 +57,15 @@
   />
 
   <!-- Data Table -->
-  <TableSkeleton v-if="pending" :rows="4" :columns="7" />
-  <div v-else class="overflow-x-auto rounded-lg bg-white">
+  <TableSkeleton
+    v-if="pending && viewData === 'borrowable'"
+    :rows="4"
+    :columns="7"
+  />
+  <div
+    v-else-if="viewData === 'borrowable'"
+    class="overflow-x-auto rounded-lg bg-white"
+  >
     <table class="min-w-full text-sm text-left">
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
@@ -67,7 +73,9 @@
             <input type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="py-3 px-4 text-center">Type</th>
-          <th class="px-4 py-3 text-center first:!px-2 first:!text-left nth-2:!px-2 nth-2:!text-center">
+          <th
+            class="px-4 py-3 text-center first:!px-2 first:!text-left nth-2:!px-2 nth-2:!text-center"
+          >
             Unit Code
           </th>
           <th class="px-4 py-3 text-center">Brand</th>
@@ -82,7 +90,9 @@
           <td colspan="7" class="px-4 py-3 text-center">Loading...</td>
         </tr>
         <!-- Empty State -->
-        <tr v-else-if="!historyStore.history || historyStore.history.length === 0">
+        <tr
+          v-else-if="!historyStore.history || historyStore.history.length === 0"
+        >
           <td colspan="7" class="px-4 py-3 text-center">
             No history data available
           </td>
@@ -98,7 +108,9 @@
             <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="py-3 text-center">
-            {{ item.unit_item?.sub_item?.item?.name || item.item_name || "N/A" }}
+            {{
+              item.unit_item?.sub_item?.item?.name || item.item_name || "N/A"
+            }}
           </td>
           <td class="px-4 py-3 text-center">
             {{ item.unit_item?.code_unit || item.code_unit || "N/A" }}
@@ -111,6 +123,82 @@
           </td>
           <td class="px-4 py-3 text-center">
             {{ formatDate(item.returned_at) }}
+          </td>
+          <td class="px-4 py-3 flex justify-center gap-1">
+            <Tooltip text="Detail" position="top">
+              <div
+                class="bg-[#c89513] p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
+                @click="openDetailModal(item)"
+              >
+                <IconsDetail />
+              </div>
+            </Tooltip>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <TableSkeleton
+    v-if="pending && viewData === 'consumable'"
+    :rows="4"
+    :columns="7"
+  />
+  <div
+    v-else-if="viewData === 'consumable'"
+    class="overflow-x-auto rounded-lg bg-white"
+  >
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100">
+        <tr class="text-sm font-semibold text-gray-700">
+          <th class="px-4 py-3">
+            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+          </th>
+          <th class="py-3 px-4 text-center">Name</th>
+          <th
+            class="px-4 py-3 text-center first:!px-2 first:!text-left nth-2:!px-2 nth-2:!text-center"
+          >
+            Qty
+          </th>
+          <th class="px-4 py-3 text-center">Unit</th>
+          <th class="px-4 py-3 text-center">Borrowed Time</th>
+          <th class="px-4 py-3 text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Loading State -->
+        <tr v-if="pending">
+          <td colspan="7" class="px-4 py-3 text-center">Loading...</td>
+        </tr>
+        <!-- Empty State -->
+        <tr
+          v-else-if="!historyStore.history || historyStore.history.length === 0"
+        >
+          <td colspan="7" class="px-4 py-3 text-center">
+            No history data available
+          </td>
+        </tr>
+        <!-- Data Rows -->
+        <tr
+          v-else
+          v-for="item in historyStore.history"
+          :key="item.id"
+          class="hover:bg-gray-50"
+        >
+          <td class="px-4 py-3">
+            <input type="checkbox" v-model="selectedItems" :value="item.id" />
+          </td>
+          <td class="py-3 text-center">
+            {{ item.consumable_item.name || "N/A" }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            {{ item.quantity || "N/A" }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            {{ item.consumable_item.unit || "N/A" }}
+          </td>
+          <td class="px-4 py-3 text-center">
+            {{ formatDate(item.borrowed_at) }}
           </td>
           <td class="px-4 py-3 flex justify-center gap-1">
             <Tooltip text="Detail" position="top">
@@ -145,7 +233,7 @@
 
 <script setup>
 import {
-  IconsNavbarIconsAddItem,
+  IconsNavbarIconsChangeItems,
   IconsNavbarIconsFile,
   IconsNavbarIconsFilterMajor,
   IconsNavbarIconsFilterRole,
@@ -189,8 +277,10 @@ const selectedItems = ref([]);
 const selectAll = ref(false);
 
 // Sorting & Filtering
+const viewData = ref("borrowable");
 const sortByType = ref("");
 const sortByTime = ref("");
+const sortByQuantity = ref("");
 
 // Pagination
 const currentPage = ref(1);
@@ -207,6 +297,7 @@ const formData = ref({
   // Common fields
   id: "",
   unitItemId: "",
+  consumableItemId: "",
   studentId: "",
   teacherId: "",
   borrowerName: "",
@@ -255,6 +346,12 @@ const unitItem = ref({
   status: "",
 });
 
+const consumableItem = ref({
+  name: "",
+  quantity: 0,
+  unit: "",
+});
+
 // =============================================================================
 // COMPUTED PROPERTIES
 // =============================================================================
@@ -280,13 +377,21 @@ const paginationItems = computed(() => {
     } else if (currentPage.value >= lastPage.value - halfVisible) {
       pages.push(1);
       pages.push("...");
-      for (let i = lastPage.value - (maxVisiblePages - 2); i <= lastPage.value; i++) {
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
         pages.push(i);
       }
     } else {
       pages.push(1);
       pages.push("...");
-      for (let i = currentPage.value - halfVisible + 1; i <= currentPage.value + halfVisible - 1; i++) {
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
         pages.push(i);
       }
       pages.push("...");
@@ -299,7 +404,7 @@ const paginationItems = computed(() => {
 // =============================================================================
 // BREADCRUMBS CONFIGURATION
 // =============================================================================
-const breadcrumbs = [
+const breadcrumbs = computed(() => [
   {
     label: "Manage Inventory",
     icon: IconsNavbarIconsFile,
@@ -311,16 +416,34 @@ const breadcrumbs = [
     click: () => openModalFromBreadcrumb({ label: "Print Selected" }),
   },
   {
+    label: "Change Items",
+    icon: IconsNavbarIconsChangeItems,
+    click: () => changeHistoryData(),
+  },
+  {
     label: "Sort by Type",
     icon: IconsNavbarIconsFilterMajor,
     click: () => handleSort("type"),
   },
-  {
-    label: "Sort by Time",
-    icon: IconsNavbarIconsFilterRole,
-    click: () => handleSort("time"),
-  },
-];
+  ...(viewData.value === "borrowable"
+    ? [
+        {
+          label: "Sort by Time",
+          icon: IconsNavbarIconsFilterRole,
+          click: () => handleSort("time"),
+        },
+      ]
+    : []),
+  ...(viewData.value === "consumable"
+    ? [
+        {
+          label: "Sort by Quantity",
+          icon: IconsNavbarIconsFilterMajor,
+          click: () => handleSort("quantity"),
+        },
+      ]
+    : []),
+]);
 
 // =============================================================================
 // UTILITY FUNCTIONS
@@ -343,6 +466,7 @@ const resetFormData = () => {
   formData.value = {
     id: "",
     unitItemId: "",
+    consumableItemId: "",
     studentId: "",
     teacherId: "",
     borrowerName: "",
@@ -383,6 +507,12 @@ const resetFormData = () => {
     type: "",
     status: "",
   };
+
+  consumableItem.value = {
+    name: "",
+    quantity: 0,
+    unit: "",
+  };
 };
 
 // =============================================================================
@@ -398,27 +528,36 @@ const closeModal = () => {
 const openDetailModal = async (item) => {
   resetFormData();
 
-  if (item.unit_item) {
-    // Handle borrowable items
-    unitItem.value = {
-      code: item.unit_item.code_unit || "",
-      brand: item.unit_item.sub_item?.merk || "",
-      condition: item.unit_item.condition || "",
-      type: item.unit_item.sub_item?.item?.name || "",
-      status: item.unit_item.status || "",
-    };
+  if (item.unit_item || item.consumable_item) {
+    if (viewData.value === "borrowable") {
+      unitItem.value = {
+        code: item.unit_item.code_unit ?? "",
+        brand: item.unit_item.sub_item?.merk ?? "",
+        condition: item.unit_item.condition ?? "",
+        type: item.unit_item.sub_item?.item?.name ?? "",
+        status: item.unit_item.status ?? "",
+      };
+    } else {
+      consumableItem.value = {
+        name: item.consumable_item.name ?? "",
+        quantity: item.consumable_item.quantity ?? 0,
+        unit: item.consumable_item.unit ?? "",
+      };
+    }
 
     formData.value = {
       ...formData.value,
-      id: item.id || "",
-      unitItemId: item.unit_item?.id || "",
-      borrowerName: item.borrowed_by || "",
-      borrowDate: item.borrowed_at || "",
-      returnDate: item.returned_at || "",
-      purpose: item.purpose || "",
-      room: item.room || "",
-      guarantee: item.guarantee || "",
-      image: item.image || "",
+      id: item.id ?? "",
+      unitItemId: item.unit_item?.id ?? "",
+      consumableItemId: item.consumable_item?.id ?? "",
+      borrowerName: item.borrowed_by ?? "",
+      borrowDate: item.borrowed_at ?? "",
+      returnDate: item.returned_at ?? "",
+      purpose: item.purpose ?? "",
+      quantity: item.quantity ?? 0,
+      room: item.room ?? "",
+      guarantee: item.guarantee ?? "",
+      image: item.image ?? "",
     };
 
     selectedCollateralType.value = item.guarantee || "";
@@ -434,7 +573,11 @@ const openDetailModal = async (item) => {
         majorName: item.student.major?.name || "",
       };
       formData.value.studentId = item.student.id || "";
-      currentModal.value = "borrowable-student";
+      if (viewData.value === "borrowable") {
+        currentModal.value = "borrowable-student";
+      } else {
+        currentModal.value = "consumable-student";
+      }
     } else if (item.teacher) {
       teacherData.value = {
         nip: item.teacher.nip || "",
@@ -442,28 +585,11 @@ const openDetailModal = async (item) => {
         telephone: item.teacher.telephone || "",
       };
       formData.value.teacherId = item.teacher.id || "";
-      currentModal.value = "borrowable-teacher";
-    }
-  } else if (item.quantity) {
-    // Handle consumable items
-    formData.value = {
-      ...formData.value,
-      id: item.id || "",
-      quantity: item.quantity || 1,
-      usageDate: item.usage_date || "",
-    };
-
-    // Determine user type
-    if (item.student) {
-      formData.value.studentName = item.student.name || "";
-      formData.value.studentId = item.student.nis || "";
-      formData.value.class = item.student.class || "";
-      currentModal.value = "consumable-student";
-    } else if (item.teacher) {
-      formData.value.teacherName = item.teacher.name || "";
-      formData.value.employeeId = item.teacher.nip || "";
-      formData.value.department = item.teacher.department || "";
-      currentModal.value = "consumable-teacher";
+      if (viewData.value === "borrowable") {
+        currentModal.value = "borrowable-teacher";
+      } else {
+        currentModal.value = "consumable-teacher";
+      }
     }
   }
 };
@@ -474,19 +600,35 @@ const openDetailModal = async (item) => {
 const getHistoryData = async () => {
   try {
     pending.value = true;
-    const response = await fetch(
-      `${url}/unit-loan/history?data=returning&sort_by_type=${sortByType.value}&sort_by_time=${sortByTime.value}&search=${searchQuery.value}&page=${currentPage.value}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authStore.token}`,
-        },
-      }
-    );
 
-    if (response.ok) {
-      const result = await response.json();
+    const response = ref(null);
+
+    if (viewData.value === "borrowable") {
+      response.value = await fetch(
+        `${url}/unit-loan/history?data=returning&sort_by_type=${sortByType.value}&sort_by_time=${sortByTime.value}&search=${searchQuery.value}&page=${currentPage.value}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        }
+      );
+    } else {
+      response.value = await fetch(
+        `${url}/consumable-loan/history?sort_type=${sortByType.value}&sort_quantity=${sortByQuantity.value}&search=${searchQuery.value}&page=${currentPage.value}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        }
+      );
+    }
+
+    if (response.value.ok) {
+      const result = await response.value.json();
       if (result.data) {
         historyStore.history = result.data;
         lastPage.value = result.meta.last_page;
@@ -509,6 +651,13 @@ const getHistoryData = async () => {
   }
 };
 
+const changeHistoryData = () => {
+  viewData.value =
+    viewData.value === "borrowable" ? "consumable" : "borrowable";
+  currentPage.value = 1;
+  getHistoryData();
+};
+
 // =============================================================================
 // EVENT HANDLERS
 // =============================================================================
@@ -529,12 +678,19 @@ const handleSort = (type) => {
   if (type === "type") {
     sortByType.value = sortByType.value === "asc" ? "desc" : "asc";
     sortByTime.value = "";
+    sortByQuantity.value = "";
   } else if (type === "time") {
     sortByTime.value = sortByTime.value === "asc" ? "desc" : "asc";
     sortByType.value = "";
-  } else {
+    sortByQuantity.value = "";
+  } else if (type === "quantity") {
+    sortByQuantity.value = sortByQuantity.value === "asc" ? "desc" : "asc";
     sortByType.value = "";
     sortByTime.value = "";
+  } else {
+    sortByQuantity.value = "";
+    sortByTime.value = "";
+    sortByType.value = "";
   }
   getHistoryData();
 };
