@@ -15,6 +15,10 @@
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
         :disabled="props.disabled"
+        :class="{
+          'bg-gray-100 cursor-not-allowed': props.disabled,
+          'bg-white cursor-pointer': !props.disabled
+        }"
       />
     </div>
   </div>

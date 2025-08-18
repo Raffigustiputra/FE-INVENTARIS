@@ -9,9 +9,13 @@
                 name="brand"
                 :value="modelValue"
                 @input="$emit('update:modelValue', $event.target.value)"
-                class="outline-none mt-2 block w-full px-4 py-2 rounded-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC]  focus:border-blue-500 focus:ring focus:ring-blue-200"
+                class="outline-none mt-2 block w-full text-sm px-4 py-2 rounded-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC]  focus:border-blue-500 focus:ring focus:ring-blue-200"
                 :placeholder="props.placeholder" 
                 :disabled="props.isDisabled" 
+                :class="{
+                    'bg-gray-100 cursor-not-allowed': props.isDisabled,
+                    'bg-white': !props.isDisabled
+                }"
             />
         </div>
     </div>
