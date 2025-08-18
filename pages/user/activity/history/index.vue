@@ -243,6 +243,7 @@ import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useHistory } from "~/stores/history";
 import { useAuthStore } from "~/stores/auth";
 import UnitloanData from "~/components/Modal/unitLoan/UnitLoanData.vue";
+import { useRoute } from "vue-router";
 
 // =============================================================================
 // PAGE META & SETUP
@@ -257,6 +258,7 @@ definePageMeta({
 const historyStore = useHistory();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const route = useRoute();
 
 // =============================================================================
 // REACTIVE STATE
@@ -277,7 +279,7 @@ const selectedItems = ref([]);
 const selectAll = ref(false);
 
 // Sorting & Filtering
-const viewData = ref("borrowable");
+const viewData = ref(route.query.view === "consumable" ? "consumable" : "borrowable");
 const sortByType = ref("");
 const sortByTime = ref("");
 const sortByQuantity = ref("");
@@ -756,6 +758,9 @@ const changePage = async (page) => {
 // LIFECYCLE HOOKS
 // =============================================================================
 onMounted(() => {
+  if (route.query.view === "consumable") {
+    viewData.value = "consumable";
+  }
   getHistoryData();
 });
 
@@ -771,6 +776,15 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
     }, 3000);
   }
 });
+
+watch(
+  () => route.query.view,
+  (newView) => {
+    viewData.value = newView === "consumable" ? "consumable" : "borrowable";
+    currentPage.value = 1;
+    getHistoryData();
+  }
+);
 </script>
 
 <style scoped>
