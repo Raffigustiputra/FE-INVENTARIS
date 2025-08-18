@@ -60,507 +60,713 @@
         <div class="inline text-lg">/</div>
         Borrowed
       </h1>
-      <SearchBox :text="'Search Borrowed'" />
+      <SearchBox
+        :text="'Search Borrowed Items'"
+        v-model="searchQuery"
+        @input="handleSearch"
+      />
     </div>
   </div>
 
-  <!-- Modal FORM BORROWING -->
+  <!-- Universal Modal -->
   <div class="w-full">
     <Transition name="fade">
       <div
-        v-if="modalFormBorrowing"
+        v-if="currentModal"
         class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
-          @btnSubmit="handleFormBorrowingSubmit"
-          @btnClose="closeModalCreate"
-          title="Form Borrowing"
+          @btnSubmit="handleSubmit"
+          @btnClose="closeModal"
+          :title="getModalTitle()"
           :isSubmitting="isSubmitting"
-        >
-          <div>
-            <label class="ml-0.5 mt-3 block text-sm font-medium text-[#727272]"
-              >Item Type</label
-            >
-            <div class="w-full flex items-center gap-2">
-              <InputRadio
-                class="w-1/2"
-                valueName="Consumable Item"
-                name="itemType"
-                value="consumable"
-                v-model="selectedItemType"
-              />
-              <InputRadio
-                class="w-1/2"
-                valueName="Borrowable Item"
-                name="itemType"
-                value="borrowable"
-                v-model="selectedItemType"
-              />
-            </div>
-            <p v-if="formErrors.itemType" class="text-red-500 text-xs mt-1">
-              {{ formErrors.itemType }}
-            </p>
-          </div>
-          <div class="mb-3">
-            <label class="ml-0.5 mt-5 block text-sm font-medium text-[#727272]"
-              >Select Borrow's</label
-            >
-            <div class="w-full flex items-center gap-2">
-              <InputRadio
-                class="w-1/2"
-                valueName="Student"
-                name="borrowerType"
-                value="student"
-                v-model="selectedBorrowerType"
-              />
-              <InputRadio
-                class="w-1/2"
-                valueName="Teacher"
-                name="borrowerType"
-                value="teacher"
-                v-model="selectedBorrowerType"
-              />
-            </div>
-            <p v-if="formErrors.borrowerType" class="text-red-500 text-xs mt-1">
-              {{ formErrors.borrowerType }}
-            </p>
-          </div>
-          <div v-if="formErrors.general" class="text-red-500 text-sm mb-3">
-            {{ formErrors.general }}
-          </div>
-        </Modal>
-      </div>
-    </Transition>
-  </div>
-
-  <!-- Modal BORROWABLE STUDENT -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalBorrowableStudent"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnClose="closeModalBorrowableStudent"
-          :title="
-            isPreview
-              ? 'Detail Borrowing'
-              : isReturn
-              ? 'Return Borrowing'
-              : 'Form Borrowing'
-          "
-          @btnSubmit="submitBorrowableStudent"
-          :isSubmitting="isSubmitting"
-          :disableSubmit="!termsAccepted || isPreview"
-          :showActions="!isPreview"
+          :disableSubmit="!isFormValid()"
+          :showActions="!isPreviewData"
           class="max-h-[90vh] overflow-y-auto"
         >
-          <div class="space-y-6">
+          <!-- Initial Selection Form -->
+          <div v-if="currentModal === 'selection'">
             <div>
-              <p class="text-sm font-medium text-[#AAA] mb-2">ITEM DETAILS</p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                <InputText
-                  label="Type"
-                  placeholder="Type Name"
-                  :isDisabled="true"
-                  v-model="unitItem.type"
-                />
-                <div class="relative flex items-center gap-2">
-                  <InputText
-                    label="Unit Code"
-                    placeholder="Enter Unit Code"
-                    v-model="unitItem.code"
-                    @keydown.enter="getUnitItemData(unitItem.code)"
-                    :isDisabled="isPreview | isReturn"
-                  />
-                  <button
-                    v-if="!isPreview"
-                    class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
-                    @click="getUnitItemData(unitItem.code)"
-                    :disabled="isPreview | isReturn"
-                  >
-                    <IconsSearchIcon />
-                  </button>
-                </div>
-                <InputText
-                  label="Brand Name"
-                  placeholder="Brand Name"
-                  :isDisabled="true"
-                  v-model="unitItem.brand"
-                />
-                <InputText
-                  label="Condition"
-                  :isDisabled="true"
-                  v-model="unitItem.condition"
-                />
-              </div>
-              <div
-                v-if="
-                  unitItem.status === 'unavailable' && !isPreview && !isReturn
-                "
+              <label
+                class="ml-0.5 mt-3 block text-sm font-medium text-[#727272]"
               >
-                <p class="text-red-500 text-sm">
-                  Item is currently unavailable
+                Item Type
+              </label>
+              <div class="w-full flex items-center gap-2">
+                <InputRadio
+                  class="w-1/2"
+                  valueName="Consumable Item"
+                  name="itemType"
+                  value="consumable"
+                  v-model="selectedItemType"
+                />
+                <InputRadio
+                  class="w-1/2"
+                  valueName="Borrowable Item"
+                  name="itemType"
+                  value="borrowable"
+                  v-model="selectedItemType"
+                />
+              </div>
+              <p v-if="formErrors.itemType" class="text-red-500 text-xs mt-1">
+                {{ formErrors.itemType }}
+              </p>
+            </div>
+            <div class="mb-3">
+              <label
+                class="ml-0.5 mt-5 block text-sm font-medium text-[#727272]"
+              >
+                Select Borrower's
+              </label>
+              <div class="w-full flex items-center gap-2">
+                <InputRadio
+                  class="w-1/2"
+                  valueName="Student"
+                  name="borrowerType"
+                  value="student"
+                  v-model="selectedBorrowerType"
+                />
+                <InputRadio
+                  class="w-1/2"
+                  valueName="Teacher"
+                  name="borrowerType"
+                  value="teacher"
+                  v-model="selectedBorrowerType"
+                />
+              </div>
+              <p
+                v-if="formErrors.borrowerType"
+                class="text-red-500 text-xs mt-1"
+              >
+                {{ formErrors.borrowerType }}
+              </p>
+            </div>
+            <div v-if="formErrors.general" class="text-red-500 text-sm mb-3">
+              {{ formErrors.general }}
+            </div>
+          </div>
+
+          <!-- Borrowable Student Form -->
+          <div
+            v-if="
+              currentModal === 'borrowable-student' ||
+              currentModal === 'return-borrowable-student'
+            "
+          >
+            <div class="space-y-6">
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">ITEM DETAILS</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <InputText
+                    label="Type"
+                    placeholder="Type Name"
+                    :isDisabled="true"
+                    v-model="unitItem.type"
+                  />
+                  <div class="relative flex items-center gap-2">
+                    <InputText
+                      label="Unit Code"
+                      placeholder="Enter Unit Code"
+                      v-model="unitItem.code"
+                      @keydown.enter="getUnitItemData(unitItem.code)"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    />
+                    <button
+                      v-if="!isPreviewData"
+                      class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
+                      @click="getUnitItemData(unitItem.code)"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    >
+                      <IconsSearchIcon />
+                    </button>
+                  </div>
+                  <InputText
+                    label="Brand Name"
+                    placeholder="Brand Name"
+                    :isDisabled="true"
+                    v-model="unitItem.brand"
+                  />
+                  <InputText
+                    label="Condition"
+                    :isDisabled="true"
+                    v-model="unitItem.condition"
+                  />
+                </div>
+                <div
+                  v-if="
+                    unitItem.status === 'unavailable' &&
+                    currentModal === 'borrowable-student'
+                  "
+                >
+                  <p class="text-red-500 text-sm">
+                    Item is currently unavailable
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">
+                  BORROWER INFO
                 </p>
-              </div>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-[#AAA] mb-2">BORROWER INFO</p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                <div class="relative flex items-center gap-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <div class="relative flex items-center gap-2">
+                    <InputText
+                      label="NIS"
+                      placeholder="NIS"
+                      v-model="studentData.nis"
+                      @keydown.enter="getStudentData(studentData.nis)"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    />
+                    <button
+                      v-if="!isPreviewData"
+                      class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
+                      @click="getStudentData(studentData.nis)"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    >
+                      <IconsSearchIcon />
+                    </button>
+                  </div>
                   <InputText
-                    label="NIS"
-                    placeholder="NIS"
-                    v-model="studentData.nis"
-                    @keydown.enter="getStudentData(studentData.nis)"
-                    :isDisabled="isPreview | isReturn"
+                    label="Name"
+                    placeholder="Name"
+                    :isDisabled="true"
+                    v-model="studentData.name"
                   />
-                  <button
-                    v-if="!isPreview"
-                    class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
-                    @click="getStudentData(studentData.nis)"
-                    :disabled="isPreview | isReturn"
-                  >
-                    <IconsSearchIcon />
-                  </button>
-                </div>
-                <InputText
-                  label="Name"
-                  placeholder="Name"
-                  :isDisabled="true"
-                  v-model="studentData.name"
-                />
-                <InputText
-                  label="Rayon"
-                  placeholder="Rayon"
-                  :isDisabled="true"
-                  v-model="studentData.rayon"
-                />
-                <InputText
-                  label="Major"
-                  placeholder="Major"
-                  :isDisabled="true"
-                  v-model="studentData.majorName"
-                />
-              </div>
-            </div>
-            <p class="text-sm font-medium text-[#AAA] mb-4">COLLATERAL</p>
-            <div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                <InputRadio
-                  label="Warranty"
-                  valueName="BKP"
-                  name="collateralType"
-                  value="bkp"
-                  v-model="selectedCollateralType"
-                  :disabled="isPreview | isReturn"
-                />
-                <InputRadio
-                  class="mt-5"
-                  valueName="Student Card"
-                  name="collateralType"
-                  value="kartu pelajar"
-                  v-model="selectedCollateralType"
-                  :disabled="isPreview | isReturn"
-                />
-              </div>
-              <div class="flex gap-4">
-                <div class="w-1/2">
-                  <InputFile
-                    label="Upload Warranty"
-                    :preview="imagePreview"
-                    @update:file="handleFileInput"
-                    :disabled="isPreview | isReturn"
+                  <InputText
+                    label="Rayon"
+                    placeholder="Rayon"
+                    :isDisabled="true"
+                    v-model="studentData.rayon"
+                  />
+                  <InputText
+                    label="Major"
+                    placeholder="Major"
+                    :isDisabled="true"
+                    v-model="studentData.majorName"
                   />
                 </div>
-                <div class="w-1/2">
-                  <InputText
-                    label="Room"
-                    placeholder="Enter Room"
-                    class="mb-2"
-                    v-model="borrowableStudentForm.room"
-                    :isDisabled="isPreview | isReturn"
+              </div>
+              <p class="text-sm font-medium text-[#AAA] mb-4">COLLATERAL</p>
+              <div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                  <InputRadio
+                    label="Warranty"
+                    valueName="BKP"
+                    name="collateralType"
+                    value="BKP"
+                    v-model="selectedCollateralType"
+                    :disabled="
+                      isPreviewData ||
+                      currentModal === 'return-borrowable-student'
+                    "
                   />
-                  <InputTextarea
-                    label="Description"
+                  <InputRadio
+                    class="mt-5"
                     valueName="Student Card"
                     name="collateralType"
-                    value="student_card"
-                    v-model="borrowableStudentForm.purpose"
-                    :rows="3"
-                    :disabled="isPreview | isReturn"
-                  />
-                  <InputDate
-                    v-if="isReturn"
-                    label="Return Time"
-                    type="datetime-local"
-                    v-model="borrowableStudentForm.returnDate"
+                    value="kartu pelajar"
+                    v-model="selectedCollateralType"
+                    :disabled="
+                      isPreviewData ||
+                      currentModal === 'return-borrowable-student'
+                    "
                   />
                 </div>
+                <div class="flex gap-4">
+                  <div class="w-1/2">
+                    <InputFile
+                      label="Upload Warranty"
+                      :preview="imagePreview"
+                      @update:file="handleFileInput"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    />
+                  </div>
+                  <div class="w-1/2">
+                    <InputText
+                      label="Room"
+                      placeholder="Enter Room"
+                      class="mb-2"
+                      v-model="formData.room"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    />
+                    <InputTextarea
+                      label="Description"
+                      v-model="formData.purpose"
+                      :rows="3"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    />
+                    <InputDate
+                      v-if="currentModal === 'return-borrowable-student'"
+                      label="Return Time"
+                      type="datetime-local"
+                      v-model="formData.returnDate"
+                    />
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <InputDate
+                    label="Date - Pick Up Time"
+                    type="datetime-local"
+                    v-model="formData.borrowDate"
+                    :disabled="
+                      isPreviewData ||
+                      currentModal === 'return-borrowable-student'
+                    "
+                  />
+                  <InputText
+                    label="Lender's Name"
+                    placeholder="Enter Lender's Name"
+                    v-model="formData.borrowerName"
+                    :isDisabled="
+                      isPreviewData ||
+                      currentModal === 'return-borrowable-student'
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
+              <input
+                type="checkbox"
+                id="confirmData"
+                v-model="termsAccepted"
+                class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                :disabled="isPreviewData"
+              />
+              <label
+                for="confirmData"
+                class="text-sm text-gray-700 select-none"
+              >
+                Make sure the data is correct
+              </label>
+            </div>
+          </div>
+
+          <!-- Borrowable Teacher Form -->
+          <div
+            v-if="
+              currentModal === 'borrowable-teacher' ||
+              currentModal === 'return-borrowable-teacher'
+            "
+          >
+            <div class="space-y-6">
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">ITEM DETAILS</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <InputText
+                    label="Type"
+                    placeholder="Type Name"
+                    :isDisabled="true"
+                    v-model="unitItem.type"
+                  />
+                  <div class="relative flex items-center gap-2">
+                    <InputText
+                      label="Unit Code"
+                      placeholder="Enter Unit Code"
+                      v-model="unitItem.code"
+                      @keydown.enter="getUnitItemData(unitItem.code)"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-teacher'
+                      "
+                    />
+                    <button
+                      v-if="!isPreviewData"
+                      class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
+                      @click="getUnitItemData(unitItem.code)"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-teacher'
+                      "
+                    >
+                      <IconsSearchIcon />
+                    </button>
+                  </div>
+                  <InputText
+                    label="Brand Name"
+                    placeholder="Brand Name"
+                    :isDisabled="true"
+                    v-model="unitItem.brand"
+                  />
+                  <InputText
+                    label="Condition"
+                    :isDisabled="true"
+                    v-model="unitItem.condition"
+                  />
+                </div>
+                <div
+                  v-if="
+                    unitItem.status === 'unavailable' &&
+                    currentModal === 'borrowable-student'
+                  "
+                >
+                  <p class="text-red-500 text-sm">
+                    Item is currently unavailable
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">
+                  BORROWER INFO
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <div class="relative flex items-center gap-2">
+                    <InputText
+                      label="NIP"
+                      placeholder="NIP"
+                      v-model="teacherData.nip"
+                      @keydown.enter="getTeacherData(teacherData.nip)"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-teacher'
+                      "
+                    />
+                    <button
+                      v-if="!isPreviewData"
+                      class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
+                      @click="getTeacherData(teacherData.nip)"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-teacher'
+                      "
+                    >
+                      <IconsSearchIcon />
+                    </button>
+                  </div>
+                  <InputText
+                    label="Name"
+                    placeholder="Name"
+                    :isDisabled="true"
+                    v-model="teacherData.name"
+                  />
+                </div>
+                <InputNumber
+                  label="Telephone"
+                  placeholder="Telephone"
+                  :isDisabled="true"
+                  v-model="teacherData.telephone"
+                />
+              </div>
+              <p class="text-sm font-medium text-[#AAA] mb-4">COLLATERAL</p>
+              <div>
+                <InputText
+                  label="Room"
+                  placeholder="Enter Room"
+                  class="mb-2"
+                  v-model="formData.room"
+                  :isDisabled="
+                    isPreviewData ||
+                    currentModal === 'return-borrowable-teacher'
+                  "
+                />
+                <InputTextarea
+                  label="Description"
+                  v-model="formData.purpose"
+                  :rows="3"
+                  :disabled="
+                    isPreviewData ||
+                    currentModal === 'return-borrowable-teacher'
+                  "
+                />
+                <InputDate
+                  v-if="currentModal === 'return-borrowable-teacher'"
+                  label="Return Time"
+                  type="datetime-local"
+                  v-model="formData.returnDate"
+                />
+                <div class="flex gap-4">
+                  <InputDate
+                    label="Date - Pick Up Time"
+                    type="datetime-local"
+                    v-model="formData.borrowDate"
+                    :disabled="
+                      isPreviewData ||
+                      currentModal === 'return-borrowable-teacher'
+                    "
+                  />
+                  <InputText
+                    label="Lender's Name"
+                    placeholder="Enter Lender's Name"
+                    v-model="formData.borrowerName"
+                    :isDisabled="
+                      isPreviewData ||
+                      currentModal === 'return-borrowable-teacher'
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
+              <input
+                type="checkbox"
+                id="confirmData"
+                v-model="termsAccepted"
+                class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                :disabled="isPreviewData"
+              />
+              <label
+                for="confirmData"
+                class="text-sm text-gray-700 select-none"
+              >
+                Make sure the data is correct
+              </label>
+            </div>
+          </div>
+
+          <!-- Consumable Student Form -->
+          <div v-if="currentModal === 'consumable-student'">
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">
+                  ITEMS DETAILS
+                </p>
+                <InputSelect
+                  placeholder="Select Item"
+                  v-model="loanStore.loan"
+                  class="w-1/2"
+                  label="Name"
+                >
+                  <option value="superadmin">Super Admin</option>
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                </InputSelect>
+                <div class="flex gap-4">
+                  <InputNumber
+                    v-model="formData.quantity"
+                    class="mt-1 w-full"
+                    label="Quantity"
+                    placeholder="Enter Quantity"
+                  />
+                  <InputText
+                    label="Unit (pcs/pack)"
+                    v-model="formData.itemName"
+                    class="mt-1 w-full"
+                    placeholder="Enter unit"
+                  />
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">
+                  BORROWER INFO
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <div class="relative flex items-center gap-2">
+                    <InputText
+                      label="NIS"
+                      placeholder="NIS"
+                      v-model="studentData.nis"
+                      @keydown.enter="getStudentData(studentData.nis)"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    />
+                    <button
+                      v-if="!isPreviewData"
+                      class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
+                      @click="getStudentData(studentData.nis)"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-student'
+                      "
+                    >
+                      <IconsSearchIcon />
+                    </button>
+                  </div>
+                  <InputText
+                    label="Name"
+                    placeholder="Name"
+                    :isDisabled="true"
+                    v-model="studentData.name"
+                  />
+                  <InputText
+                    label="Rayon"
+                    placeholder="Rayon"
+                    :isDisabled="true"
+                    v-model="studentData.rayon"
+                  />
+                  <InputText
+                    label="Major"
+                    placeholder="Major"
+                    :isDisabled="true"
+                    v-model="studentData.majorName"
+                  />
+                </div>
+              </div>
+              <div class="">
+                <div class="flex gap-4">
+                  <InputDate
+                  label="Date - Pick Up Time"
+                  type="datetime-local"
+                  v-model="formData.borrowDate"
+                  :disabled="
+                    isPreviewData ||
+                    currentModal === 'return-borrowable-teacher'
+                  "
+                />
+                <InputText
+                  label="Lender's Name"
+                  placeholder="Enter Lender's Name"
+                  v-model="formData.borrowerName"
+                  :isDisabled="
+                    isPreviewData ||
+                    currentModal === 'return-borrowable-teacher'
+                  "
+                />
+                </div>
+                <InputDate
+                  label="Return Time"
+                  type="datetime-local"
+                  v-model="formData.returnDate"
+                />
+              </div>
+            </div>
+            <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
+              <input
+                type="checkbox"
+                id="confirmData"
+                v-model="termsAccepted"
+                class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                :disabled="isPreviewData"
+              />
+              <label
+                for="confirmData"
+                class="text-sm text-gray-700 select-none"
+              >
+                Make sure the data is correct
+              </label>
+            </div>
+          </div>
+
+          <!-- Consumable Teacher Form -->
+          <div v-if="currentModal === 'consumable-teacher'">
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">
+                  ITEMS DETAILS
+                </p>
+                <InputSelect
+                  placeholder="Select Item"
+                  v-model="loanStore.loan"
+                  class="w-1/2"
+                  label="Name"
+                >
+                  <option value="superadmin">Super Admin</option>
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                </InputSelect>
+                <div class="flex gap-4">
+                  <InputNumber
+                    v-model="formData.quantity"
+                    class="mt-1 w-full"
+                    label="Quantity"
+                    placeholder="Enter Quantity"
+                  />
+                  <InputText
+                    label="Unit (pcs/pack)"
+                    v-model="formData.itemName"
+                    class="mt-1 w-full"
+                    placeholder="Enter unit"
+                  />
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-[#AAA] mb-2">
+                  BORROWER INFO
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <div class="relative flex items-center gap-2">
+                    <InputText
+                      label="NIP"
+                      placeholder="NIP"
+                      v-model="teacherData.nip"
+                      @keydown.enter="getTeacherData(teacherData.nip)"
+                      :isDisabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-teacher'
+                      "
+                    />
+                    <button
+                      v-if="!isPreviewData"
+                      class="absolute cursor-pointer inset-y-0 right-0 top-7 flex items-center pr-2"
+                      @click="getTeacherData(teacherData.nip)"
+                      :disabled="
+                        isPreviewData ||
+                        currentModal === 'return-borrowable-teacher'
+                      "
+                    >
+                      <IconsSearchIcon />
+                    </button>
+                  </div>
+                  <InputText
+                    label="Name"
+                    placeholder="Name"
+                    :isDisabled="true"
+                    v-model="teacherData.name"
+                  />
+                </div>
+                <InputNumber
+                  label="Telephone"
+                  placeholder="Telephone"
+                  :isDisabled="true"
+                  v-model="teacherData.telephone"
+                />
               </div>
               <div class="flex gap-4">
                 <InputDate
                   label="Date - Pick Up Time"
                   type="datetime-local"
-                  v-model="borrowableStudentForm.borrowDate"
-                  :disabled="isPreview | isReturn"
+                  v-model="formData.borrowDate"
+                  :disabled="
+                    isPreviewData ||
+                    currentModal === 'return-borrowable-teacher'
+                  "
                 />
                 <InputText
                   label="Lender's Name"
                   placeholder="Enter Lender's Name"
-                  v-model="borrowableStudentForm.borrowerName"
-                  :isDisabled="isPreview | isReturn"
+                  v-model="formData.borrowerName"
+                  :isDisabled="
+                    isPreviewData ||
+                    currentModal === 'return-borrowable-teacher'
+                  "
                 />
               </div>
             </div>
-          </div>
-          <div class="mt-6 flex items-center gap-2" v-if="!isPreview">
-            <input
-              type="checkbox"
-              id="confirmDataBorrowableStudent"
-              v-model="termsAccepted"
-              class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
-              :disabled="isPreview"
-            />
-            <label
-              for="confirmDataBorrowableStudent"
-              class="text-sm text-gray-700 select-none"
-            >
-              Make sure the data is correct
-            </label>
-          </div>
-        </Modal>
-      </div>
-    </Transition>
-  </div>
-
-  <!-- Modal BORROWABLE TEACHER -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalBorrowableTeacher"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnSubmit="submitBorrowableTeacher"
-          @btnClose="closeModalBorrowableTeacher"
-          title="Borrowable Form - Teacher"
-          :isSubmitting="isSubmitting"
-        >
-          <div class="space-y-4">
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Teacher Name</label
-              >
+            <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
               <input
-                type="text"
-                v-model="borrowableTeacherForm.teacherName"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter teacher name"
+                type="checkbox"
+                id="confirmData"
+                v-model="termsAccepted"
+                class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                :disabled="isPreviewData"
               />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Employee ID</label
+              <label
+                for="confirmData"
+                class="text-sm text-gray-700 select-none"
               >
-              <input
-                type="text"
-                v-model="borrowableTeacherForm.employeeId"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter employee ID"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Department</label
-              >
-              <input
-                type="text"
-                v-model="borrowableTeacherForm.department"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter department"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Borrow Date</label
-              >
-              <input
-                type="date"
-                v-model="borrowableTeacherForm.borrowDate"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Return Date</label
-              >
-              <input
-                type="date"
-                v-model="borrowableTeacherForm.returnDate"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </Modal>
-      </div>
-    </Transition>
-  </div>
-
-  <!-- Modal CONSUMABLE STUDENT -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalConsumableStudent"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnClose="closeModalBorrowableStudent"
-          title="Form Borrowing"
-          @btnSubmit="submitBorrowableStudent"
-          :isSubmitting="isSubmitting"
-          :disableSubmit="!termsAccepted || isPreview"
-          :showActions="!isPreview"
-          class="max-h-[90vh] overflow-y-auto"
-        >
-          <div class="space-y-4">
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Student Name</label
-              >
-              <input
-                type="text"
-                v-model="consumableStudentForm.studentName"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter student name"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Student ID</label
-              >
-              <input
-                type="text"
-                v-model="consumableStudentForm.studentId"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter student ID"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Class</label
-              >
-              <input
-                type="text"
-                v-model="consumableStudentForm.class"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter class"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Quantity</label
-              >
-              <input
-                type="number"
-                v-model="consumableStudentForm.quantity"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter quantity"
-                min="1"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Usage Date</label
-              >
-              <input
-                type="date"
-                v-model="consumableStudentForm.usageDate"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <template v-if="isPreview" #footer>
-            <button
-              @click="closeModalBorrowableStudent"
-              class="border-2 hover:cursor-pointer hover:bg-black/10 duration-200 border-[#D2D2D2] px-3 py-1 text-sm rounded-md font-medium w-full"
-            >
-              Close
-            </button>
-          </template>
-        </Modal>
-      </div>
-    </Transition>
-  </div>
-
-  <!-- Modal CONSUMABLE TEACHER -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalConsumableTeacher"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnSubmit="submitConsumableTeacher"
-          @btnClose="closeModalConsumableTeacher"
-          title="Consumable Form - Teacher"
-          :isSubmitting="isSubmitting"
-        >
-          <div class="space-y-4">
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Teacher Name</label
-              >
-              <input
-                type="text"
-                v-model="consumableTeacherForm.teacherName"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter teacher name"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Employee ID</label
-              >
-              <input
-                type="text"
-                v-model="consumableTeacherForm.employeeId"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter employee ID"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Department</label
-              >
-              <input
-                type="text"
-                v-model="consumableTeacherForm.department"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter department"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Quantity</label
-              >
-              <input
-                type="number"
-                v-model="consumableTeacherForm.quantity"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter quantity"
-                min="1"
-              />
-            </div>
-            <div>
-              <label class="ml-0.5 block text-sm font-medium text-[#727272]"
-                >Usage Date</label
-              >
-              <input
-                type="date"
-                v-model="consumableTeacherForm.usageDate"
-                class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                Make sure the data is correct
+              </label>
             </div>
           </div>
         </Modal>
@@ -620,14 +826,14 @@
               <div
                 class="bg-blue-400 p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
               >
-                <IconsReturn @click="openModalReturnBorrowableStudent(item)" />
+                <IconsReturn @click="openReturnModal(item)" />
               </div>
             </Tooltip>
             <Tooltip text="Detail" position="top">
               <div
                 class="bg-[#c89513] p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
               >
-                <IconsDetail @click="openModalDetail(item)" />
+                <IconsDetail @click="openDetailModal(item)" />
               </div>
             </Tooltip>
           </td>
@@ -636,9 +842,25 @@
     </table>
     <p class="text-xs text-gray-500 mt-3 ml-2"></p>
   </div>
+  <div class="flex items-center justify-between mt-4">
+    <p class="text-xs text-gray-500">
+      Showing {{ loanStore.loan.length }} of {{ allLoanCount }} Data
+    </p>
+    <Pagination
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      :paginationItems="paginationItems"
+      @prev="prevPage"
+      @next="nextPage"
+      @change="changePage"
+    />
+  </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
+import { useLoanStore } from "~/stores/loan";
+import { useAuthStore } from "~/stores/auth";
 import {
   IconsNavbarIconsAddItem,
   IconsNavbarIconsFile,
@@ -646,25 +868,57 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
 } from "#components";
-import { ref } from "vue";
-import { useLoanStore } from "~/stores/loan";
-import { useAuthStore } from "~/stores/auth";
 
-const modalFormBorrowing = ref(false);
-const modalBorrowableStudent = ref(false);
-const modalBorrowableTeacher = ref(false);
-const modalConsumableStudent = ref(false);
-const modalConsumableTeacher = ref(false);
+// Store references
 const loanStore = useLoanStore();
-const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
+const url = useRuntimeConfig().public.authUrl;
+
+// Modal state
+const currentModal = ref(null);
+const isSubmitting = ref(false);
 
 // Form states
 const selectedItemType = ref("");
 const selectedBorrowerType = ref("");
 const selectedCollateralType = ref("");
 const termsAccepted = ref(false);
+const imagePreview = ref("");
 
+// Universal form data object
+const formData = ref({
+  // Borrowable
+  id: "",
+  unitItemId: "",
+  studentId: "",
+  teacherId: "",
+  borrowerName: "",
+  borrowDate: new Date()
+    .toLocaleString("sv-SE", { timeZone: "Asia/Jakarta" })
+    .slice(0, 16),
+  returnDate: new Date()
+    .toLocaleString("sv-SE", { timeZone: "Asia/Jakarta" })
+    .slice(0, 16),
+  purpose: "",
+  room: "",
+  guarantee: "",
+  image: "",
+
+  // Teacher forms
+  teacherName: "",
+  employeeId: "",
+  department: "",
+
+  // Student forms
+  studentName: "",
+  class: "",
+
+  // Consumable forms
+  quantity: 1,
+  usageDate: "",
+});
+
+// Data objects
 const studentData = ref({
   nis: "",
   name: "",
@@ -673,50 +927,19 @@ const studentData = ref({
   majorName: "",
 });
 
+const teacherData = ref({
+  nip: "",
+  name: "",
+  telephone: "",
+});
+
 const unitItem = ref({
   code: "",
   name: "",
   brand: "",
   condition: "",
   type: "",
-});
-
-// Form data
-const borrowableStudentForm = ref({
-  id: "",
-  unitItemId: "",
-  studentId: "",
-  borrowerName: "",
-  borrowDate: "",
-  returnDate: "",
-  purpose: "",
-  room: "",
-  guarantee: "",
-  image: "",
-});
-
-const borrowableTeacherForm = ref({
-  teacherName: "",
-  employeeId: "",
-  department: "",
-  borrowDate: "",
-  returnDate: "",
-});
-
-const consumableStudentForm = ref({
-  studentName: "",
-  studentId: "",
-  class: "",
-  quantity: 1,
-  usageDate: "",
-});
-
-const consumableTeacherForm = ref({
-  teacherName: "",
-  employeeId: "",
-  department: "",
-  quantity: 1,
-  usageDate: "",
+  status: "",
 });
 
 // Form validation state
@@ -726,19 +949,102 @@ const formErrors = ref({
   general: "",
 });
 
-// Modal functions
-const openModalFormBorrowing = () => {
-  modalFormBorrowing.value = true;
+// Other states
+const selectedItems = ref([]);
+const selectAll = ref(false);
+const alertError = ref(false);
+const alertSuccess = ref(false);
+const alertWarning = ref(false);
+const alertMessage = ref("");
+const pending = ref(false);
+const searchQuery = ref("");
+const sortByType = ref("");
+const sortByTime = ref("");
+
+// Modal control functions
+const openModal = (modalType) => {
+  currentModal.value = modalType;
+  if (modalType === "selection") {
+    resetFormData();
+    resetSelections();
+  }
 };
 
-const closeModalCreate = () => {
-  modalFormBorrowing.value = false;
-  selectedItemType.value = "";
-  selectedBorrowerType.value = "";
+const closeModal = () => {
+  currentModal.value = null;
+  isPreviewData.value = false;
+  resetFormData();
+  resetSelections();
+  termsAccepted.value = false;
+  imagePreview.value = "";
+  formErrors.value = {
+    itemType: "",
+    borrowerType: "",
+    general: "",
+  };
 };
 
-// Handle form borrowing submit - conditional logic
-const handleFormBorrowingSubmit = () => {
+// Modal helper functions
+const getModalTitle = () => {
+  const titles = {
+    selection: "Form Borrowing",
+    "borrowable-student":
+      isPreviewData === true ? "Detail Borrowing" : "Form Borrowing",
+    "borrowable-teacher":
+      isPreviewData === true ? "Detail Borrowing" : "Form Borrowing",
+    "consumable-student":
+      isPreviewData === true ? "Detail Borrowing" : "Consumable Form - Student",
+    "consumable-teacher":
+      isPreviewData === true ? "Detail Borrowing" : "Consumable Form - Teacher",
+    "return-consumable-student": "Return Consumable - Student",
+    "return-consumable-teacher": "Return Consumable - Teacher",
+    "return-borrowable-student": "Return Borrowable - Student",
+    "return-borrowable-teacher": "Return Borrowable - Teacher",
+    return: "Return Borrowing",
+    preview: "Detail Borrowing",
+  };
+  return titles[currentModal.value] || "Form";
+};
+
+const needsScroll = () => {
+  return ["borrowable-student", "return", "preview"].includes(
+    currentModal.value
+  );
+};
+
+const isFormValid = () => {
+  switch (currentModal.value) {
+    case "selection":
+      return selectedItemType.value && selectedBorrowerType.value;
+    case "borrowable-student":
+      return termsAccepted.value && unitItem.value.status !== "unavailable";
+    case "preview":
+      return false;
+    case "borrowable-teacher":
+      return termsAccepted.value && unitItem.value.status !== "unavailable";
+    case "return-borrowable-student":
+      return formData.value.returnDate && termsAccepted.value;
+    case "return-borrowable-teacher":
+      return formData.value.returnDate && termsAccepted.value;
+    case "consumable-student":
+      return formData.value.studentName && formData.value.studentId;
+    case "consumable-teacher":
+      return formData.value.teacherName && formData.value.employeeId;
+    default:
+      return true;
+  }
+};
+
+// Form submission handler
+const handleSubmit = async () => {
+  if (currentModal.value === "selection") {
+    handleSelectionSubmit();
+  } else {
+    await submitForm();
+  }
+};
+
+const handleSelectionSubmit = () => {
   // Reset form errors
   formErrors.value = {
     itemType: "",
@@ -764,66 +1070,266 @@ const handleFormBorrowingSubmit = () => {
     return;
   }
 
-  // Close the first modal
-  modalFormBorrowing.value = false;
+  // Determine next modal
+  const nextModal = `${selectedItemType.value}-${selectedBorrowerType.value}`;
+  currentModal.value = nextModal;
 
-  // Open appropriate modal based on selections
   if (
-    selectedItemType.value === "borrowable" &&
-    selectedBorrowerType.value === "student"
+    nextModal === "borrowable-student" ||
+    nextModal === "borrowable-teacher"
   ) {
-    resetBorrowableStudentForm();
-    modalBorrowableStudent.value = true;
-  } else if (
-    selectedItemType.value === "borrowable" &&
-    selectedBorrowerType.value === "teacher"
-  ) {
-    modalBorrowableTeacher.value = true;
-  } else if (
-    selectedItemType.value === "consumable" &&
-    selectedBorrowerType.value === "student"
-  ) {
-    modalConsumableStudent.value = true;
-  } else if (
-    selectedItemType.value === "consumable" &&
-    selectedBorrowerType.value === "teacher"
-  ) {
-    modalConsumableTeacher.value = true;
+    resetBorrowableData();
+  } else {
+    resetConsumableData();
   }
 };
 
-// Borrowable Student Modal functions
-const closeModalBorrowableStudent = () => {
-  modalBorrowableStudent.value = false;
-  isPreview.value = false;
-  resetBorrowableStudentForm();
-  termsAccepted.value = false; // Reset the checkbox when closing the modal
+const submitForm = async () => {
+  isSubmitting.value = true;
+
+  try {
+    switch (currentModal.value) {
+      case "borrowable-student":
+        await submitBorrowableStudent();
+        break;
+      case "return-borrowable-student":
+        await submitReturn();
+        break;
+      case "borrowable-teacher":
+        await submitBorrowableTeacher();
+        break;
+      case "return-borrowable-teacher":
+        await submitReturn();
+        break;
+      case "consumable-student":
+        await submitConsumableStudent();
+        break;
+      case "consumable-teacher":
+        await submitConsumableTeacher();
+        break;
+    }
+  } catch (error) {
+    alertError.value = true;
+    alertMessage.value = "An error occurred while submitting the form";
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
+// Individual submit functions
+const submitBorrowableStudent = async () => {
+  const formDataToSend = new FormData();
+  formDataToSend.append("unit_item_id", formData.value.unitItemId);
+  formDataToSend.append("student_id", formData.value.studentId);
+  formDataToSend.append("borrowed_by", formData.value.borrowerName);
+  formDataToSend.append("borrowed_at", formData.value.borrowDate);
+  formDataToSend.append("purpose", formData.value.purpose);
+  formDataToSend.append("room", formData.value.room);
+  formDataToSend.append("guarantee", selectedCollateralType.value);
+
+  if (formData.value.image) {
+    formDataToSend.append("image", formData.value.image);
+  }
+
+  const response = await fetch(`${url}/unit-loan`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+    },
+    body: formDataToSend,
+  });
+
+  if (response.ok) {
+    alertSuccess.value = true;
+    if (currentModal.value === "return") {
+      alertMessage.value = "Return date submitted successfully!";
+    } else {
+      alertMessage.value = "Borrowable form submitted successfully!";
+    }
+    closeModal();
+    getUnitLoan();
+  } else {
+    alertError.value = true;
+    alertMessage.value = "Failed to submit return date";
+  }
+};
+
+const submitBorrowableTeacher = async () => {
+  const formDataToSend = new FormData();
+  formDataToSend.append("unit_item_id", formData.value.unitItemId);
+  formDataToSend.append("teacher_id", formData.value.teacherId);
+  formDataToSend.append("borrowed_by", formData.value.borrowerName);
+  formDataToSend.append("borrowed_at", formData.value.borrowDate);
+  formDataToSend.append("purpose", formData.value.purpose);
+  formDataToSend.append("room", formData.value.room);
+
+  const response = await fetch(`${url}/unit-loan`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+    },
+    body: formDataToSend,
+  });
+
+  if (response.ok) {
+    alertSuccess.value = true;
+    alertMessage.value = "Return date submitted successfully!";
+    closeModal();
+    getUnitLoan();
+  } else {
+    alertError.value = true;
+    alertMessage.value = "Failed to submit return date";
+  }
+};
+
+const submitConsumableStudent = async () => {
+  if (!formData.value.studentName || !formData.value.studentId) {
+    alertError.value = true;
+    alertMessage.value = "Please fill in required fields";
+    return;
+  }
+
+  console.log("Consumable Student Form Data:", formData.value);
+
+  alertSuccess.value = true;
+  alertMessage.value = "Consumable form for student submitted successfully!";
+  closeModal();
+};
+
+const submitConsumableTeacher = async () => {
+  if (!formData.value.teacherName || !formData.value.employeeId) {
+    alertError.value = true;
+    alertMessage.value = "Please fill in required fields";
+    return;
+  }
+
+  console.log("Consumable Teacher Form Data:", formData.value);
+
+  alertSuccess.value = true;
+  alertMessage.value = "Consumable form for teacher submitted successfully!";
+  closeModal();
+};
+
+// Reset functions
+const resetFormData = () => {
+  formData.value = {
+    id: "",
+    unitItemId: "",
+    studentId: "",
+    teacherId: "",
+    borrowerName: "",
+    borrowDate: new Date()
+      .toLocaleString("sv-SE", { timeZone: "Asia/Jakarta" })
+      .slice(0, 16),
+    returnDate: new Date()
+      .toLocaleString("sv-SE", { timeZone: "Asia/Jakarta" })
+      .slice(0, 16),
+    purpose: "",
+    room: "",
+    guarantee: "",
+    image: "",
+    teacherName: "",
+    employeeId: "",
+    department: "",
+    studentName: "",
+    class: "",
+    quantity: 1,
+    usageDate: "",
+  };
+};
+
+const resetBorrowableData = () => {
+  studentData.value = {
+    nis: "",
+    name: "",
+    rayon: "",
+    majorId: "",
+    majorName: "",
+  };
+
+  teacherData.value = {
+    nip: "",
+    name: "",
+    telephone: "",
+  };
+
+  unitItem.value = {
+    code: "",
+    name: "",
+    brand: "",
+    condition: "",
+    type: "",
+    status: "",
+  };
+
+  selectedCollateralType.value = "";
+  termsAccepted.value = false;
+};
+
+const resetSelections = () => {
+  selectedItemType.value = "";
+  selectedBorrowerType.value = "";
+};
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
+
+  timeoutFiltering = setTimeout(() => {
+    getUnitLoan();
+  }, 500);
+};
+
+const handleSort = (type) => {
+  if (type === "type") {
+    sortByType.value = sortByType.value === "asc" ? "desc" : "asc";
+    sortByTime.value = "";
+  } else if (type === "time") {
+    sortByTime.value = sortByTime.value === "asc" ? "desc" : "asc";
+    sortByType.value = "";
+  } else {
+    sortByType.value = "";
+    sortByTime.value = "";
+  }
+  getUnitLoan();
+};
+
+let allLoanCount = ref(0);
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+
+// API functions
 const getUnitLoan = async () => {
   try {
     pending.value = true;
-    const response = await fetch(`${url}/unit-loan/history?data=borrowing`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
+    const response = await fetch(
+      `${url}/unit-loan/history?sort_by_type=${sortByType.value}&sort_by_time=${sortByTime.value}&search=${searchQuery.value}&data=borrowing&page=${currentPage.value}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }
+    );
 
     if (response.ok) {
       const result = await response.json();
-
-      // Check if the data structure has a 'data' property
       if (result.data) {
         loanStore.loan = result.data;
-        console.log("Loan data loaded successfully:", result.data);
+        lastPage.value = result.meta.last_page;
+        allLoanCount.value = result.meta.total;
       } else {
         loanStore.loan = result;
-        console.log("Loan data loaded with fallback structure:", result);
+        lastPage.value = result.meta.last_page;
+        allLoanCount.value = result.meta.total;
       }
     } else {
-      console.error("Error response:", response.status, response.statusText);
       alertError.value = true;
       alertMessage.value = "Failed to fetch loan data";
     }
@@ -834,325 +1340,6 @@ const getUnitLoan = async () => {
   } finally {
     pending.value = false;
   }
-};
-
-onMounted(() => {
-  getUnitLoan();
-});
-
-const submitBorrowableStudent = async () => {
-  isSubmitting.value = true;
-  try {
-    if (isReturn.value) {
-      // Handle return case
-      const response = await fetch(
-        `${url}/unit-loan/${borrowableStudentForm.value.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            returned_at: borrowableStudentForm.value.returnDate,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        alertSuccess.value = true;
-        alertMessage.value = "Return date submitted successfully!";
-        closeModalBorrowableStudent();
-        getUnitLoan();
-      } else {
-        alertError.value = true;
-        alertMessage.value = "Failed to submit return date";
-      }
-    } else {
-      // Handle borrow case
-      const formData = new FormData();
-      formData.append("unit_item_id", borrowableStudentForm.value.unitItemId);
-      formData.append("student_id", borrowableStudentForm.value.studentId);
-      formData.append("borrowed_by", borrowableStudentForm.value.borrowerName);
-      formData.append("borrowed_at", borrowableStudentForm.value.borrowDate);
-      formData.append("purpose", borrowableStudentForm.value.purpose);
-      formData.append("room", borrowableStudentForm.value.room);
-      formData.append("guarantee", selectedCollateralType.value);
-      if (borrowableStudentForm.value.image) {
-        formData.append("image", borrowableStudentForm.value.image);
-      }
-
-      const response = await fetch(`${url}/unit-loan`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        alertSuccess.value = true;
-        alertMessage.value =
-          "Borrowable form for student submitted successfully!";
-        closeModalBorrowableStudent();
-        getUnitLoan();
-        imagePreview.value = "";
-      } else {
-        alertError.value = true;
-        alertMessage.value = "Failed to submit borrowable form for student";
-      }
-    }
-  } catch (error) {
-    alertError.value = true;
-    alertMessage.value = "An error occurred while submitting the form";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const closeModalBorrowableTeacher = () => {
-  modalBorrowableTeacher.value = false;
-  resetBorrowableTeacherForm();
-};
-
-const submitBorrowableTeacher = async () => {
-  isSubmitting.value = true;
-
-  try {
-    if (
-      !borrowableTeacherForm.value.teacherName ||
-      !borrowableTeacherForm.value.employeeId
-    ) {
-      alertError.value = true;
-      alertMessage.value = "Please fill in required fields";
-      return;
-    }
-
-    console.log("Borrowable Teacher Form Data:", borrowableTeacherForm.value);
-
-    alertSuccess.value = true;
-    alertMessage.value = "Borrowable form for teacher submitted successfully!";
-
-    closeModalBorrowableTeacher();
-    resetSelections();
-  } catch (error) {
-    alertError.value = true;
-    alertMessage.value = "An error occurred while submitting the form";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const closeModalConsumableStudent = () => {
-  modalConsumableStudent.value = false;
-  resetConsumableStudentForm();
-};
-
-const submitConsumableStudent = async () => {
-  isSubmitting.value = true;
-
-  try {
-    if (
-      !consumableStudentForm.value.studentName ||
-      !consumableStudentForm.value.studentId
-    ) {
-      alertError.value = true;
-      alertMessage.value = "Please fill in required fields";
-      return;
-    }
-
-    console.log("Consumable Student Form Data:", consumableStudentForm.value);
-
-    alertSuccess.value = true;
-    alertMessage.value = "Consumable form for student submitted successfully!";
-
-    closeModalConsumableStudent();
-    resetSelections();
-  } catch (error) {
-    alertError.value = true;
-    alertMessage.value = "An error occurred while submitting the form";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const closeModalConsumableTeacher = () => {
-  modalConsumableTeacher.value = false;
-  resetConsumableTeacherForm();
-};
-
-const submitConsumableTeacher = async () => {
-  isSubmitting.value = true;
-
-  try {
-    if (
-      !consumableTeacherForm.value.teacherName ||
-      !consumableTeacherForm.value.employeeId
-    ) {
-      alertError.value = true;
-      alertMessage.value = "Please fill in required fields";
-      return;
-    }
-
-    console.log("Consumable Teacher Form Data:", consumableTeacherForm.value);
-
-    alertSuccess.value = true;
-    alertMessage.value = "Consumable form for teacher submitted successfully!";
-
-    closeModalConsumableTeacher();
-    resetSelections();
-  } catch (error) {
-    alertError.value = true;
-    alertMessage.value = "An error occurred while submitting the form";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const resetBorrowableStudentForm = () => {
-  borrowableStudentForm.value = {
-    id: "",
-    unitItemId: "",
-    studentId: "",
-    borrowerName: "",
-    borrowDate: "",
-    purpose: "",
-    returnDate: "",
-    room: "",
-    guarantee: "",
-    image: "",
-  };
-  selectedCollateralType.value = ""; // Reset collateral type selection
-  termsAccepted.value = false; // Reset terms checkbox
-};
-
-const resetBorrowableTeacherForm = () => {
-  borrowableTeacherForm.value = {
-    teacherName: "",
-    employeeId: "",
-    department: "",
-    borrowDate: "",
-    returnDate: "",
-  };
-};
-
-const resetConsumableStudentForm = () => {
-  consumableStudentForm.value = {
-    studentName: "",
-    studentId: "",
-    class: "",
-    quantity: 1,
-    usageDate: "",
-  };
-};
-
-const resetConsumableTeacherForm = () => {
-  consumableTeacherForm.value = {
-    teacherName: "",
-    employeeId: "",
-    department: "",
-    quantity: 1,
-    usageDate: "",
-  };
-};
-
-const resetSelections = () => {
-  selectedItemType.value = "";
-  selectedBorrowerType.value = "";
-};
-
-// Other existing variables and functions
-const isSubmitting = ref(false);
-const selectedItems = ref([]);
-const selectAll = ref(false);
-const alertError = ref(false);
-const alertSuccess = ref(false);
-const alertWarning = ref(false);
-const alertMessage = ref("");
-const pending = ref(false);
-
-const toggleAll = () => {
-  if (selectAll.value) {
-    selectedItems.value = unitItemStore.unitItems.map((item) => item.id);
-  } else {
-    selectedItems.value = [];
-  }
-};
-
-const openModalUpdate = (item) => {
-  console.log("Update item:", item);
-};
-
-const openModalDelete = (item) => {
-  console.log("Delete item:", item);
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const day = date.getDate();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
-};
-
-definePageMeta({
-  title: "Inventory",
-});
-
-const breadcrumbs = [
-  {
-    label: "Manage Inventory",
-    icon: IconsNavbarIconsFile,
-  },
-  {
-    label: "Create Borrowing",
-    icon: IconsNavbarIconsAddItem,
-  },
-  {
-    label: "Print Selected",
-    icon: IconsNavbarIconsPrint,
-  },
-  {
-    label: "Sort by Type",
-    icon: IconsNavbarIconsFilterMajor,
-  },
-  {
-    label: "Sort by Time",
-    icon: IconsNavbarIconsFilterRole,
-  },
-];
-
-const openModalFromBreadcrumb = (item) => {
-  if (item.label === "Create Borrowing") {
-    openModalFormBorrowing();
-  }
-};
-
-let timeoutFiltering = null;
-
-const handleStudentData = () => {
-  if (timeoutFiltering) {
-    clearTimeout(timeoutFiltering);
-  }
-
-  timeoutFiltering = setTimeout(() => {
-    if (studentData.value.nis) {
-      getStudentData(studentData.value.nis);
-    }
-  }, 500);
-};
-
-const handleUnitItem = () => {
-  if (timeoutFiltering) {
-    clearTimeout(timeoutFiltering);
-  }
-
-  timeoutFiltering = setTimeout(() => {
-    if (unitItem.value.code) {
-      getUnitItemData(unitItem.value.code);
-    }
-  }, 500);
 };
 
 const getStudentData = async (nis) => {
@@ -1168,7 +1355,7 @@ const getStudentData = async (nis) => {
     if (response.ok) {
       const result = await response.json();
       const data = Array.isArray(result.data) ? result.data[0] : result.data;
-      console.log("Student Data:", data);
+
       if (data) {
         studentData.value = {
           nis: data.nis,
@@ -1177,9 +1364,15 @@ const getStudentData = async (nis) => {
           majorId: data.major?.name || data.major_id || "",
           majorName: data.major?.name || "",
         };
-        borrowableStudentForm.value.studentId = data.id || "";
+        formData.value.studentId = data.id || "";
       } else {
-        studentData.value = { nis: nis, name: "", rayon: "", majorId: "", majorName: "" };
+        studentData.value = {
+          nis: nis,
+          name: "",
+          rayon: "",
+          majorId: "",
+          majorName: "",
+        };
       }
       return data;
     } else {
@@ -1192,9 +1385,9 @@ const getStudentData = async (nis) => {
   }
 };
 
-const getTeacherData = async (employeeId) => {
+const getTeacherData = async (nip) => {
   try {
-    const response = await fetch(`${url}/teacher?search=${employeeId}`, {
+    const response = await fetch(`${url}/teacher?search=${nip}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -1207,13 +1400,18 @@ const getTeacherData = async (employeeId) => {
       const data = Array.isArray(result.data) ? result.data[0] : result.data;
 
       if (data) {
-        borrowableTeacherForm.value.teacherName = data.name || "";
-        borrowableTeacherForm.value.employeeId = data.employee_id || "";
-        borrowableTeacherForm.value.department = data.department || "";
+        teacherData.value = {
+          nip: data.nip || "",
+          name: data.name || "",
+          telephone: data.telephone || "",
+        };
+        formData.value.teacherId = data.id || "";
       } else {
-        borrowableTeacherForm.value.teacherName = "";
-        borrowableTeacherForm.value.employeeId = employeeId;
-        borrowableTeacherForm.value.department = "";
+        teacherData.value = {
+          nip: "",
+          name: "",
+          telephone: "",
+        };
       }
       return data;
     } else {
@@ -1239,17 +1437,29 @@ const getUnitItemData = async (code) => {
 
     if (response.ok) {
       const result = await response.json();
+
+      if (result.is_borrowed) {
+        alertWarning.value = true;
+        alertMessage.value = `Item is already borrowed by ${
+          result.data.student?.name || result.data.teacher?.name || "unknown"
+        } on ${formatDate(result.data.borrowed_at)}`;
+        return null;
+      }
+
       const data = Array.isArray(result.data) ? result.data[0] : result.data;
 
       if (data) {
         unitItem.value = {
-          code: data.code_unit || "",
-          brand: data.sub_item.merk || "",
-          condition: data.condition || "",
-          type: data.sub_item.item.name || "",
-          status: data.status || "",
+          code: data.code_unit || data.unit_item.code_unit || "",
+          brand: data.sub_item.merk || data.unit_item.sub_item?.merk || "",
+          condition: data.condition || data.unit_item.condition || "",
+          type:
+            data.sub_item.item.name ||
+            data.unit_item.sub_item?.item?.name ||
+            "",
+          status: data.status || data.unit_item.status || "",
         };
-        borrowableStudentForm.value.unitItemId = data.id || "";
+        formData.value.unitItemId = data.id || "";
       } else {
         unitItem.value = {
           code: code,
@@ -1270,51 +1480,49 @@ const getUnitItemData = async (code) => {
   }
 };
 
-let isPreview = ref(false);
-
-const getDetailUnitItem = async (id) => {
+const getDetailUnitItem = async (item) => {
   try {
-    const response = await fetch(`${url}/unit-loan/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
+    const data = item;
 
-    if (response.ok) {
-      const result = await response.json();
-      const data = Array.isArray(result.data) ? result.data[0] : result.data;
+    if (data) {
+      unitItem.value = {
+        code: data.unit_item.code_unit || "",
+        brand: data.unit_item.sub_item?.merk || "",
+        condition: data.unit_item.condition || "",
+        type: data.unit_item.sub_item?.item?.name || "",
+        status: data.unit_item.status || "",
+      };
 
-      if (data) {
-        unitItem.value = {
-          code: data.unit_item.code_unit || "",
-          brand: data.unit_item.sub_item?.merk || "",
-          condition: data.unit_item.condition || "",
-          type: data.unit_item.sub_item?.item?.name || "",
-          status: data.unit_item.status || "",
-        };
-        studentData.value = {
-          nis: data.student?.nis || "",
-          name: data.student?.name || "",
-          rayon: data.student?.rayon || "",
-          majorId: data.student?.major?.id || "",
-          majorName: data.student?.major?.name || "",
-        };
-        borrowableStudentForm.value = {
-          id: data.id || "",
-          unitItemId: data.unit_item?.id || "",
-          studentId: data.student?.id || "",
-          borrowerName: data.borrowed_by || "",
-          borrowDate: data.borrowed_at || "",
-          purpose: data.purpose || "",
-          room: data.room || "",
-          guarantee: data.guarantee || "",
-          image: data.image || "",
-        };
-        selectedCollateralType.value = data.guarantee || "";
-        imagePreview.value = data.image || "";
-      }
+      studentData.value = {
+        nis: data.student?.nis || "",
+        name: data.student?.name || "",
+        rayon: data.student?.rayon || "",
+        majorId: data.student?.major?.id || "",
+        majorName: data.student?.major?.name || "",
+      };
+
+      teacherData.value = {
+        nip: data.teacher?.nip || "",
+        name: data.teacher?.name || "",
+        telephone: data.teacher?.telephone || "",
+      };
+
+      formData.value = {
+        ...formData.value,
+        id: data.id || "",
+        unitItemId: data.unit_item?.id || "",
+        studentId: data.student?.id || "",
+        teacherId: data.teacher?.id || "",
+        borrowerName: data.borrowed_by || "",
+        borrowDate: data.borrowed_at || "",
+        purpose: data.purpose || "",
+        room: data.room || "",
+        guarantee: data.guarantee || "",
+        image: data.image || "",
+      };
+
+      selectedCollateralType.value = data.guarantee || "";
+      imagePreview.value = data.image || "";
       return data;
     } else {
       console.error("Failed to fetch unit item data:", response.statusText);
@@ -1326,23 +1534,235 @@ const getDetailUnitItem = async (id) => {
   }
 };
 
-const imagePreview = ref("");
-let isReturn = ref(false);
-
-function handleFileInput(file) {
-  borrowableStudentForm.value.image = file;
+// Event handlers
+const handleFileInput = (file) => {
+  formData.value.image = file;
   imagePreview.value = file ? URL.createObjectURL(file) : "";
-}
+};
 
-async function openModalDetail(item) {
-  isPreview.value = true;
-  modalBorrowableStudent.value = true;
-  await getDetailUnitItem(item.id);
-}
+let isPreviewData = ref(false);
 
-async function openModalReturnBorrowableStudent(item) {
-  isReturn.value = true;
-  modalBorrowableStudent.value = true;
-  await getDetailUnitItem(item.id);
-}
+const openDetailModal = async (item) => {
+  isPreviewData.value = true;
+  const data = await getDetailUnitItem(item);
+
+  if (!data) return;
+
+  const isConsumable = !!data.quantity;
+  const isBorrowable = !isConsumable;
+
+  const isStudent = !!data.student?.id;
+  const isTeacher = !!data.teacher?.id;
+
+  if (isConsumable) {
+    currentModal.value = isStudent
+      ? "consumable-student"
+      : "consumable-teacher";
+  } else if (isBorrowable) {
+    currentModal.value = isStudent
+      ? "borrowable-student"
+      : "borrowable-teacher";
+  }
+};
+
+const openReturnModal = async (item) => {
+  const data = await getDetailUnitItem(item);
+
+  if (!data) return;
+
+  const isConsumable = !!data.quantity;
+  const isBorrowable = !isConsumable;
+
+  const isStudent = !!data.student?.id;
+  const isTeacher = !!data.teacher?.id;
+
+  if (isConsumable) {
+    currentModal.value = isStudent
+      ? "return-consumable-student"
+      : "return-consumable-teacher";
+  } else if (isBorrowable) {
+    currentModal.value = isStudent
+      ? "return-borrowable-student"
+      : "return-borrowable-teacher";
+  }
+};
+
+const toggleAll = () => {
+  if (selectAll.value) {
+    selectedItems.value = loanStore.loan.map((item) => item.id);
+  } else {
+    selectedItems.value = [];
+  }
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+};
+
+const breadcrumbs = [
+  {
+    label: "Manage Inventory",
+    icon: IconsNavbarIconsFile,
+  },
+  {
+    label: "Create Borrowing",
+    icon: IconsNavbarIconsAddItem,
+  },
+  {
+    label: "Print Selected",
+    icon: IconsNavbarIconsPrint,
+  },
+  {
+    label: "Sort by Type",
+    icon: IconsNavbarIconsFilterMajor,
+    click: () => handleSort("type"),
+  },
+  {
+    label: "Sort by Time",
+    icon: IconsNavbarIconsFilterRole,
+    click: () => handleSort("time"),
+  },
+];
+
+const openModalFromBreadcrumb = (item) => {
+  if (item.label === "Create Borrowing") {
+    openModal("selection");
+  }
+};
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    nextTick(() => {
+      getHistoryData();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    nextTick(() => {
+      getHistoryData();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+  }
+  nextTick(() => {
+    getHistoryData();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
+// Page metadata
+definePageMeta({
+  title: "Inventory",
+});
+
+// Lifecycle
+onMounted(() => {
+  getUnitLoan();
+});
+
+const submitReturn = async () => {
+  const response = await fetch(`${url}/unit-loan/${formData.value.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+    body: JSON.stringify({
+      returned_at: formData.value.returnDate,
+    }),
+  });
+
+  if (response.ok) {
+    alertSuccess.value = true;
+    alertMessage.value = "Return date submitted successfully!";
+    closeModal();
+    getUnitLoan();
+  } else {
+    alertError.value = true;
+    alertMessage.value = "Failed to submit return date";
+  }
+};
+
+watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
+  if (error || success || warning) {
+    setTimeout(() => {
+      alertError.value = false;
+      alertSuccess.value = false;
+      alertWarning.value = false;
+    }, 3000);
+  }
+});
 </script>
