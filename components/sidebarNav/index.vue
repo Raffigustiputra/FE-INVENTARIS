@@ -210,6 +210,8 @@ import {
   IconsInventory,
   NavLink,
   NavMajor,
+  IconsBorrowable,
+  IconsConsumable,
 } from "#components";
 
 import Tooltip from "@/components/Tooltip/index.vue";
@@ -340,12 +342,12 @@ const menuByRole = {
         {
           name: "Borrowable",
           path: "/kaprog/inventory/borrowable",
-          icon: IconsBorrowed,
+          icon: IconsBorrowable,
         },
         {
           name: "Consumable",
           path: "/kaprog/inventory/consumable",
-          icon: IconsHistory,
+          icon: IconsConsumable,
         },
       ],
     },

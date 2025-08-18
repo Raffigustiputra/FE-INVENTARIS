@@ -51,10 +51,10 @@
 
 <script setup>
 
-// const props = defineProps(["error"]);
+const props = defineProps(["error"]);
 
-// const goBack = () => {
-//   window.history.back();
-// };
+const goBack = () => {
+  window.history.back();
+};
 
 </script>

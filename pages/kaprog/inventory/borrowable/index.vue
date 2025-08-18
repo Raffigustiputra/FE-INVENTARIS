@@ -164,11 +164,22 @@
               v-model="adminInventoryStore.input.procurement_date"
             />
           </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
+          <div class="w-full flex items-center gap-2">
+            <InputTextarea
+              label="Description"
+              placeholder="Input Description Here.."
+              v-model="adminInventoryStore.input.description"
+              rows="1"
+            />
+            <InputSelect
+              class="w-full"
+              label="Condition"
+              v-model="adminInventoryStore.input.condition"
+            >
+              <option value="true">Good</option>
+              <option value="false">Damaged</option>
+            </InputSelect>
+          </div>
         </Modal>
       </div>
     </Transition>
@@ -291,6 +302,7 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
   IconsNavbarIconsAddItem,
+  InputSelect,
 } from "#components";
 import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
@@ -526,12 +538,21 @@ const openModalUpdate = (item) => {
   modalUpdate.value = true;
   isSubmitting.value = false;
 
+  // Convert condition to string for the select input
+  let conditionValue = "true"; // Default to "true" (good)
+  if (item.condition === false || item.condition === "false" || item.condition === "damaged") {
+    conditionValue = "false";
+  } else if (item.condition === true || item.condition === "true" || item.condition === "good") {
+    conditionValue = "true";
+  }
+
   adminInventoryStore.input = {
     id: item.id,
     item_id: item.sub_item?.item?.id || "",
     merk: item.sub_item?.merk || "",
     procurement_date: item.procurement_date || "",
     description: item.description || "",
+    condition: conditionValue,
   };
 };
 
@@ -650,12 +671,23 @@ const createUnitItem = async () => {
 
 const updateUnitItem = async () => {
   if (isSubmitting.value) return;
-  const { id, item_id, merk, description, procurement_date } =
+  const { id, item_id, merk, description, procurement_date, condition } =
     adminInventoryStore.input;
 
   if (!item_id || !merk) {
     showAlert("warning", "Item type and brand name must be filled");
     return;
+  }
+
+  // Convert string condition values to boolean for API
+  let conditionValue;
+  if (condition === 'true') {
+    conditionValue = true;
+  } else if (condition === 'false') {
+    conditionValue = false;
+  } else {
+    // Default to true (good) if not specified
+    conditionValue = true;
   }
 
   isSubmitting.value = true;
@@ -665,7 +697,10 @@ const updateUnitItem = async () => {
     description: description || "",
     procurement_date:
       procurement_date || new Date().toISOString().split("T")[0],
+    condition: conditionValue
   };
+
+  console.log("Sending update payload:", payload);
 
   try {
     const response = await $fetch(`${url}/unit-items/${id}`, {
@@ -736,15 +771,26 @@ const statusClass = (status) => {
 };
 
 const conditionClass = (condition) => {
-  switch ((condition || "").toUpperCase()) {
+  // Convert boolean values to string for display
+  const conditionStr = condition === true || condition === 'true' ? 'GOOD' : 
+                       condition === false || condition === 'false' ? 'DAMAGED' : 
+                       String(condition || '').toUpperCase();
+  
+  switch (conditionStr) {
     case "GOOD":
+    case "TRUE":
       return "bg-[#D2F3D8] text-[#59AE75]";
     case "DAMAGED":
+    case "FALSE":
       return "bg-red-200 text-red-700";
     default:
       return "bg-gray-100 text-gray-700";
   }
 };
 
-const toUpperCase = (str) => (str ? String(str).toUpperCase() : "");
+const toUpperCase = (str) => {
+  if (str === true || str === 'true') return "GOOD";
+  if (str === false || str === 'false') return "DAMAGED";
+  return str ? String(str).toUpperCase() : "";
+};
 </script>

@@ -51,6 +51,7 @@ export const useAdminInventoryStore = defineStore("admin-inventory", {
             merk: '',
             procurement_date: '',
             description: '',
+            condition: '',
         },
         inputConsumable: {
             name: '',

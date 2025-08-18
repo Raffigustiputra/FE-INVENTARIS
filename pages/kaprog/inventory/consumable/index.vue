@@ -498,7 +498,7 @@ const getConsumableItems = async () => {
   pending.value = true;
   try {
     const response = await $fetch(
-      `${url}/consumable-item?search=${consumableItemStore.filter.search}&page=${currentPage.value}`,
+      `${url}/consumable-item/data?search=${consumableItemStore.filter.search}&page=${currentPage.value}`,
       {
         method: "GET",
         headers: {
