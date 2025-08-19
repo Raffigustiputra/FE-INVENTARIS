@@ -9,6 +9,16 @@
   opacity: 0;
   transform: translateY(-4px);
 }
+
+.sidebar {
+  transition: width 0.3s ease;
+}
+.sidebar-collapsed {
+  width: 4rem; 
+}
+.sidebar-expanded {
+  width: 16rem; 
+}
 </style>
 
 <template>
@@ -48,18 +58,51 @@
 
   <div class="">
     <!-- SIDEBAR -->
-    <div
+    <!-- <div
       class="w-2/10 fixed h-screen flex flex-col justify-between bg-white border border-r border-black/10 overflow-y-auto"
+    > -->
+    <div
+      :class="[
+        'sidebar fixed h-screen flex flex-col justify-between bg-white border-r border-black/10 overflow-y-auto',
+        isCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded',
+      ]"
     >
       <div>
-        <!-- LOGO ATAS -->
-        <div class="select-none flex items-center w-[189px] ml-5 mt-6 mb-4">
-          <img src="../../public/images/wv-logo.png" alt="" />
+        <!-- HAMBURGER TOGGLE -->
+        <div class="flex items-center justify-between px-4 py-3">
+          <!-- TOP LOGO -->
+          <div v-if="!isCollapsed"class="select-none flex items-center w-[189px] mt-4">
+            <img src="../../public/images/wv-logo.png" alt="" />
+          </div>
+          
+          <button @click="toggleSidebar" class="p-2 rounded hover:bg-gray-200 mt-4">
+            <!-- Hamburger icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 5.25h16.5M3.75 12h16.5m-16.5 6.75h16.5"
+              />
+            </svg>
+          </button>
+          <!-- Logo -->
+          <!-- <div v-if="!isCollapsed" class="select-none ml-2">
+            <img src="../../public/images/wv-logo.png" alt="Logo" class="w-[120px]" />
+          </div> -->
         </div>
-        <div class="border-b border-black/10 mx-4"></div>
+
+        <div class="border-b border-black/10 mx-2"></div>
 
         <!-- HEADER SMK -->
         <div
+          v-if="!isCollapsed"
           class="select-none bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto"
         >
           <img
@@ -220,6 +263,12 @@ const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
+
+// STATE COLLAPSE
+const isCollapsed = ref(false);
+function toggleSidebar() {
+  isCollapsed.value = !isCollapsed.value;
+}
 
 const createModal = ref(false);
 const openCreateModal = () => {
