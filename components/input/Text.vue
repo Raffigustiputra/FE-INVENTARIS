@@ -13,6 +13,7 @@
                 :class="[props.isDisabled ? 'bg-gray-100 cursor-not-allowed' : '']"
                 :placeholder="props.placeholder" 
                 :disabled="props.isDisabled" 
+                :autoFocus="props.autoFocus"
             />
         </div>
     </div>
@@ -35,6 +36,10 @@ const props = defineProps({
     modelValue: {
         type: String
     },
+    autoFocus: {
+        type: Boolean,
+        default: false
+    }
 })
 
 const emit = defineEmits(['update:modelValue']);
