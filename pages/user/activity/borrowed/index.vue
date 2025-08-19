@@ -54,9 +54,9 @@
           :isSubmitting="isSubmitting"
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
-          class="max-h-[90vh] overflow-y-auto"
         >
-          <!-- Initial Selection Form -->
+        <div class="max-h-[80vh] overflow-y">
+
           <div v-if="currentModal === 'selection'">
             <div>
               <label
@@ -117,7 +117,7 @@
               {{ formErrors.general }}
             </div>
           </div>
-
+  
           <!-- Borrowable Student Form -->
           <div
             v-if="
@@ -182,7 +182,7 @@
                   </p>
                 </div>
               </div>
-
+  
               <!-- Borrower Info Section -->
               <div>
                 <p class="text-sm font-medium text-[#AAA] mb-2">
@@ -232,7 +232,7 @@
                   />
                 </div>
               </div>
-
+  
               <!-- Collateral Section -->
               <div>
                 <p class="text-sm font-medium text-[#AAA] mb-4">COLLATERAL</p>
@@ -322,7 +322,7 @@
                 </div>
               </div>
             </div>
-
+  
             <!-- Terms Checkbox -->
             <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
               <input
@@ -340,7 +340,7 @@
               </label>
             </div>
           </div>
-
+  
           <!-- Borrowable Teacher Form -->
           <div
             v-if="
@@ -405,7 +405,7 @@
                   </p>
                 </div>
               </div>
-
+  
               <!-- Borrower Info Section -->
               <div>
                 <p class="text-sm font-medium text-[#AAA] mb-2">
@@ -449,7 +449,7 @@
                   v-model="teacherData.telephone"
                 />
               </div>
-
+  
               <!-- Collateral Section -->
               <div>
                 <p class="text-sm font-medium text-[#AAA] mb-4">COLLATERAL</p>
@@ -500,7 +500,7 @@
                 </div>
               </div>
             </div>
-
+  
             <!-- Terms Checkbox -->
             <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
               <input
@@ -518,7 +518,7 @@
               </label>
             </div>
           </div>
-
+  
           <!-- Consumable Student Form -->
           <div v-if="currentModal === 'consumable-student'">
             <div class="space-y-4">
@@ -558,7 +558,7 @@
                   />
                 </div>
               </div>
-
+  
               <!-- Borrower Info Section -->
               <div>
                 <p class="text-sm font-medium text-[#AAA] mb-2">
@@ -608,7 +608,7 @@
                   />
                 </div>
               </div>
-
+  
               <!-- Date and Lender Section -->
               <div>
                 <InputTextarea
@@ -642,7 +642,7 @@
                 </div>
               </div>
             </div>
-
+  
             <!-- Terms Checkbox -->
             <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
               <input
@@ -660,7 +660,7 @@
               </label>
             </div>
           </div>
-
+  
           <!-- Consumable Teacher Form -->
           <div v-if="currentModal === 'consumable-teacher'">
             <div class="space-y-4">
@@ -700,7 +700,7 @@
                   />
                 </div>
               </div>
-
+  
               <!-- Borrower Info Section -->
               <div>
                 <p class="text-sm font-medium text-[#AAA] mb-2">
@@ -744,7 +744,7 @@
                   v-model="teacherData.telephone"
                 />
               </div>
-
+  
               <!-- Date and Lender Section -->
               <div>
                 <InputTextarea
@@ -778,7 +778,7 @@
                 </div>
               </div>
             </div>
-
+  
             <!-- Terms Checkbox -->
             <div class="mt-6 flex items-center gap-2" v-if="!isPreviewData">
               <input
@@ -796,6 +796,8 @@
               </label>
             </div>
           </div>
+        </div>
+          <!-- Initial Selection Form -->
         </Modal>
       </div>
     </Transition>
