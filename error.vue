@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen flex flex-col text-center font-Poppins">
-    <header class="h-[6%] border-b border-gray-200">
+    <header class="h-[8%] border-b border-gray-200">
       <img
         src="/images/WV-BLACKLANDSCAPE.png"
         alt="WV black landscape"
@@ -8,7 +8,7 @@
       />
     </header>
 
-    <main class="text-black h-[80%] flex flex-col items-center justify-center">
+    <main class="text-black h-[90%] flex flex-col items-center justify-center">
       <img
         src="/images/errorImages/404.png"
         alt="404 Image"

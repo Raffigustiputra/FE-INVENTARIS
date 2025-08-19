@@ -66,7 +66,7 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
-const url = useRuntimeConfig().public.localUrl;
+const url = useRuntimeConfig().public.authUrl;
 
 const users = ref([]);
 const pending = ref(true);
@@ -79,6 +79,7 @@ const fetchUsers = async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
+        'ngrok-skip-browser-warning': 'true'
       },
     });
 

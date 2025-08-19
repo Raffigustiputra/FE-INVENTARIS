@@ -35,7 +35,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 let modal = ref(false)
 let OpenModal = () => {
   modal.value = true
@@ -46,7 +46,9 @@ let Closemodal = () => {
 
 definePageMeta({
   layout: "default",
-  title: "Home - Inventaris"
+  title: "Home - Inventaris",
+  middleware: ["auth"],
+  roles: ["admin"]
 })
 
 const now = new Date()
@@ -59,6 +61,7 @@ const date = now.toLocaleDateString("en-GB", {
 })
 
 const today = `${weekday}, ${date}`
+
 </script>
 
 <style scoped>

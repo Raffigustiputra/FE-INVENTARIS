@@ -5,7 +5,7 @@
   <div class="w-full min-h-screen font-Poppins">
     <!-- Online checking -->
     <div  v-if="!isOnline" class="h-screen flex flex-col text-center font-Poppins">
-      <header class="h-[6%] border-b border-gray-200">
+      <header class="h-[8%] border-b border-gray-200">
         <img
           src="/public/images/WV-BLACKLANDSCAPE.png"
           alt="WV black landscape"

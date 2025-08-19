@@ -17,6 +17,7 @@
     transition: all 350ms ease;
 }
 </style>
+
 <script setup>
 const authStore = useAuthStore();
 let switchEye = ref(false);
@@ -27,63 +28,70 @@ const switchVisibility = () => {
 };
 
 const router = useRouter();
-const url = useRuntimeConfig().public.localUrl;
+const route = useRoute();
+const url = useRuntimeConfig().public.authUrl;
 
 const alertError = ref(false);
 const alertMessage = ref('');
 const alertSuccess = ref(false);
 
 const showAlert = (type, message) => {
-    if (type === 'error') {
-        alertMessage.value = message;
-        alertError.value = true;
-        setTimeout(() => {
-            alertError.value = false;
-            alertMessage.value = null;
-        }, 3000);
-    } else if (type === 'success') {
-        alertMessage.value = message;
-        alertSuccess.value = true;
-        setTimeout(() => {
-            alertSuccess.value = false;
-            alertMessage.value = null;
-        }, 2500);
-    } else {
-        alert(message);
-    }
+  if (type === 'error') {
+    alertMessage.value = message;
+    alertError.value = true;
+    setTimeout(() => {
+      alertError.value = false;
+      alertMessage.value = null;
+    }, 3000);
+  } else if (type === 'success') {
+    alertMessage.value = message;
+    alertSuccess.value = true;
+    setTimeout(() => {
+      alertSuccess.value = false;
+      alertMessage.value = null;
+    }, 2500);
+  } else {
+    alert(message);
+  }
 };
 
+// Jalankan saat halaman pertama kali di-load
+onMounted(() => {
+  if (route.query.message) {
+    showAlert('error', route.query.message);
+  }
+});
+
 const login = async () => {
-    try {
-        const response = await $fetch(`${url}/login`, {
-            method: 'POST',
-            body: {
-                username: authStore.input.username,
-                password: authStore.input.password,
-            },
-        });
-        console.log(response.data);
+  try {
+    const response = await $fetch(`${url}/login`, {
+      method: 'POST',
+      body: {
+        username: authStore.input.username,
+        password: authStore.input.password,
+      },
+    });
 
-        // Gunakan action yang sudah ada di store
-        authStore.setAuthData({
-            token: response.token,
-            role: response.data.role,
-            name: response.data.name,
-            usid: response.data.usid,
-            username: response.data.username
-        });
+    authStore.setAuthData({
+      token: response.token,
+      role: response.data.role,
+      name: response.data.name,
+      usid: response.data.usid,
+      username: response.data.username
+    });
 
-        router.push('/admin/dashboard');
-    } catch (err) {
-        console.error('Login gagal:', err);
-        showAlert('error', 'Terjadi kesalahan saat login.');
-    }
+    router.push('/admin/dashboard');
+  } catch (err) {
+    console.error('Login gagal:', err);
+    showAlert('error', 'Terjadi kesalahan saat login.');
+  }
 };
 
 definePageMeta({
-    layout: 'none',
+  layout: 'none',
 });
 </script>
+
 
 <template>
     <transition name="alert">
