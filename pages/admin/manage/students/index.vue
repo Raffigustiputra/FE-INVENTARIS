@@ -587,7 +587,7 @@ const submitCreateStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Created");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while creating student");
@@ -624,7 +624,7 @@ const submitEditStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Updated");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while updating student");
@@ -641,7 +641,7 @@ const submitDeleteStudent = async () => {
   });
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Deleted");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while deleting student");
