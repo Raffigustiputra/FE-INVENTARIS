@@ -125,7 +125,9 @@
                           :is="menu.icon"
                           :class="[
                             'size-4 transition-colors duration-300',
-                            isActive ? 'text-white fill-white' : 'fill-[#727272]',
+                            isActive
+                              ? 'text-white fill-white'
+                              : 'fill-[#727272]',
                           ]"
                         />
                       </div>
@@ -166,8 +168,6 @@
           </div>
         </div>
 
-        <!-- <div class="border-b border-black/10 mx-4"></div> -->
-
         <!-- MAJOR SECTION -->
         <div v-if="authStore.role === 'superadmin'">
           <div class="flex justify-between items-center px-6 my-4">
@@ -183,9 +183,8 @@
             <NavMajor :majorColor="major.color" :majorName="major.name" />
           </div>
         </div>
-
       </div>
-      
+
       <!-- LOGOUT -->
       <div>
         <div class="border-b border-black/10 mx-4"></div>
@@ -211,6 +210,8 @@ import {
   IconsInventory,
   NavLink,
   NavMajor,
+  IconsBorrowable,
+  IconsConsumable,
 } from "#components";
 
 import Tooltip from "@/components/Tooltip/index.vue";
@@ -337,6 +338,18 @@ const menuByRole = {
       name: "Inventory",
       path: "/kaprog/inventory",
       icon: IconsInventory,
+      childMenu: [
+        {
+          name: "Borrowable",
+          path: "/kaprog/inventory/borrowable",
+          icon: IconsBorrowable,
+        },
+        {
+          name: "Consumable",
+          path: "/kaprog/inventory/consumable",
+          icon: IconsConsumable,
+        },
+      ],
     },
     {
       name: "Activity",

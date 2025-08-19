@@ -54,54 +54,11 @@
       @breadcrumbClick="openModalFromBreadcrumb"
     />
     <div class="flex items-center justify-between mt-12 mb-4">
-      <h1 class="font-semibold text-2xl">Inventory</h1>
+      <h1 class="font-semibold text-2xl">Inventory
+        <div class="inline text-lg">/</div>
+        Borrowed Items</h1>
       <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
     </div>
-  </div>
-
-  <!-- Modal Form Borrowing -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalFormBorrowing"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnSubmit="handleFormBorrowingSubmit"
-          @btnClose="closeModalCreate"
-          title="Form Borrowing"
-          :isSubmitting="isSubmitting"
-        >
-          <div>
-            <label class="ml-0.5 mt-3 block text-sm font-medium text-[#727272]"
-              >Item Type</label
-            >
-            <div class="w-full flex items-center gap-2">
-              <InputRadio
-                class="w-1/2"
-                valueName="Consumable Item"
-                name="itemType"
-                value="consumable"
-                v-model="selectedItemType"
-              />
-              <InputRadio
-                class="w-1/2"
-                valueName="Borrowable Item"
-                name="itemType"
-                value="borrowable"
-                v-model="selectedItemType"
-              />
-            </div>
-            <p v-if="formErrors.itemType" class="text-red-500 text-xs mt-1">
-              {{ formErrors.itemType }}
-            </p>
-          </div>
-          <div v-if="formErrors.general" class="text-red-500 text-sm mb-3">
-            {{ formErrors.general }}
-          </div>
-        </Modal>
-      </div>
-    </Transition>
   </div>
 
   <!-- Modal Create Borrowable -->
@@ -116,6 +73,7 @@
           title="Add New Item"
           @btnSubmit="createUnitItem"
           :isSubmitting="isSubmitting"
+          labelButton="Add Item"
         >
           <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
@@ -160,66 +118,6 @@
     </Transition>
   </div>
 
-  <!-- Modal Create Consumable -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div
-        v-if="modalConsumableItem"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnClose="closeModalCreate"
-          title="Add Consumable Item"
-          @btnSubmit="createConsumableItem"
-          :isSubmitting="isSubmitting"
-        >
-          <p class="text-sm font-medium text-[#727272] my-2">CONSUMABLE ITEM DETAILS</p>
-          <div class="w-full flex items-center gap-2">
-            <InputSelect
-              class="w-1/2"
-              label="Item Type"
-              v-model="adminInventoryStore.input.item_id"
-            >
-              <option
-                v-for="type in mainInventoryStore.inventory"
-                :key="type.id"
-                :value="type.id"
-              >
-                {{ type.name }}
-              </option>
-            </InputSelect>
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-1/2"
-              label="Brand Name"
-              placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk"
-            />
-            <InputNumber
-              class="w-1/2"
-              label="Quantity"
-              placeholder="Enter Quantity"
-              v-model="adminInventoryStore.input.quantity"
-            />
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputDate
-              class="w-full"
-              label="Purchase Date"
-              v-model="adminInventoryStore.input.procurement_date"
-            />
-          </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
-        </Modal>
-      </div>
-    </Transition>
-  </div>
-
   <!-- Modal Update Borrowable -->
   <div class="w-full">
     <Transition name="fade">
@@ -232,6 +130,7 @@
           @btnClose="closeModalUpdate"
           title="Update Item"
           :isSubmitting="isSubmitting"
+          labelButton="Update Item"
         >
           <div class="w-full flex items-center gap-2">
             <InputSelect
@@ -265,11 +164,22 @@
               v-model="adminInventoryStore.input.procurement_date"
             />
           </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
+          <div class="w-full flex items-center gap-2">
+            <InputTextarea
+              label="Description"
+              placeholder="Input Description Here.."
+              v-model="adminInventoryStore.input.description"
+              rows="1"
+            />
+            <InputSelect
+              class="w-full"
+              label="Condition"
+              v-model="adminInventoryStore.input.condition"
+            >
+              <option value="true">Good</option>
+              <option value="false">Damaged</option>
+            </InputSelect>
+          </div>
         </Modal>
       </div>
     </Transition>
@@ -286,6 +196,7 @@
         @btnClose="closeModalDelete"
         title="Confirm Deletion"
         :isSubmitting="isSubmitting"
+        labelButton="Delete"
       >
         <div class="">
           <p class="text-gray-600">
@@ -318,7 +229,7 @@
           </th>
           <th class="px-4 py-3 text-center">Type</th>
           <th class="px-4 py-3 text-center">Unit Code</th>
-          <th class="px-4 py-3">Brand</th>
+          <th class="px-4 py-3 text-center">Brand</th>
           <th class="px-4 py-3 text-center">Borrowed Time</th>
           <th class="px-4 py-3 text-center">Status</th>
           <th class="px-4 py-3 text-center">Condition</th>
@@ -336,7 +247,7 @@
           </td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
           <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
-          <td class="px-4 py-3">{{ item.sub_item.merk }}</td>
+          <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
           <td class="px-4 py-3 text-center">
             {{ formatDate(item.procurement_date) }}
           </td>
@@ -357,8 +268,12 @@
             </span>
           </td>
           <td class="px-4 py-3 flex justify-center gap-2">
-            <ButtonEdit @click="openModalUpdate(item)" />
-            <ButtonDelete @click="openModalDelete(item)" />
+            <Tooltip text="Edit" position="top">
+              <ButtonEdit @click="openModalUpdate(item)" />
+            </Tooltip>
+            <Tooltip text="Delete" position="top">
+              <ButtonDelete @click="openModalDelete(item)" />
+            </Tooltip>
           </td>
         </tr>
       </tbody>
@@ -387,6 +302,7 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
   IconsNavbarIconsAddItem,
+  InputSelect,
 } from "#components";
 import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
@@ -414,7 +330,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsPrint,
   },
   {
-    label: "Add Item",
+    label: "Add Item Borrowable",
     icon: IconsNavbarIconsAddItem,
   },
   {
@@ -434,16 +350,13 @@ const mainInventoryStore = useMainInventoryStore();
 const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
-  if (item.label === "Add Item") {
-    // Show form borrowing modal first instead of directly opening create modal
-    modalFormBorrowing.value = true;
+  if (item.label === "Add Item Borrowable") {
+    modalCreate.value = true;
   }
 };
 
 // Modal states
-const modalFormBorrowing = ref(false);
 const modalCreate = ref(false);
-const modalConsumableItem = ref(false);
 const modalUpdate = ref(false);
 const modalDelete = ref(false);
 const deleteItemData = ref(null);
@@ -614,83 +527,24 @@ const showAlert = (type, message) => {
   }
 };
 
-// Handle form borrowing submit - conditional logic for showing different modals
-const handleFormBorrowingSubmit = () => {
-  // Reset form errors
-  formErrors.value = {
-    itemType: '',
-    general: ''
-  };
-  
-  // Validate item type is selected
-  if (!selectedItemType.value) {
-    formErrors.value.itemType = 'Please select an item type';
-    formErrors.value.general = 'Please select an item type to continue';
-    return;
-  }
-
-  // Close form borrowing modal
-  modalFormBorrowing.value = false;
-  
-  // Open appropriate modal based on selection
-  if (selectedItemType.value === "borrowable") {
-    openModalCreate("Add Borrowable Item");
-  } else if (selectedItemType.value === "consumable") {
-    openModalConsumableItem("Add Consumable Item");
-  }
-};
-
-const openModalConsumableItem = (title) => {
-  modalTitle.value = title;
-  modalConsumableItem.value = true;
-  isSubmitting.value = false;
-  // Initialize consumable item form
-  adminInventoryStore.input = {
-    item_id: "",
-    merk: "",
-    procurement_date: new Date().toISOString().split("T")[0],
-    description: "",
-    quantity: 1
-  };
-};
-
-const openModalCreate = (title) => {
-  modalTitle.value = title;
-  modalCreate.value = true;
-  isSubmitting.value = false;
-  adminInventoryStore.input = {
-    item_id: "",
-    merk: "",
-    procurement_date: new Date().toISOString().split("T")[0],
-    description: "",
-  };
-};
-
 const closeModalCreate = () => {
-  // Close all modals and reset form states
-  modalFormBorrowing.value = false;
   modalCreate.value = false;
-  modalConsumableItem.value = false;
-  selectedItemType.value = "";
-  adminInventoryStore.input = {
-    item_id: "",
-    merk: "",
-    procurement_date: "",
-    description: "",
-    quantity: null
-  };
-  
-  // Clear any form errors
-  formErrors.value = {
-    itemType: '',
-    general: ''
-  };
+  adminInventoryStore.input = {};
 };
+
 
 const openModalUpdate = (item) => {
   modalTitle.value = "Update Item";
   modalUpdate.value = true;
   isSubmitting.value = false;
+
+  // Convert condition to string for the select input
+  let conditionValue = "true"; // Default to "true" (good)
+  if (item.condition === false || item.condition === "false" || item.condition === "damaged") {
+    conditionValue = "false";
+  } else if (item.condition === true || item.condition === "true" || item.condition === "good") {
+    conditionValue = "true";
+  }
 
   adminInventoryStore.input = {
     id: item.id,
@@ -698,6 +552,7 @@ const openModalUpdate = (item) => {
     merk: item.sub_item?.merk || "",
     procurement_date: item.procurement_date || "",
     description: item.description || "",
+    condition: conditionValue,
   };
 };
 
@@ -753,7 +608,6 @@ const getUnitItemsInventory = async () => {
     if (response.status === 200) {
       unitItemStore.unitItems = response.data;
 
-      // Update pagination data if meta is available
       if (response.meta) {
         lastPage.value = response.meta.last_page;
         allItemCount.value = response.meta.total;
@@ -766,53 +620,6 @@ const getUnitItemsInventory = async () => {
     alertError.value = true;
     alertMessage.value = "Error loading inventory items";
     pending.value = false;
-  }
-};
-
-const createConsumableItem = async () => {
-  if (isSubmitting.value) return;
-  const { item_id, merk, description, procurement_date, quantity } =
-    adminInventoryStore.input;
-  console.log("Consumable Item Form values:", adminInventoryStore.input);
-
-  if (!item_id || !merk || !quantity) {
-    showAlert("warning", "Item type, brand name and quantity must be filled");
-    return;
-  }
-
-  isSubmitting.value = true;
-  const formData = new FormData();
-
-  formData.append("item_id", item_id);
-  formData.append("merk", merk);
-  formData.append("description", description || "");
-  formData.append("quantity", quantity || 1);
-  formData.append(
-    "procurement_date",
-    procurement_date || new Date().toISOString().split("T")[0]
-  );
-
-  try {
-    const response = await $fetch(`${url}/consumable-items`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-      body: formData,
-    });
-
-    if (response.status === 201 || response.status === 200) {
-      showAlert("success", "Consumable item created successfully!");
-      closeModalCreate();
-      getUnitItemsInventory();
-    } else {
-      showAlert("error", "Failed to create consumable item");
-    }
-  } catch (error) {
-    console.error("Error creating consumable item:", error);
-    showAlert("error", "An error occurred while creating the consumable item");
-  } finally {
-    isSubmitting.value = false;
   }
 };
 
@@ -847,6 +654,8 @@ const createUnitItem = async () => {
       },
     });
 
+    console.log(response);
+
     if (response.status === 201 || response.status === 200) {
       getUnitItemsInventory();
       closeModalCreate();
@@ -862,12 +671,23 @@ const createUnitItem = async () => {
 
 const updateUnitItem = async () => {
   if (isSubmitting.value) return;
-  const { id, item_id, merk, description, procurement_date } =
+  const { id, item_id, merk, description, procurement_date, condition } =
     adminInventoryStore.input;
 
   if (!item_id || !merk) {
     showAlert("warning", "Item type and brand name must be filled");
     return;
+  }
+
+  // Convert string condition values to boolean for API
+  let conditionValue;
+  if (condition === 'true') {
+    conditionValue = true;
+  } else if (condition === 'false') {
+    conditionValue = false;
+  } else {
+    // Default to true (good) if not specified
+    conditionValue = true;
   }
 
   isSubmitting.value = true;
@@ -877,7 +697,10 @@ const updateUnitItem = async () => {
     description: description || "",
     procurement_date:
       procurement_date || new Date().toISOString().split("T")[0],
+    condition: conditionValue
   };
+
+  console.log("Sending update payload:", payload);
 
   try {
     const response = await $fetch(`${url}/unit-items/${id}`, {
@@ -948,15 +771,26 @@ const statusClass = (status) => {
 };
 
 const conditionClass = (condition) => {
-  switch ((condition || "").toUpperCase()) {
+  // Convert boolean values to string for display
+  const conditionStr = condition === true || condition === 'true' ? 'GOOD' : 
+                       condition === false || condition === 'false' ? 'DAMAGED' : 
+                       String(condition || '').toUpperCase();
+  
+  switch (conditionStr) {
     case "GOOD":
+    case "TRUE":
       return "bg-[#D2F3D8] text-[#59AE75]";
     case "DAMAGED":
+    case "FALSE":
       return "bg-red-200 text-red-700";
     default:
       return "bg-gray-100 text-gray-700";
   }
 };
 
-const toUpperCase = (str) => (str ? String(str).toUpperCase() : "");
+const toUpperCase = (str) => {
+  if (str === true || str === 'true') return "GOOD";
+  if (str === false || str === 'false') return "DAMAGED";
+  return str ? String(str).toUpperCase() : "";
+};
 </script>

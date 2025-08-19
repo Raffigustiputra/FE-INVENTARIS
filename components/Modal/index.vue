@@ -50,10 +50,10 @@
       <button
         @click="$emit('btnSubmit')"
         :disabled="isSubmitting || disableSubmit"
-        class="bg-[#3A6CC2] hover:cursor-pointer duration-200 hover:bg-[#335fac] text-white px-3 py-1 text-sm rounded-md font-medium"
-        :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || disableSubmit }"
+        class="duration-200 hover:cursor-pointer text-white px-3 py-1 text-sm rounded-md font-medium"
+        :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || disableSubmit, 'bg-red-600 hover:bg-red-700': labelButton === 'Delete' || labelButton === 'delete', 'bg-[#3A6CC2] hover:bg-[#335fac]': labelButton !== 'delete' }"
       >
-        Submit
+        {{ labelButton }}
       </button>
     </div>
     <slot name="footer" />
@@ -78,6 +78,10 @@ const props = defineProps({
   disableSubmit: {
     type: Boolean,
     default: false,
+  },
+  labelButton: {
+    type: String,
+    default: "Submit",
   },
 });
 </script>
