@@ -146,6 +146,7 @@
                         isPreviewData ||
                         currentModal === 'return-borrowable-student'
                       "
+                      :autoFocus="true"
                     />
                     <button
                       v-if="!isPreviewData"
@@ -175,6 +176,7 @@
                   v-if="
                     unitItem.status === 'unavailable' &&
                     currentModal === 'borrowable-student'
+                    && !isPreviewData
                   "
                 >
                   <p class="text-red-500 text-sm">
@@ -808,7 +810,7 @@
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3">
-            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+            <input class="cursor-pointer" type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="py-3 px-4 text-center">Type</th>
           <th
@@ -837,7 +839,7 @@
           class="hover:bg-gray-50"
         >
           <td class="px-4 py-3">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" />
+            <input class="cursor-pointer" type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="py-3 text-center">
             {{ item.unit_item.sub_item.item.name }}
@@ -911,6 +913,7 @@ const url = useRuntimeConfig().public.authUrl;
 const currentModal = ref(null);
 const isSubmitting = ref(false);
 const isPreviewData = ref(false);
+const exportData = ref("selected");
 
 // Form Selection States
 const selectedItemType = ref("");
@@ -1079,10 +1082,12 @@ const breadcrumbs = [
   {
     label: "Create Borrowing",
     icon: IconsNavbarIconsAddItem,
+    click: () => openModal("selection"),
   },
   {
     label: "Print Selected",
     icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData(),
   },
   {
     label: "Sort by Type",
@@ -1411,6 +1416,52 @@ const updateConsumableItemData = () => {
       unit: "",
       quantity: 0,
     };
+  }
+};
+
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/unit-loan`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({
+        export: exportData.value,
+        data: selectedItems.value,
+        type: "borrowing",
+        search: searchQuery.value,
+        sort_by_type: sortByType.value,
+        sort_by_time: sortByTime.value,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `borrowed_items_selected_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
   }
 };
 
@@ -1847,8 +1898,10 @@ const openModalFromBreadcrumb = (item) => {
 // Table Selection Handlers
 const toggleAll = () => {
   if (selectAll.value) {
+    exportData.value = "all";
     selectedItems.value = loanStore.loan.map((item) => item.id);
   } else {
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 };
