@@ -26,7 +26,7 @@
       </main>
     </div>
 
-    <div v-else class="flex">
+    <!-- <div v-else class="flex">
       <div class="w-2/12">
         <SidebarNav />
       </div>
@@ -38,11 +38,33 @@
           <slot></slot>
         </div>
       </div>
+    </div> -->
+
+    <div v-else class="flex">
+    <!-- Sidebar -->
+      <SidebarNav v-model:isCollapsed="isCollapsed" />
+
+      <!-- Konten kanan -->
+      <div
+        :class="[
+          'flex-1 transition-all duration-300',
+          isCollapsed ? 'ml-16' : 'ml-64'
+        ]"
+      >
+        <Navbar />
+        <div class="py-4 px-10 flex flex-col">
+          <div class="w-full mt-20 h-auto">
+            <slot></slot>
+          </div>
+        </div>
+      </div>
     </div>
+
 
   </div>
 </template>
 <script setup>
 const { isOnline } = useOnlineStatus()
 const route = useRoute();
+const isCollapsed = ref(false)
 </script>

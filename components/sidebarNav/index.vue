@@ -264,11 +264,16 @@ const url = useRuntimeConfig().public.authUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
 
-// STATE COLLAPSE
-const isCollapsed = ref(false);
+const emit = defineEmits(["update:isCollapsed"])
+
 function toggleSidebar() {
-  isCollapsed.value = !isCollapsed.value;
+  emit("update:isCollapsed", !props.isCollapsed)
 }
+// STATE COLLAPSE
+// const isCollapsed = ref(false);
+// function toggleSidebar() {
+//   isCollapsed.value = !isCollapsed.value;
+// }
 
 const createModal = ref(false);
 const openCreateModal = () => {
@@ -283,6 +288,7 @@ const closeCreateModal = () => {
 
 const props = defineProps({
   countKaprog: Number,
+  isCollapsed: Boolean
 });
 
 const GetMajor = async () => {
