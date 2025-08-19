@@ -12,6 +12,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.11.2",
     "@tailwindcss/vite": "^4.1.11",
+    "dayjs": "^1.11.13",
     "nuxt": "^4.0.1",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.4.1",

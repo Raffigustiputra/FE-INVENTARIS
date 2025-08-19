@@ -1,4 +1,3 @@
-
 <style scoped>
 .alert-enter-from,
 .alert-leave-to {
@@ -21,6 +20,7 @@
 <script setup>
 const authStore = useAuthStore();
 let switchEye = ref(false);
+let loading = ref(false);
 let typeInputPassword = ref('password');
 const switchVisibility = () => {
     typeInputPassword.value = typeInputPassword.value === 'password' ? 'text' : 'password';
@@ -28,7 +28,6 @@ const switchVisibility = () => {
 };
 
 const router = useRouter();
-const route = useRoute();
 const url = useRuntimeConfig().public.authUrl;
 
 const alertError = ref(false);
@@ -54,37 +53,42 @@ const showAlert = (type, message) => {
     alert(message);
   }
 };
-
-// Jalankan saat halaman pertama kali di-load
-onMounted(() => {
-  if (route.query.message) {
-    showAlert('error', route.query.message);
-  }
-});
-
+    
 const login = async () => {
-  try {
-    const response = await $fetch(`${url}/login`, {
-      method: 'POST',
-      body: {
-        username: authStore.input.username,
-        password: authStore.input.password,
-      },
-    });
+    try {
+        loading.value = true;
+        const response = await $fetch(`${url}/login`, {
+            method: 'POST',
+            body: {
+                username: authStore.input.username,
+                password: authStore.input.password,
+            },
+        });
 
-    authStore.setAuthData({
-      token: response.token,
-      role: response.data.role,
-      name: response.data.name,
-      usid: response.data.usid,
-      username: response.data.username
-    });
+        authStore.setAuthData({
+            token: response.token,
+            role: response.data.role,
+            name: response.data.name,
+            usid: response.data.usid,
+            username: response.data.username,
+            major_id: response.data.major_id // Store the complete major object
+        });
 
-    router.push('/admin/dashboard');
-  } catch (err) {
-    console.error('Login gagal:', err);
-    showAlert('error', 'Terjadi kesalahan saat login.');
-  }
+        if (response.data.role === 'superadmin') {
+            router.push('/admin/dashboard');
+        } else if (response.data.role === 'admin') {
+            router.push('/kaprog/dashboard');
+        } else if (response.data.role === 'user') {
+            router.push('/user/dashboard');
+        } else {
+            showAlert('error', 'Unknown role');
+        }
+    } catch (err) {
+        console.error('Login gagal:', err);
+        showAlert('error', 'Failed to login');
+    } finally {
+        loading.value = false;
+    }
 };
 
 definePageMeta({
@@ -133,7 +137,7 @@ definePageMeta({
                 </div>
             </div>
 
-            <div class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
+            <form @submit.prevent="login" class="w-5/12 pt-4 pb-8 rounded-xl bg-white">
                 <div class="w-full text-center">
                     <h1 class="font-semibold">Log in to start using WikVentory</h1>
                 </div>
@@ -155,7 +159,7 @@ definePageMeta({
                     <button
                         type="button"
                         @click="switchVisibility"
-                        class="absolute right-3 top-11 transform -translate-y-1/2">
+                        class="absolute right-3 top-11 transform -translate-y-1/2 hover:cursor-pointer">
                         <svg
                             v-if="switchEye === true"
                             xmlns="http://www.w3.org/2000/svg"
@@ -191,14 +195,23 @@ definePageMeta({
                 <div class="mx-4 mt-6">
                     <button
                         @click="login"
-                        class="w-full bg-[#0844A4] text-white py-2 text-sm font-medium rounded-md">
-                        LOGIN
+                            class="w-full bg-[#0844A4] text-white py-2 flex justify-center items-center text-sm cursor-pointer font-medium rounded-md"
+                            :class="loading ? 'opacity-70 cursor-not-allowed' : ''"
+                        >
+                        <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        {{ loading ? 'Loading...' : 'Login' }}
                     </button>
                 </div>
-            </div>
+            </form>
          <!--copy right-->
-            <p class="text-xs mt-10">
-                © PPLG XII-V 2025. All Rights Reservedd
+            <p class="text-xs font-semibold mt-10">
+                © PPLG XII-V 2025. All Rights Reserved
             </p>
         </div>
     </div>

@@ -1,16 +1,16 @@
 <template>
   <div class="h-screen flex flex-col text-center font-Poppins">
-    <header class="h-[8%] border-b border-gray-200">
+    <header class=" border-gray-200">
       <img
-        src="/images/WV-BLACKLANDSCAPE.png"
+        src="/public/images/WV-BLACKLANDSCAPE.png"
         alt="WV black landscape"
-        class="w-50 m-3.5"
+        class="w-50 m-5"
       />
     </header>
 
     <main class="text-black h-[90%] flex flex-col items-center justify-center">
       <img
-        src="/images/errorImages/404.png"
+        src="/public/images/errorImages/404.png"
         alt="404 Image"
         class="w-90" />
       <h1 class="text-6xl font-medium my-4 tracking-tight"> {{ error.statusCode }} </h1>
