@@ -373,6 +373,7 @@ const GetMajor = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
+      'ngrok-skip-browser-warning': true
     },
   });
   if (response.status === 200) {
@@ -386,6 +387,7 @@ const fetchUsers = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
+       'ngrok-skip-browser-warning': true
     },
   });
 
