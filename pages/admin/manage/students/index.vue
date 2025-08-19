@@ -89,43 +89,125 @@
         </Modal>
       </div>
     </Transition>
+    <Transition name="fade">
+      <div
+        v-if="modalEdit"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+      >
+        <Modal
+          title="Edit Student"
+          @btnSubmit="submitEditStudent"
+          @btnClose="closeModal"
+        >
+          <div class="w-full flex items-center gap-2">
+            <InputText
+              label="Name"
+              placeholder="Enter Name Here.."
+              v-model="studentStore.input.name"
+              class="w-1/2"
+            />
+            <InputNumber
+              label="NIS"
+              placeholder="Enter NIS Here.."
+              v-model="studentStore.input.nis"
+              class="w-1/2"
+            />
+          </div>
+          <div class="w-full flex items-center gap-2">
+            <InputText
+              label="Rayon"
+              placeholder="Enter Rayon Here.."
+              v-model="studentStore.input.rayon"
+              class="w-1/2"
+            />
+            <InputSelect
+              label="Major"
+              placeholder="Select Major"
+              v-model="studentStore.input.major_id"
+              class="w-1/2"
+            >
+              <option
+                v-for="i in majorStore.dataMajor"
+                :key="i.id"
+                :value="i.id"
+              >
+                {{ i.name }}
+              </option>
+            </InputSelect>
+          </div>
+        </Modal>
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div
+        v-if="modalDelete"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+      >
+        <Modal
+          @btnSubmit="submitDeleteStudent"
+          @btnClose="closeModal"
+          title="Delete Student"
+        >
+          <div class="w-full flex flex-col items-center py-4">
+            <div class="text-red-500 mb-3"></div>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">
+              Confirm Deletion
+            </h3>
+            <p class="text-center text-gray-600">
+              Are you sure you want to delete
+              <span class="font-semibold">{{ studentStore.input.name }}</span>
+              ?
+              <br />
+            </p>
+          </div>
+        </Modal>
+      </div>
+    </Transition>
     <Navbar
       :breadcrumbs="breadcrumbs"
       @breadcrumbClick="handleBreadcrumbClick"
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Students</h1>
-      <SearchBox text="Search students..." />
+      <div
+        class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2"
+      >
+        <IconsSearchIcon class="w-6 h-6 text-gray-500" />
+        <input
+          type="text"
+          v-model="studentStore.filter.search"
+          @input="handleSearch"
+          class="outline-none w-full"
+        />
+      </div>
     </div>
 
-         <TableSkeleton v-if="pending"
-        :rows="5"
-        :columns="5"
-     />
+    <TableSkeleton v-if="pending" :rows="5" :columns="5" />
 
-        <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
-            <table class="min-w-full text-sm">
-                <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
-                    <tr class="text-sm font-medium text-gray-700">
-                        <th class="px-8 py-2 w-3/12 text-left">Name</th>
-                        <th class="px-4 py-2 w-3/12 text-center">NIS</th>
-                        <th class="px-4 py-2 w-2/12 text-center">Rayon</th>
-                        <th class="px-4 py-2 w-3/12 text-center">Major</th>
-                        <th class="px-4 py-2 w-3/12 text-right">
-                            <div class="mr-2">Action</div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white">
-                    <tr
-                        v-for="i in studentStore.students"
-                        :key="i"
-                        class="border-b border-[#EEEEEE] hover:bg-gray-50">
-                        <!-- Name -->
-                        <td class="flex items-center gap-2 px-8 py-4 text-left">
-                            <IconsUserIcon />
-                            <span class="text-xs font-medium">{{ i.name }}</span>
-                        </td>
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+      <table class="min-w-full text-sm">
+        <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
+          <tr class="text-sm font-medium text-gray-700">
+            <th class="px-8 py-2 w-3/12 text-left">Name</th>
+            <th class="px-4 py-2 w-3/12 text-center">NIS</th>
+            <th class="px-4 py-2 w-2/12 text-center">Rayon</th>
+            <th class="px-4 py-2 w-3/12 text-center">Major</th>
+            <th class="px-4 py-2 w-3/12 text-right">
+              <div class="mr-2">Action</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white">
+          <tr
+            v-for="i in studentStore.students"
+            :key="i"
+            class="border-b border-[#EEEEEE] hover:bg-gray-50"
+          >
+            <!-- Name -->
+            <td class="flex items-center gap-2 px-8 py-4 text-left">
+              <IconsUserIcon />
+              <span class="text-xs font-medium">{{ i.name }}</span>
+            </td>
 
             <!-- NIS -->
             <td class="px-4 py-4 text-center">
@@ -163,15 +245,28 @@
             <!-- Action -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
-                <ButtonEdit />
-                <ButtonDelete />
+                <ButtonEdit @click="openModalEdit(i)" />
+                <ButtonDelete @click="openModalDelete(i)" />
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="text-xs text-gray-500 mt-3 ml-2">Showing to of Accounts</p>
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500">
+        Showing {{ studentStore.students.length }} of
+        {{ allStudentCount }} Accounts
+      </p>
+      <Pagination
+        :currentPage="currentPage"
+        :lastPage="lastPage"
+        :paginationItems="paginationItems"
+        @prev="prevPage"
+        @next="nextPage"
+        @change="changePage"
+      />
+    </div>
   </div>
 </template>
 
@@ -183,6 +278,7 @@ import {
   IconsNavbarIconsManageUser,
 } from "#components";
 import { useAuthStore } from "@/stores/auth";
+import Pagination from '@/components/pagination/index.vue'
 
 definePageMeta({
   layout: "default",
@@ -192,14 +288,142 @@ definePageMeta({
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const studentStore = useStudentStore();
+const majorStore = useMajorStore();
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getStudent();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getStudent();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    getStudent();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
+
+  timeoutFiltering = setTimeout(() => {
+    getStudent();
+  }, 500);
+};
 
 let modalCreate = ref(false);
 let modalEdit = ref(false);
 let modalDelete = ref(false);
-let Closemodal = () => {
+let closeModal = () => {
   modalCreate.value = false;
   modalEdit.value = false;
   modalDelete.value = false;
+  studentStore.input.name = "";
+  studentStore.input.major_id = "";
+  studentStore.input.nis = "";
+  studentStore.input.rayon = "";
+};
+
+const openModalEdit = (item) => {
+  modalEdit.value = true;
+  studentStore.input.id = item.id;
+  studentStore.input.name = item.name;
+  studentStore.input.major_id = item.major_id;
+  studentStore.input.nis = item.nis;
+  studentStore.input.rayon = item.rayon;
+};
+
+const openModalDelete = (item) => {
+  studentStore.input.id = item.id;
+  studentStore.input.name = item.name;
+  modalDelete.value = true;
 };
 
 const modalImport = ref(false);
@@ -298,17 +522,37 @@ const submitImportStudent = async () => {
   }
 };
 
+const allStudentCount = ref(0);
+
+const getMajor = async () => {
+  const response = await $fetch(`${url}/major`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  });
+  if (response.status === 200) {
+    majorStore.dataMajor = response.data;
+  }
+};
+
 const getStudent = async () => {
-    const response = await $fetch(`${url}/student/data`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-        },
-    });
+  const response = await $fetch(
+    `${url}/student/data?search=${studentStore.filter.search}&page=${currentPage.value}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    }
+  );
 
   if (response.status === 200 || response.status === 201) {
     studentStore.students = response.data;
+    lastPage.value = response.meta.last_page;
+    allStudentCount.value = response.meta.total;
     pending.value = false;
   }
 };

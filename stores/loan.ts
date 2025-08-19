@@ -6,6 +6,7 @@ export const useLoanStore = defineStore("loan", {
             name: "",
             class: "",
             item: ""
-        }
+        },
+        loan: []
     })
 });

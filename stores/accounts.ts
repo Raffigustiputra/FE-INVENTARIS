@@ -10,6 +10,8 @@ export const useAccountsStore = defineStore("accounts", {
             role : '',
             password : '',
             major_id : '',
+        }, filter : {
+            search : ''
         },
         Accounts : [],
     }),

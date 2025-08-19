@@ -3,6 +3,7 @@
     <label
       :for="`radio-${props.value}`"
       class="ml-0.5 mb-1 block text-sm font-medium cursor-pointer text-[#727272]"
+      :class="{'cursor-not-allowed': props.disabled}"
     >
       {{ props.label }}
     </label>
@@ -12,15 +13,18 @@
       <label
         :for="`radio-${props.value}`"
         class="flex items-center gap-2 cursor-pointer w-full"
+        :class="{'cursor-not-allowed': props.disabled}"
       >
         <input
           type="radio"
           :name="props.name"
           :id="`radio-${props.value}`"
           class="size-4 outline-none"
+          :class="{'cursor-not-allowed': props.disabled}"
           :value="props.value"
           :checked="modelValue === props.value"
           @change="$emit('update:modelValue', props.value)"
+          :disabled="props.disabled"
         />
         <p class="text-sm">{{ props.valueName }}</p>
       </label>
@@ -35,6 +39,7 @@ const props = defineProps({
   value: String,
   name: String,
   modelValue: String,
+  disabled: Boolean
 });
 
 defineEmits(["update:modelValue"]);
