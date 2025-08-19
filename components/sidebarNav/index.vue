@@ -306,6 +306,11 @@ const menuByRole = {
       icon: IconsInventory,
     },
     {
+      name: "QR",
+      path: "/admin/qr",
+      icon: IconsDashboard,
+    },
+    {
       name: "Manage Data",
       path: "/admin/manage",
       icon: IconsManage,
