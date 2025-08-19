@@ -1,5 +1,5 @@
 <template>
-  <div class="border bg-white border-[#D2D2D2] w-5/12 rounded-sm">
+  <div class="border bg-white border-[#D2D2D2] w-6/12 rounded-sm pb-4">
     <div class="border-b bg-white rounded-sm border-[#D2D2D2] py-2 px-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center p-1.5 gap-2">
@@ -39,7 +39,7 @@
     </div>
     <div
       v-if="showActions"
-      class="border-t w-full justify-end flex gap-3 px-4 py-2 bg-white rounded-sm border-[#D2D2D2]"
+      class="mt-2.5 justify-end flex gap-3 px-4 py-2 bg-white rounded-sm border-[#D2D2D2]"
     >
       <button
         @click="$emit('btnClose')"
@@ -49,13 +49,14 @@
       </button>
       <button
         @click="$emit('btnSubmit')"
-        :disabled="isSubmitting"
-        class="bg-[#3A6CC2] hover:cursor-pointer duration-200 hover:bg-[#335fac] text-white px-3 py-1 text-sm rounded-md font-medium"
-        :class="{ 'opacity-60 cursor-not-allowed': isSubmitting }"
+        :disabled="isSubmitting || disableSubmit"
+        class="duration-200 hover:cursor-pointer text-white px-3 py-1 text-sm rounded-md font-medium"
+        :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || disableSubmit, 'bg-red-600 hover:bg-red-700': labelButton === 'Delete' || labelButton === 'delete', 'bg-[#3A6CC2] hover:bg-[#335fac]': labelButton !== 'delete' }"
       >
-        Submit
+        {{ labelButton }}
       </button>
     </div>
+    <slot name="footer" />
   </div>
 </template>
 <script setup>
@@ -73,6 +74,14 @@ const props = defineProps({
   isSubmitting: {
     type: Boolean,
     default: false,
+  },
+  disableSubmit: {
+    type: Boolean,
+    default: false,
+  },
+  labelButton: {
+    type: String,
+    default: "Submit",
   },
 });
 </script>

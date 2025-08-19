@@ -152,8 +152,14 @@
       </div>
     </Transition>
 
+    <!-- SKELETON -->
+     <TableSkeleton v-if="pending"
+        :rows="3"
+        :columns="5"
+     />
+
     <!-- Tabel -->
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="bg-[#F7F8F9]">
           <tr class="text-sm font-medium text-gray-700">
@@ -173,7 +179,10 @@
         </thead>
 
         <tbody class="bg-white" v-for="item in mainInventoryStore.inventory">
-          <tr :key="item.id">
+          <tr 
+              :key="item.id"
+              class="hover:bg-gray-100 transition-colors duration-200"
+            >
             <!-- Checkbox -->
             <td class="px-4 py-4">
               <input
@@ -181,24 +190,20 @@
                 v-model="selectedItems"
                 :value="item.id"
                 class="w-4 h-4 rounded-md border-2 border-gray-400 cursor-pointer"
+                @click.stop
               />
             </td>
 
             <!-- Name -->
-            <td class="px-10 py-4">
-              <NuxtLink
-                :to="`/admin/inventory/${item.id}`"
-                class="text-black text-xs font-medium"
-              >
+            <td class="px-10 w-full py-4 cursor-pointer" @click="viewItem(item.id)">
                 {{ item.name }}
-              </NuxtLink>
             </td>
 
             <!-- Action -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
-                <ButtonEdit @click="openModalUpdate(item)" />
-                <ButtonDelete @click="openModalDelete(item)" />
+                <ButtonEdit @click.stop="openModalUpdate(item)" />
+                <ButtonDelete @click.stop="openModalDelete(item)" />
               </div>
             </td>
           </tr>
@@ -235,6 +240,10 @@ const alertError = ref(false);
 const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
+
+const viewItem = (id) => {
+  navigateTo(`/admin/inventory/${id}`);
+};
 
 const showAlert = (type, message) => {
   alertMessage.value = message;
@@ -296,6 +305,7 @@ const closeModalDelete = () => {
 };
 
 const getMainInvetoryItems = async () => {
+    setTimeout(() => setLoading(false), 2000);
   const response = await $fetch(`${url}/item`, {
     method: "GET",
     headers: {

@@ -160,7 +160,7 @@
         <Modal
           @btnClose="CloseModalCreate"
           @btnSubmit="submitDeleteAccount"
-          title="Delete Type"
+          title="Delete Account"
           :isSubmitting="isSubmitting"
         >
           <div class="w-full flex flex-col items-center py-4">
@@ -185,10 +185,23 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Account</h1>
-      <SearchBox text="Search account..." />
+      <div class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2">
+                <IconsSearchIcon class="w-6 h-6 text-gray-500" />
+                <input
+                    type="text"
+                    v-model="accountStore.filter.search"
+                    @input="handleSearch"
+                    class="outline-none w-full" />
+            </div>
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <!-- skeleton -->
+      <TableSkeleton v-if="pending"
+        :rows="4"
+        :columns="4"
+     />
+
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
           <tr class="text-sm font-medium text-gray-700">
@@ -266,6 +279,19 @@ definePageMeta({
   title: "Accounts",
 });
 
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+    pending.value = true;
+    if (timeoutFiltering) {
+        clearTimeout(timeoutFiltering);
+    }
+
+    timeoutFiltering = setTimeout(() => {
+        fetchUsers();
+    }, 500);
+};
+
 const alertError = ref(false);
 const alertMessage = ref("");
 const alertSuccess = ref(false);
@@ -340,6 +366,8 @@ const pending = ref(true);
 const error = ref(null);
 
 const GetMajor = async () => {
+    setTimeout(() => setLoading(false), 5000);
+    setTimeout(() => setLoading(false), 5000);
   const response = await $fetch(`${url}/major`, {
     method: "GET",
     headers: {
@@ -353,7 +381,7 @@ const GetMajor = async () => {
 };
 
 const fetchUsers = async () => {
-  const response = await $fetch(`${url}/user`, {
+  const response = await $fetch(`${url}/user?search=${accountStore.filter.search}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -363,6 +391,7 @@ const fetchUsers = async () => {
 
   if (response.status === 200) {
     accountStore.Accounts = response.data;
+    pending.value = false;
   }
 };
 

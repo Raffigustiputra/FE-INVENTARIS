@@ -66,13 +66,25 @@
       </div>
     </Transition>
 
-    <!-- Table -->
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Teachers</h1>
-      <SearchBox text="Search teachers..." />
+      <div
+        class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2"
+      >
+        <IconsSearchIcon class="w-6 h-6 text-gray-500" />
+        <input
+          type="text"
+          v-model="teacherStore.filter.search"
+          @input="handleSearch"
+          class="outline-none w-full"
+          placeholder="Search anything..."
+        />
+      </div>
     </div>
 
-    <div class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
+    <TableSkeleton v-if="pending" :rows="3" :columns="5" />
+    <!-- Table -->
+    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="h-6 bg-[#F7F8F9] rounded-t-lg">
           <tr class="text-sm font-medium text-gray-700">
@@ -112,11 +124,20 @@
         </tbody>
       </table>
     </div>
-    <p class="text-xs text-gray-500 mt-3 ml-2">
-      Showing {{ teacherStore.teachers.length > 0 ? 1 : 0 }} to
-      {{ teacherStore.teachers.length }} of
-      {{ teacherStore.teachers.length }} Teachers
-    </p>
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500">
+        Showing {{ teacherStore.teachers.length }} of
+        {{ allTeacherCount }} Accounts
+      </p>
+      <Pagination
+        :currentPage="currentPage"
+        :lastPage="lastPage"
+        :paginationItems="paginationItems"
+        @prev="prevPage"
+        @next="nextPage"
+        @change="changePage"
+      />
+    </div>
   </div>
 </template>
 
@@ -129,11 +150,122 @@ import IconsUpload from "@/components/icons/upload.vue";
 
 import { useAuthStore } from "@/stores/auth";
 import AlertSuccess from "@/components/alert/Success.vue"; // sesuaikan path-nya
+import Pagination from "@/components/pagination/index.vue";
 
 definePageMeta({
   layout: "default",
   title: "Teachers",
 });
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
+
+  timeoutFiltering = setTimeout(() => {
+    getTeachers();
+  }, 500);
+};
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getTeachers();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getTeachers();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    getTeachers();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
+const allTeacherCount = ref(0);
 
 const alertShow = ref(false);
 const alertTitle = ref("");
@@ -168,7 +300,7 @@ const submitImportTeacher = async () => {
   formData.append("file", fileImport.value);
 
   try {
-    const response = await $fetch(`${url}/teachers-import`, {
+    const response = await $fetch(`${url}/teacher/import`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${authStore.token}`,
@@ -205,18 +337,27 @@ const submitImportTeacher = async () => {
   }
 };
 
+const pending = ref(true);
+const error = ref(null);
+
 const getTeachers = async () => {
-  const response = await $fetch(`${url}/teacher`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-      "ngrok-skip-browser-warning": "true",
-    },
-  });
+  const response = await $fetch(
+    `${url}/teacher/data?search=${teacherStore.filter.search}&page=${currentPage.value}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+        "ngrok-skip-browser-warning": "true",
+      },
+    }
+  );
 
   if (response.status === 200 || response.status === 201) {
     teacherStore.teachers = response.data;
+    lastPage.value = response.meta.last_page;
+    allTeacherCount.value = response.meta.total;
+    pending.value = false;
   }
 };
 

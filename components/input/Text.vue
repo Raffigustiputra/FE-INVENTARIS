@@ -9,7 +9,8 @@
                 name="brand"
                 :value="modelValue"
                 @input="$emit('update:modelValue', $event.target.value)"
-                class="outline-none mt-2 block w-full px-4 py-2 rounded-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC]  focus:border-blue-500 focus:ring focus:ring-blue-200"
+                class="outline-none mt-2 block w-full px-4 py-2 rounded-sm text-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC]  focus:border-blue-500 focus:ring focus:ring-blue-200"
+                :class="[props.isDisabled ? 'bg-gray-100 cursor-not-allowed' : '']"
                 :placeholder="props.placeholder" 
                 :disabled="props.isDisabled" 
             />
@@ -33,7 +34,7 @@ const props = defineProps({
     },
     modelValue: {
         type: String
-    }
+    },
 })
 
 const emit = defineEmits(['update:modelValue']);

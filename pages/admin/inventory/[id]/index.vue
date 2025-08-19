@@ -11,7 +11,12 @@
       <SearchBox />
     </div>
 
-    <div class="overflow-x-auto mt-7 rounded-lg bg-[#F7F8F9]">
+     <TableSkeleton v-if="pending"
+        :rows="4"
+        :columns="4"
+     />
+
+    <div v-else class="overflow-x-auto mt-7 rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
         <thead class="bg-[#F7F8F9]">
           <tr class="text-sm font-medium text-gray-700">
@@ -34,30 +39,40 @@
           v-for="item in subItemStore.subItems"
           :key="item.id"
         >
-          <tr class="border-b border-[#EEEEEE] hover:bg-gray-50">
+          <tr class="border-b border-[#EEEEEE] hover:bg-gray-100">
             <td class="px-4 py-4">
               <input
                 type="checkbox"
                 v-model="selectedItems"
                 :value="item.id"
                 class="w-4 h-4 rounded-md border-2 border-gray-400 bg-gray-300 checked:border-blue-500"
+                @click.stop
               />
             </td>
-            <td class="px-6 py-4 text-center">{{ item.item.name }}</td>
-            <td class="px-6 py-4 text-center">
-              <NuxtLink
-                :to="`/admin/inventory/${item.item.id}/${item.id}`"
-                class="text-black text-xs font-medium"
-              >
+            <td class="px-6 py-4 text-center cursor-pointer" @click="viewItem(item)">{{ item.item.name }}</td>
+            <td class="px-6 py-4 text-center cursor-pointer" @click="viewItem(item)">
                 {{ item.merk }}
-              </NuxtLink>
             </td>
-            <td class="px-6 py-4 text-center">{{ item.stock }}</td>
-            <td class="px-6 py-4 text-center">
-              <div class="bg-blue-300 w-24 py-0.5 rounded-md inline-block">
-                <span class="text-white text-xs font-medium">{{
-                  item.major.name
-                }}</span>
+            <td class="px-6 py-4 text-center cursor-pointer" @click="viewItem(item)">{{ item.stock }}</td>
+            <td class="px-6 py-4 text-center cursor-pointer" @click="viewItem(item)">
+              <div 
+                class="w-24 py-0.5 rounded-md inline-block"
+                :style="{
+                  backgroundColor: `rgba(${parseInt(
+                    item.major?.color.slice(1, 3),
+                    16
+                  )}, ${parseInt(item.major?.color.slice(3, 5), 16)}, ${parseInt(
+                    item.major?.color.slice(5, 7),
+                    16
+                  )}, 0.8)`,
+                }"
+              >
+                <span 
+                  class="text-xs font-medium"
+                  :style="{ color: darkenColor(item.major?.color, 70) }"
+                >
+                  {{ item.major.name }}
+                </span>
               </div>
             </td>
           </tr>
@@ -76,6 +91,7 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
 } from "#components";
+import { darkenColor } from "~/lib/helper";
 
 definePageMeta({
   title: "Inventory",
@@ -86,7 +102,12 @@ const authStore = useAuthStore();
 const subItemStore = useSubItemStore();
 const url = useRuntimeConfig().public.authUrl;
 
+const viewItem = (item) => {
+  navigateTo(`/admin/inventory/${item.item.id}/${item.id}`);
+};
+
 const getSubItemInventory = async () => {
+  setTimeout(() => setLoading(false), 2000);
   const response = await $fetch(`${url}/subitem`, {
     method: "GET",
     headers: {
