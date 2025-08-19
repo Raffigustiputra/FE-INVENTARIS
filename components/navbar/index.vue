@@ -32,12 +32,8 @@
         :key="index"
         class="flex items-center gap-4"
           >
-<<<<<<< HEAD
-        <div class="text-[#A9A9A9] flex gap-1 hover:text-[#727272] hover:cursor-pointer">
-=======
         <div class="text-[#A9A9A9] flex gap-2.5 hover:text-[#727272] hover:cursor-pointer"
           @click="$emit('breadcrumbClick', item)">
->>>>>>> e6fb5d2d3ee0449afe2db48ce6770dec6f6a87f8
           <component
             :is="item.icon"
             class="w-5 h-5"

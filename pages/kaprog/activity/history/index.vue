@@ -22,11 +22,11 @@
               />
             </th>
             <th class="px-6 py-2 font-semibold">Type</th>
-            <th class="px-6 py-2 font-semibold">Unit Code</th>
-            <th class="px-6 py-2 font-semibold">Brand</th>
-            <th class="px-6 py-2 font-semibold">Back Time</th>
-            <th class="px-6 py-2 font-semibold">Status</th>
-            <th class="px-6 py-2 font-semibold">Condition</th>
+            <th class="px-6 py-2 font-semibold text-center">Unit Code</th>
+            <th class="px-6 py-2 font-semibold text-center">Brand</th>
+            <th class="px-6 py-2 font-semibold text-center">Back Time</th>
+            <th class="px-6 py-2 font-semibold text-center">Status</th>
+            <th class="px-6 py-2 font-semibold text-center">Condition</th>
             <th class="px-4 py-2 font-semibold text-right">Action</th>
           </tr>
         </thead>
@@ -41,7 +41,7 @@
             ]"
           >
             <!-- Checkbox -->
-            <td class="px-4 py-4">
+            <td class="px-4 py-2">
               <input
                 type="checkbox"
                 v-model="selectedItems"
@@ -51,7 +51,7 @@
             </td>
 
             <!-- Type -->
-            <td class="px-6 py-4">
+            <td class="px-6 py-2">
               <NuxtLink
                 :to="`/kaprog/history/${item.id}`"
                 class="text-xs text-black font-medium hover:underline"
@@ -61,27 +61,27 @@
             </td>
 
             <!-- Unit Code -->
-            <td class="px-6 py-4 text-xs">
+            <td class="px-6 py-2 text-xs text-center">
               <span class="text-xs font-medium">{{ item.unit_code }}</span>
             </td>
 
             <!-- Brand -->
-            <td class="px-6 py-4 text-xs">
+            <td class="px-6 py-2 text-xs text-center">
               <span class="text-xs font-medium">{{ item.brand }}</span>
             </td>
 
             <!-- Back Time -->
-            <td class="px-6 py-4 text-xs">
+            <td class="px-6 py-2 text-xs text-center">
               <span class="text-xs font-medium">{{ item.back_time }}</span>
             </td>
 
             <!-- Status -->
-            <td class="px-6 py-4">
+            <td class="px-6 py-2 text-center">
               <Badge type="status" :value="item.status" :label="item.status" />
             </td>
 
             <!-- Condition -->
-            <td class="px-6 py-4">
+            <td class="px-6 py-2 text-center">
               <Badge type="condition" :value="item.condition" :label="item.condition" />
             </td>
 
