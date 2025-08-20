@@ -73,7 +73,16 @@
             <!-- left section -->
             <div class="w-8/12 border-r border-[#D9D9D9] h-screen px-2 overflow-y-auto">
                 <!-- over view Section -->
-                <div></div>
+                <div>
+
+                     <div class="bg-white p-4 rounded-lg shadow">
+    <apexchart
+      type="line"
+      :options="chartOptions"
+      :series="series"
+    ></apexchart>
+  </div>
+                </div>
 
                 <!-- last Activity Section -->
                 <div class="mt-2 mr-2">
@@ -124,6 +133,27 @@
 const authStore = useAuthStore();
 
 const now = new Date();
+
+const chartOptions = {
+  chart: {
+    type: 'line',
+    height: 350,
+    zoom: {
+      enabled: false
+    }
+  },
+  stroke: {
+    curve: 'smooth'
+  },
+  xaxis: {
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+  }
+}
+
+const series = [{
+  name: 'Sales',
+  data: [30, 40, 35, 50, 49, 60, 70]
+}]
 
 const options = {
     weekday: 'short', // Thu
