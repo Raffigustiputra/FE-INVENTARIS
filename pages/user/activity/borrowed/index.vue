@@ -55,8 +55,7 @@
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
         >
-        <div class="max-h-[80vh] overflow-y">
-
+        <div class="max-h-96 overflow-y">
           <div v-if="currentModal === 'selection'">
             <div>
               <label
