@@ -70,7 +70,7 @@
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3">
-            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+            <input class="cursor-pointer" type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="py-3 px-4 text-center">Type</th>
           <th
@@ -105,7 +105,7 @@
           class="hover:bg-gray-50"
         >
           <td class="px-4 py-3">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" />
+            <input class="cursor-pointer" type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="py-3 text-center">
             {{
@@ -152,7 +152,7 @@
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3">
-            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+            <input class="cursor-pointer" type="checkbox" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="py-3 px-4 text-center">Name</th>
           <th
@@ -186,7 +186,7 @@
           class="hover:bg-gray-50"
         >
           <td class="px-4 py-3">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" />
+            <input class="cursor-pointer" type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="py-3 text-center">
             {{ item.consumable_item.name || "N/A" }}
@@ -259,6 +259,7 @@ const historyStore = useHistory();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const route = useRoute();
+const exportData = ref("");
 
 // =============================================================================
 // REACTIVE STATE
@@ -413,9 +414,9 @@ const breadcrumbs = computed(() => [
     click: () => openModalFromBreadcrumb({ label: "Manage Inventory" }),
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
-    click: () => openModalFromBreadcrumb({ label: "Print Selected" }),
+    click: () => exportSelectedData(),
   },
   {
     label: "Change Items",
@@ -660,6 +661,61 @@ const changeHistoryData = () => {
   getHistoryData();
 };
 
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const endpoint = viewData.value === "borrowable" ? "unit-loan" : "consumable-loan";
+    const requestBody = {
+      export: exportData.value,
+      data: selectedItems.value,
+      search: searchQuery.value,
+    };
+
+    if (viewData.value === "borrowable") {
+      requestBody.type = "returning";
+      requestBody.sort_by_type = sortByType.value;
+      requestBody.sort_by_time = sortByTime.value;
+    } else {
+      requestBody.sort_type = sortByType.value;
+      requestBody.sort_quantity = sortByQuantity.value;
+    }
+
+    const response = await fetch(`${url}/export/${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${viewData.value}_history_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
+  }
+};
+
 // =============================================================================
 // EVENT HANDLERS
 // =============================================================================
@@ -699,8 +755,10 @@ const handleSort = (type) => {
 
 const toggleAll = () => {
   if (selectAll.value) {
+    exportData.value = "all";
     selectedItems.value = historyStore.history.map((item) => item.id);
   } else {
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 };

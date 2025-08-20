@@ -286,15 +286,15 @@
       {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
     </p>
     <Pagination
-      :currentPage="currentPage"
-      :lastPage="lastPage"
-      :paginationItems="paginationItems"
+    :currentPage="currentPage"
+    :lastPage="lastPage"
+    :paginationItems="paginationItems"
       @prev="prevPage"
       @next="nextPage"
       @change="changePage"
-    />
-  </div>
-</template>
+      />
+    </div>
+  </template>
 <script setup>
 import {
   IconsNavbarIconsFile,
@@ -306,10 +306,16 @@ import {
 } from "#components";
 import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
+import { useUnitItemStore } from "@/stores/main-inventory";
 
 definePageMeta({
-  title: "Inventory",
+  title: "Borrowable",
 });
+const url = useRuntimeConfig().public.authUrl;
+const authStore = useAuthStore();
+const unitItemStore = useUnitItemStore();
+const mainInventoryStore = useMainInventoryStore();
+const adminInventoryStore = useAdminInventoryStore();
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
@@ -326,7 +332,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsFile,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
   },
   {
@@ -343,11 +349,6 @@ const breadcrumbs = [
   },
 ];
 
-const url = useRuntimeConfig().public.authUrl;
-const authStore = useAuthStore();
-const unitItemStore = useUnitItemStore();
-const mainInventoryStore = useMainInventoryStore();
-const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
   if (item.label === "Add Item Borrowable") {
@@ -364,13 +365,6 @@ const modalTitle = ref("");
 const isSubmitting = ref(false);
 const selectedItems = ref([]);
 const selectAll = ref(false);
-
-// Form state for modal form borrowing
-const selectedItemType = ref("");
-const formErrors = ref({
-  itemType: "",
-  general: ""
-});
 
 const alertError = ref(false);
 const alertSuccess = ref(false);

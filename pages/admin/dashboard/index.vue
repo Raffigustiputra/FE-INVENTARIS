@@ -15,7 +15,7 @@
             <Transition name="fade">
                 <div
                     v-if="modal"
-                    class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30">
+                    class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
                     <Modal @btnClose="Closemodal" title="Add new item">
                       <div class="w-full flex items-center gap-2">
                         <InputRadio
