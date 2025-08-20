@@ -307,9 +307,9 @@ const breadcrumbs = [
     click: () => openModalFromBreadcrumb({ label: "Manage Inventory" }),
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
-    click: () => openModalFromBreadcrumb({ label: "Print Selected" }),
+    click: () => openModalFromBreadcrumb({ label: "Export Selected" }),
   },
   {
     label: "Sort by Type",

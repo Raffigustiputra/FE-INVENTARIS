@@ -1087,7 +1087,7 @@ const breadcrumbs = [
     click: () => openModal("selection"),
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
     click: () => exportSelectedData(),
   },
@@ -1980,7 +1980,7 @@ onMounted(() => {
 
 // ===== PAGE METADATA =====
 definePageMeta({
-  title: "Inventory",
+  title: "Borrowed",
 });
 </script>
 
