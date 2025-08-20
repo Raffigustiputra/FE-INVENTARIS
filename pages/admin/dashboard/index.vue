@@ -1,177 +1,87 @@
 <template>
     <div>
-        <!-- welome and time secion -->
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-semibold">Welcome Back, {{ authStore.getName }}</h1>
-                <p class="text-[#B0B0B0] text-sm font-light">
-                    Here’s a summary of your dashboard for today
-                </p>
-            </div>
-            <div class="flex items-center gap-3">
-                <p class="font-medium text-sm">{{ today }}</p>
-                <div class="flex items-center rounded-full bg-[#EBEBEB] p-2.5 justify-center">
-                    <svg
-                        class="size-4"
-                        viewBox="0 0 18 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M6 14.5C5.3 14.5 4.70833 14.2583 4.225 13.775C3.74167 13.2917 3.5 12.7 3.5 12C3.5 11.3 3.74167 10.7083 4.225 10.225C4.70833 9.74167 5.3 9.5 6 9.5C6.7 9.5 7.29167 9.74167 7.775 10.225C8.25833 10.7083 8.5 11.3 8.5 12C8.5 12.7 8.25833 13.2917 7.775 13.775C7.29167 14.2583 6.7 14.5 6 14.5ZM2 20C1.45 20 0.979167 19.8042 0.5875 19.4125C0.195833 19.0208 0 18.55 0 18V4C0 3.45 0.195833 2.97917 0.5875 2.5875C0.979167 2.19583 1.45 2 2 2H3V0H5V2H13V0H15V2H16C16.55 2 17.0208 2.19583 17.4125 2.5875C17.8042 2.97917 18 3.45 18 4V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H2ZM2 18H16V8H2V18ZM2 6H16V4H2V6Z"
-                            fill="#1D1D1D" />
-                    </svg>
-                </div>
-            </div>
-        </div>
+        <button-edit />
+        <button-delete />
+        <!-- <AlertError /> -->
+        <!-- <AlertSuccess /> -->
 
-        <!-- upper sections -->
-        <div class="border-b mt-3 flex py-4 items-center border-[#D9D9D9] border-t w-full">
-            <div v-for="i in 4" class="flex justify-between items-start w-full">
-                <div class="flex items-center gap-3">
-                    <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
-                        <svg
-                            width="21"
-                            height="21"
-                            viewBox="0 0 21 21"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <rect
-                                y="-0.00012207"
-                                width="21"
-                                height="21"
-                                fill="url(#pattern0_2532_77)" />
-                            <defs>
-                                <pattern
-                                    id="pattern0_2532_77"
-                                    patternContentUnits="objectBoundingBox"
-                                    width="1"
-                                    height="1">
-                                    <use
-                                        xlink:href="#image0_2532_77"
-                                        transform="scale(0.00195312)" />
-                                </pattern>
-                                <image
-                                    id="image0_2532_77"
-                                    width="512"
-                                    height="512"
-                                    preserveAspectRatio="none"
-                                    xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiTIAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAwBQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACyO34QAAAP90Uk5TAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+6wjZNQAAGr9JREFUGBntwQuAlXP+P/D3OWdmapopXSeT2NpM+alUSKjE0iasiEgoK0V+iLSlQhct5fLLJRGlsFGsLsq/kqxQSyIbW233mtFNTWO6zPWc938vdtely+f7nOd7zvPM83m9EDSRnEuu7zfooScnvzH/41Wb95SU7Nm86uP5b0x+8qFB/a6/JCcCVVHVPOemR2atLuFRlaye9chN59SEqkiqdR446aPdNLD7o0kDO1eD8r8qHR/5pJyOlH/ySMcqUP5VqcOID0sYl5IPR3SoBOU/kbOHLjpEVxxaNPTsCJSfNHv0G7rqm0ebQflE1t1f0IIv7s6C8rxK3eaW0ZKyud0qQXlZ24n7aNW+iW2hPCrjng1MgA33ZEB5z3HDvmWCfDvsOChvqT26gAlUMLo2lHdkP3GACXbgiWwob/jFhGImQfGEX0AlX86UMiZJ2ZQcqOTKGFvKJCodmwGVRF23Mcm2dYVKlkbz6QHzG0ElQ+URxfSE4hGVoRKu8wZ6xobOUIl10kx6ysyToBKo/wF6zIH+UIlSYw49aE4NqIRos4WetKUNVAIMKKVHld4DZVuNOfSwOTWgrGqzhZ62pQ2URQNK6XGl90DZUmMOfWBODSgrGq6jL6xrCGXBadvpE9tPg3LdeQX0jYLzoFx2RRF9pOgKKFf1KaevlPeBctEw+s4wKLeEn6YPPR2GckXadPrS9DQoF1R6lz71biWouEVm0n3bv1624M3J40YN7Nt34Khxk99csOzr7XTfzAhUvF6gmwpXTBvevVUmDiOzVffh01YU0k0vQMVpNN1S+vGoC7NxTNkXjvq4lG4ZDRWXu+iK6OePdc6EWGbnxz6P0hV3QcWhR4zx2/dC15owVrPrC/sYv1gPKMc6lTJeZXO7VYJDlbrNLWO8SjtBOdTmAOO04q46iEudu1YwTgfaQDlyyh7GJX/sqXDBqWPzGZc9p0A5cMI2xmPXfVXhkqr37WI8tp0AZSxlGeOQ1z8dLkrvn8c4LEuBMvUondvYNw0uS+u7kc49CmXo0hidyu2ZAgtSeubSqdilUEbq76FDZY9lwpLMx8ro0J76UAZSPqZDS5rCoqZL6NDHKVByj9CZXTfCsht30ZlHoMQujtGJ6PjqsK76+CidiF0MJVRvN53IbYuEaJtLJ3bXgxKJLKET79RCgtR6h04siUBJjKYDZYNDSJjQ4DI6MBpK4PQozeW1Q0K1y6O56OlQxxT6hObm10aC1Z5Pc5+EoI6lL82NDCHhQiNpri/UMdTeS1PRvkiKvlGa2lsb6ugm0VRxVyRJ12KamgR1VOfEaKigA5KmQwENxc6BOorIlzS0owWSqMUOGvoyAnVk/Wlo/S+RVL9cT0P9oY7o+O9oZk0WkixrDc18dzzUkUyjmbyTkHQn5dHMNKgjOJ9m8pvCA5rm08z5UIf3MY0cagtPaHuIRj6GOqzzaaTsMnjEZWU0cj7U4SyikZvgGTfRyCKow2hDI4PhIYNppA3Uz71NE6/DU16nibehfua0GA38rSo8perfaCB2GtRPzaCBohbwmBZFNDAD6ieaRGmgDzynDw1Em0D92FQamAYPmkYDU6F+pEEZ5dZmwoMy11KurAHUDz1HuUPN4UnND1HuOagfqFFMufvgUfdRrrgG1H/dRrk1qfCo1DWUuw3qv5ZR7lfwrF9RbhnUf+RQ7jV42GuUy4H6t4co9l02PCz7O4o9BPW90GaK9Yen9afY5hDUv3Sg2MoIPC2ykmIdoP5lMsXawePaUWwy1D+lF1LqPXjee5QqTIf6hx4UOx+edz7FekD9wwJKLYUPLKXUAqi/yy6nVGf4QGdKlWdDAXdS6nP4wueUuhMKmE2prvCFrpSaDYXIPgr9NQRfCP2VQvsiUK0p1Qs+0YtSraEGU6iwCnyiSiGFBkMtpNAU+MYUCi1E4KUdpNCv4Bu/otDBNATdeRTaFoZvhLdR6DwE3QgKPQIfeYRCIxB0H1Lof+Aj/0OhDxFwVUooswK+soIyJVUQbJ0odBd85S4KdUKwjaHQSfCVkyg0BsG2kDIb4DMbKLMQwbaFMhPhMxMpswWBVjlKmWvhM9dSJloZQdacMrE68Jk6Mco0R5BdTZlV8J1VlLkaQTaUMuPgO+MoMxRB9jJlfgPf+Q1lXkaQfUKR8mrwnWrlFPkEQZZPkQ3woQ0UyUeA1aHMO/ChdyhTB8HVjjLj4EPjKNMOwXUzZW6DD91GmZsRXGMpcwF86ALKjEVwTaXMCfChEygzFcH1FkX2w5f2U+QtBNe7FPkCvvQFRd5FcP2ZIq/Dl16nyJ8RXF9TZBx8aRxFvkZwbaXIKPjSKIpsRXDlU2QgfGkgRfIRXGUU6Qtf6kuRMgRWOmWugy9dR5l0BFUWZS6FL11KmSwEVSPKtIcvtadMIwRVS8q0hC+1pExLBFV7yvwSvvRLyrRHUF1ImfrwpfqUuRBB1Zoyp8CXTqFMawRVDmXOgi+dRZkcBFUWZS6EL11ImSwEVSXKXAlfupIylRBYRRTpBV/qRZEiBNdOitwBX7qDIjsRXGspMhS+NJQiaxFcn1JkDHxpDEU+RXAtpMhz8KXnKLIQwfUGRRbAlxZQ5A0E14sU2Qxf2kyRFxFcj1EkWhk+VDlKkccQXPdTphl8qBll7kdw3UGZrvChrpS5A8F1I2WGwIeGUOZGBFcnykyBD02lTCcEVz3KLIMPLaNMPQTYtxTZCx/aS5FvEWSLKNMEvtOEMosQZI9Tph98px9lHkeQ3UCZP8J3/kiZGxBkzSmzJwSfCe2hTHMEWUoxZVrCZ1pSpjgFgfYFZQbAZwZQ5gsE20uUeQc+8w5lXkKw9adMYQp8JaWQMv0RbB0o1A6+0o5CHRBs1Sn0LHzlWQpVR8BtocyeNPhI2h7KbEHQzaHQFfCRKyg0B0E3kkIz4SMzKTQSQXcehUpqwjdqllDoPARd5FsK3Q7fuJ1C30YQeC9R6BP4xicUegnqcko1hk80ptTlUOkHKfQUfOIpCh1Mh8IsCh3Kgi9kHaLQLCigF6XGwBfGUKoXFFCrnEKFNeADNQopVF4L6u8+oNRw+MBwSn0A9Q93Uyq/Kjyvaj6l7ob6hwYUGwzPG0yxBlD/9CWldqXD49J3UepLqH8ZQbH74XH3U2wE1L+0otihBvC0Boco1grqe5spNheeNpdim6H+bRDlLoeHXU65QVD/Vn0/xbZUgWdV2UKx/dWh/uNJyv0envV7yj0J9V8NyylW0gQe1aSEYuUNoX7gDcotDsGTQosp9wbUD7WhgcHwpME00AbqR5ZSrqwtPKhtGeWWQv1YVxrIrQXPqZVLA12hfiy8gQbeCcFjQu/QwIYw1E/cQROD4DGDaOIOqJ/KyKeBsnPhKeeW0UB+BtTPPEwT22rDQ2pvo4mHoX6uXglNLM+EZ2Qup4mSelCHMYVG3k2DR6S9SyNToA6n/gEamR6GJ4Sn08iB+lCHNYhmxsMTxtPMIKjDS11DMw/CAx6kmTWpUEdwEQ3dhqS7jYYugjqiN2gmejOS7OYozbwBdWT1D9DQECTVEBo6UB/qKO6jqSdDSJrQkzR1H9TRpK2lqddSkSSpr9HU2jSoo+pIYwszkRSZC2msI9QxvEljy2sjCWovp7E3oY7lxIM0tqEVEq7VBho7eCLUMQ2hueLbkGC3FdPcEKhjS1tLB6ZXRQJVnU4H1qZBCbQqogPrWiBhWqyjA0WtoET60ImivkiQvkV0og+U0Ct0ZHodJECd6XTkFSipKl/Rkfx+YVgW7pdPR76qAiXWZD+d+exMWHXmZ3RmfxMoA9fSoeiEGrCmxoQoHboWysgzdGp3rxCsCPXaTaeegTKT9ikdW3FlCK4LXbmCjn2aBmXopL107useEbgq0uNrOrf3JChjl8QYh/W9U+Ga1N7rGYfYJVAO/J5x2XZHOlyRfsc2xuX3UE5EFjM+BS+0CyFOoXYvFDA+iyNQjhz3OeO1cWQjxKHRyI2M1+fHQTlUaxXjt/TWGnCkxq1LGb9VtaAcy1pNF5R8OLx9GoyktR/+YQldsDoLKg7Z6+mOgwsHnRmGSPjMQQsP0h3rs6HicuJmumbf3DG/PacmjqLmOb8dM3cfXbP5RKg4Ncylu3Z/9OLAy9u1bJSVju+lZzVq0e7ygS9+tJvuym0IFbfGO2hJeUHu6tW5+8ppyY7GUC44dTd9afepUK5okU8fym8B5ZIzC+g7BWdCuebcQvpM4blQLmq6gb6yoSmUq2oupo8srgnlspTx9I3xKVDu61tKXyjtC2XFebvpA7vPg7KkwV/oeX9pAGVNxkx63MwMKItCI2P0sNjIEJRd3Q7Ssw52g7Kt5sv0rJdrQtl12ouH6GGHXjwNyprIVR/Q8z64KgJlQ637ttEXtt1XC8ptLScX0TeKJreEclFKt4/oMx91S4FyR61hefShvGG1oOJ33KhC+lThqOOg4pMxJJ8+lj8kA8q5ynfvos/tursylDOpt+ayAsi9NRXKXKTnRlYQG3tGoMyEuq1hBbKmWwjKwGUrWcGsvAxKqsVSVkBLW0BJZDxexgqp7PEMqGPqso0V1rYuUEd34mxWaLNPhDqylHsPsII7cG8K1BGc/SUD4MuzoQ6n+nMxBkLsuepQP9NjJwNjZw+oH2u0iIGyqBHUD/Tcz4DZ3xPq36pNYwBNqwb1T2dvYsKVF+Su/vS92a9OmPDq7Pc+XZ1bUM6E23Q2FBAeWsaEKFk9c8zdva/p3L5lo6x0/Ex6VqOW7Ttf0/vuMTNXlzAhyoaGEXgn/InW7fhg4oBLT45ALHLypQMmfrCD1v3pBATcFXtpUdGqN0ffeNZxcOi4s24c/eaqIlq09woEWfoEWrN1yo0Nw3BBuOGNU7bSmgnpCKzmX9OOna/3aQRXNerz+k7a8XVzBNQdRbRg36w7m8KKpnfO2kcLiu5AEFV5k647MP93Z4RhUfiM380/QNe9WQWBk/0ZXbZmeNtUJEBq2+Gr6bLPshEwLXPpqm+faY0Eav30t3RVbksESpcDdFHJW11SkWCpl/+xmC460AUBMjBK9/y5X00kRY3bltI90YEIitRJdM2WhxojiU4euYmumZSKQKjxPl1SOLlDCEkWav9iAV3yfg0EQM46uuPT69LhCZWvWUp3rMtBhXfBXrpiSUd4yAXv0xV7L0AF17uUbljYHh5z7v+jG0p7o0IbQxfEZreGB50+M0YXjEHFFXqG8YtObw6PavZalPF7JoQKKvQ841Y2tQk8LGdKGeP2fAgVUngS41X8XAN4XIPnihmvSWFUQOGpjNPBcSfAB+qNO8g4TQ2jwolMY5xmnACfOGEG4zQtggomZQbj87eO8JGOf2N8ZqSgQkl9i3E5NCwNvpI27BDj8lYqKpC0OYzL2w3gOw3eZlzmpKHCqDSP8dh8OXzp8s2Mx7xKqCAqL2AcSkanw6fSR5cwDgsqo0JIf49xWNQYPtZ4EePwXjoqgPBsOvfNNfC5a76hc7PD8L/xdKz8iarwvapPlNOx8fC9QXQsrz0qhPZ5dGwQfK57jE4tqIMKovZ8OhXrDl/rUEKHyoeEUGGE7iujQyUd4GOn7qNDee1RobTLpUP7ToVv1dtKhxbUQQVT6x06tLUefKrqSjpTPiSECic0qIzOrKwKX0pdSGfy2qNCOncbnVmYCj+aQmcW1EEFVWsenZkCHxpJR8qHhFBhhQaW0ZGR8J3edCSvPSq0c7bSkd7wmTaldOKLuqjgan9KJ0rbwFdqbqUTi6uiwstYQCe21oSPhObRiTfSEACp0+jEvBD8YzCdeDaMQAg9SScGwzfOK6cDDyIwhtCB8vPgE1nf0Fz0VgRI73Ka+yYLvhBeRHPFXREoXYpoblEYfjCC5go6IGDa76O5EfCBjlEa29ECgXPadhqLdoTn1dtNY+sbIoAarKOx3fXgcSkf0diKLARSnRU09lEKvG0sjS2pioDKXEJjY+Fpl8ZoamU1BFa1lTQVuxQeVn07TW2siwCru5GmtleHd02mqZ2NEGiNdtLUZHjWRTT1XSsEXKvvaOoieFSVTTRUfAEC74JiGtpUBd40joaiV0HhqigNjYMnnR2loVuh/u5WGoqeDQ9K+ysNPQj1Tw/S0F/T4D0jaWg81PfG09BIeE7zUpqZEYb6XngGzZQ2h8dEltPMe2lQ/5H2Hs0sj8BbBtLMiqpQP1B1Bc0MhKecfIhGdh4P9SPH76SRQyfDQ0J/opHohVA/cWGURv4Ugnf0pJlRUD8zkmZ6wjMqb6ORDyJQPxN+n0a2VYZXDKKR3fWgDuP4XTQyCB5Rcx9NxDpBHdZFUZrYVxPe8ASNPAx1BKNo5Al4QoNimvgoAnUEkQ9oorgBvOAPNLGnPtQRZe+iiT/AA1rFaCB2CdRR/DpGA7FWSL5FNPEo1FGNpolFSLpONLEsBeqoIktoohOSLPwlDeSfBHUM9XbTwJdhJFdPmrgc6pg6xWigJ5Kq8lYaeB1KYCoNbK2MZPodDXyXDSVQJ58GfockqpZPA/2hRG6jgfxqSJ57aWBlBEokvJwG7kXSpGyjXOxsKKEzopTbloJkuZ4GXoASe5YGrkeyrKTctzWhxKrvotxKJMmFNHAzlIGeNHAhkmM+5T4OQZlYQrn5SIpmlCtrDmWkaRnlmiEZplLuCShDj1FuKpKgXgnF8jKhDGXmUqykHhJvDOWuhjJ2FeXGIOEy91FsAZQDCyi2LxOJdjfFyhtDOdC4nGJ3I8FStlBsGpQj0yi2JQWJ1Z1isaZQjjSNUaw7EmsZxWZCOTSTYsuQUCdT7gwoh86g3MlIpJEUmw/l2HyKjUQibaRYOyjH2lFsIxKoLcWWQMVhCcXaInGep1hHqDh0pNjzSJhK+ZRaDhWX5ZTKr4REuYpiXaDi0oViVyFRZlNqVQgqLqFVlJqNBKlVSqnuUHHqTqnSWkiM2ym1LgwVp/A6St2OxPgzpX4LFbffUurPSIgcSm1NhYpb6lZK5SARRlHqASgXPECpUUiA0CYKxRpAuaBBjEKbQrDvXEotgXLFEkqdC/seplRvKFf0ptTDsO9zChVVg3JFtSIKfQ7rsmIUmg7lkukUimXBthsodQmUSy6h1A2w7Q8U2hmBcklkJ4X+AMtCuyj0f1Cu+T8K7QrBrjMo1RLKNS0pdTrsGkqhVVAuWkWhobBrCYUGQrloIIWWwKpqZZQprwflonrllCmrBpuuoNBCKFctpNAVsOl5Cl0P5arrKfQ8bNpMmf1VoFxVZT9lNsOixhSaAeWyGRRqDHvuotCtUC67lUJ3wZ65FMqBclkOhebCnl2UyYVyXS5ldsGa+hR6Gcp1L1OoPmzpQqFeUK7rRaEusGUUhU6Ect2JFBoFW+ZRZj2UBespMw+27KDMRCgLJlJmByypR6FroSy4lkL1YMdvKBPLgrIgK0aZ38COEZT5CsqKrygzAnbMpcxTUFY8RZm5sGM7ZbpAWdGFMtthRTZlotWhrKgepUw2bLiMMp9BWfIZZS6DDcMpMxbKkrGUGQ4b3qbMlVCWXEmZt2FDHmVOhbLkVMrkwYIMypSnQVmSVk6ZDLjvFMqsh7JmPWVOgft+TZl5UNbMo8yv4b5bKPMElDVPUOYWuG8UZfpCWdOXMqPgvqmU6QBlTQfKTIX73qdMXShr6lLmfbhvI0UKoCwqoMhGuC5UQpFPoSz6lCIlIbgtmzKvQFn0CmWy4bY2lBkGZdEwyrSB27pR5mooi66mTDe47V7KNIOyqBll7oXbnqJItDKURZWjFHkKbptFkU1QVm2iyCy47XOKLICyagFFPofbdlNkGpRV0yiyG24rpsjzUFY9T5FiuCxCmcegrHqMMhG4qyplhkNZNZwyVeGuupQZAGXVAMrUhbsaUqYPlFV9KNMQ7mpGme5QVnWnTDO46yzKXApl1aWUOQvuOp8yHaCs6kCZ8+GuSyhzOpRVp1PmErirG2VyoKzKoUw3uKsXZY6Hsup4yvSCu/pRJgPKqgzK9IO77qVINARlVShKkXvhrgcpUghlWSFFHoS7xlDkGyjLvqHIGLjraYqshbJsLUWehrsmUWQFlGUrKDIJ7ppAkXVQlq2jyAS4ayxF9kNZtp8iY+Gu+ymTCWVVJmXuh7v6U6YxlFWNKdMf7rqZMh2grOpAmZvhrm6UuQ7Kquso0w3uupgyw6CsGkaZi+Gu0ymzDMqqZZQ5He7KpEysLpRFdWOUyYTL8ijTB8qiPpTJg9sWU2YelEXzKLMYbptAmaIMKGsyiigzAW7rT6HuUNZ0p1B/uO1iCq2OQFkSWU2hi+G2+pTqC2VJX0rVh+vWU2h7BpQVGdsptB7um0ipB6CseIBSE+G+aylVmAVlQVYhpa6F+7IoNjME5brQTIplwYKvKPYQlOseothXsOEpyl0L5bJrKfcUbOhEuUNnQLnqjEOU6wQbItspl5cN5aLsPMptj8CKx2lg3SlQrjllHQ08Djua00TBxVAuubiAJprDkpU0UX4PlCvuKaeJlbDlHpp5KQ0qbmkv0cw9sKVuGc2svRIqTleupZmyurDmFZpa2hYqDm2X0tQrsOeUKI3NagLlUJNZNBY9BRbNoLnyJQMaQRlrNGBJOc3NgE2nxejIV6Nbp0CJpbQe/RUdiZ0Gq+bQqeiOFW8/98AtN6mjuuWB595esSNKp+bArtZUntYals2i8rBZsO0XB6k86+AvYN0QKs8aAvvS1lJ51No0JMBFVB51ERJiOpUnTUdi1N1B5UE76iJBLohSeU70AiTMg1Se8yASJ7yIymMWhZFAWdupPGV7FhKqQymVh5R2QILdEKPyjNgNSLgBVJ4xAEkwlsojxiIpplJ5wlQkR8pcKg+Ym4IkSZtBlXQz0pA04WepkuzZMJJpOFVSDUeS3R6lSpro7Ui6q/dTJcn+q+EBTf5ClRR/aQJPqDyRKgkmVoZXXFdIlWCF18FDcj6jSqjPcuAp4f8toEqYgv8Nw2vqvkqVIK/WhRedv5oqAVafD49KvTOXyrLcO1PhXWm3rKeyaP0tafC2SI+vqCz5qkcE3he67K0SKteVvHVZCD5Rs98yKlct61cTvpIzajWVS1aPyoEPZfeYtIkqTpsm9ciGfzW4eeIHO6gc2fHBxJsboAKo1vqGh16dvXj5mrzvolRHFf0ub83yxbNffeiG1tWQAP8f5pav2c/G7H8AAAAASUVORK5CYII=" />
-                            </defs>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium">INI TITLE</p>
-                        <p class="text-xs">125</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h1 @click="OpenModal">test buat klik modal</h1>
+        <!-- <AlertError /> -->
+        <!-- <AlertSuccess /> -->
+        <!-- <AlertWarning /> -->
 
-        <!-- main Sections -->
         <div class="w-full">
-            <!-- left section -->
-            <div class="w-8/12 border-r border-[#D9D9D9] h-screen px-2 overflow-y-auto">
-                <!-- over view Section -->
-                <div>
-
-                     <div class="bg-white p-4 rounded-lg shadow">
-    <apexchart
-      type="line"
-      :options="chartOptions"
-      :series="series"
-    ></apexchart>
-  </div>
-                </div>
-
-                <!-- last Activity Section -->
-                <div class="mt-2 mr-2">
-                    <h1 class="font-semibold text-md">Lastest Activity</h1>
-
-                    <div class="mt-2">
-                        <table class="min-w-full text-xs text-left rounded-t-lg overflow-hidden">
-                            <thead class="h-6 bg-[#F7F8F9]">
-                                <tr class="font-semibold text-gray-700">
-                                    <th class="px-6 py-1 w-2/12">Type</th>
-                                    <th align="center" class="px-3 py-1 w-3/12">Unit Code</th>
-                                    <th align="center" class="px-3 py-1 w-2/12">Brand</th>
-                                    <th align="center" class="px-3 py-1 w-3/12">Date Time</th>
-                                    <th align="center" class="px-3 py-1 w-3/12">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white">
-                                <tr v-for="i in 3" :key="i" class="border-b border-[#EEEEEE]">
-                                    <td class="flex items-center gap-2 px-6 py-4">
-                                        <span class="text-xs font-medium">Laptop</span>
-                                    </td>
-                                    <td align="center" class="px-3 py-2">
-                                        <span class="text-xs font-medium">PPLG-LENO-003</span>
-                                    </td>
-                                    <td align="center" class="px-3 py-2">
-                                        <span class="text-xs font-medium">LENOVO</span>
-                                    </td>
-                                    <td align="center" class="px-3 py-2">
-                                        <span class="text-xs">Today | 16:30 PM</span>
-                                    </td>
-                                    <td align="center" class="px-3 py-2">
-                                        <span
-                                            class="text-[0.7rem] bg-green-100 font-medium py-1 px-2.5 rounded-md text-green-900">
-                                            RETURNED
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Tambahkan Transition di sini -->
+            <Transition name="fade">
+                <div
+                    v-if="modal"
+                    class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+                    <Modal @btnClose="Closemodal" title="Add new item">
+                      <div class="w-full flex items-center gap-2">
+                        <InputRadio
+                        class="w-1/2"
+                        label="type"
+                        valueName="test"
+                        value="pepeg"
+                        />
+                        <InputRadio
+                        class="w-1/2"
+                        label="type"
+                        valueName="test 2"
+                        value="pepeg"
+                        />
+                      </div>
+                      <InputDate
+                      v-model="studentStore.input.date"
+                      />
+                        <!-- <div class="w-full flex items-center gap-2">
+              <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.." />
+              <InputText class="w-1/2" label="Unit Code" placeholder="Enter Unit Code Here.." />
             </div>
+            <div class="w-full flex items-center gap-2">
+              <InputDate class="w-1/2" label="Date" />
+              <InputSelect class="w-1/2" label="type">
+                <option value="">Laptop</option>
+                <option value="">Desktop</option>
+                <option value="">Printer</option>
+              </InputSelect>
+            </div>
+            <InputTextarea label="Description" placeholder="Input Description Here.." /> -->
+                        <!-- <InputFile /> -->
+                    </Modal>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
 
 <script setup>
-const authStore = useAuthStore();
+
+const studentStore = useStudentStore();
+
+let modal = ref(false);
+let OpenModal = () => {
+    modal.value = true;
+};
+let Closemodal = () => {
+    modal.value = false;
+};
+
+definePageMeta({
+    layout: 'default',
+    title: 'Home - Inventaris',
+});
 
 const now = new Date();
 
-const chartOptions = {
-  chart: {
-    type: 'line',
-    height: 350,
-    zoom: {
-      enabled: false
-    }
-  },
-  stroke: {
-    curve: 'smooth'
-  },
-  xaxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-  }
-}
+const weekday = now.toLocaleDateString('en-GB', { weekday: 'short' });
+const date = now.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+});
 
-const series = [{
-  name: 'Sales',
-  data: [30, 40, 35, 50, 49, 60, 70]
-}]
-
-const options = {
-    weekday: 'short', // Thu
-    day: '2-digit', // 31
-    month: 'long', // July
-    year: 'numeric', // 2025
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true, // AM/PM
-};
-
-const formattedDate = new Intl.DateTimeFormat('en-US', options).format(now);
-// contoh hasil asli: "Thu, July 31, 2025, 07:30 AM"
-
-const parts = formattedDate.replace(',', '').split(' ');
-// parts = ['Thu', 'July', '31', '2025', '07:30', 'AM']
-
-const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${parts[5]}`;
+const today = `${weekday}, ${date}`;
 </script>
 
 <style scoped>

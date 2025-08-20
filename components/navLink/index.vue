@@ -3,7 +3,10 @@
     <NuxtLink
       :to="props.navigateTo"
       class="px-4 py-2 rounded-lg flex items-center gap-3 duration-300 hover:cursor-pointer"
-      :class="isActive && !props.childMenu ? 'bg-[#0844A4]' : 'hover:bg-black/10', isActive && props.childMenu ? 'bg-[#414141]/20' : 'hover:bg-black/10'"
+      :class="[
+        isActive && !props.childMenu ? 'bg-[#0844A4]' : 'hover:bg-black/10',
+        isActive && props.childMenu ? 'bg-[#414141]/20' : ''
+      ]"
     >
       <div>
         <slot :isActive="isActive"></slot>

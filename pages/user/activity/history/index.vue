@@ -414,7 +414,7 @@ const breadcrumbs = computed(() => [
     click: () => openModalFromBreadcrumb({ label: "Manage Inventory" }),
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
     click: () => exportSelectedData(),
   },

@@ -1,3 +1,34 @@
+<style scoped>
+.alert-enter-from,
+.alert-leave-to {
+  opacity: 0;
+  transform: translateX(50%);
+}
+
+.alert-enter-to,
+.alert-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.alert-enter-active,
+.alert-leave-active {
+  transition: all 350ms ease;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+</style>
+
+
 <template>
   <div>
     <Navbar
@@ -16,7 +47,7 @@
     <Transition name="fade">
       <div
         v-if="modalImport"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           @btnSubmit="submitImportTeacher"
@@ -127,7 +158,7 @@
     <div class="flex items-center justify-between mt-4">
       <p class="text-xs text-gray-500">
         Showing {{ teacherStore.teachers.length }} of
-        {{ allTeacherCount }} Accounts
+        {{ allTeacherCount }} Teachers
       </p>
       <Pagination
         :currentPage="currentPage"
@@ -338,7 +369,6 @@ const submitImportTeacher = async () => {
 };
 
 const pending = ref(true);
-const error = ref(null);
 
 const getTeachers = async () => {
   const response = await $fetch(

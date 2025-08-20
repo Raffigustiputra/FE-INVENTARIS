@@ -15,6 +15,17 @@
 .alert-leave-active {
   transition: all 350ms ease;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
 </style>
 <template>
   <div>
@@ -40,7 +51,7 @@
     <Transition name="fade">
       <div
         v-if="modalCreate"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           @btnSubmit="submitCreateAccount"
@@ -101,7 +112,7 @@
     <Transition name="fade">
       <div
         v-if="modalEdit"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           @btnSubmit="submitEditAccount"
@@ -185,21 +196,22 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Account</h1>
-      <div class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2">
-                <IconsSearchIcon class="w-6 h-6 text-gray-500" />
-                <input
-                    type="text"
-                    v-model="accountStore.filter.search"
-                    @input="handleSearch"
-                    class="outline-none w-full" />
-            </div>
+      <div
+        class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2"
+      >
+        <IconsSearchIcon class="w-6 h-6 text-gray-500" />
+        <input
+          type="text"
+          v-model="accountStore.filter.search"
+          @input="handleSearch"
+          class="outline-none w-full"
+          placeholder="Search Anything"
+        />
+      </div>
     </div>
 
     <!-- skeleton -->
-      <TableSkeleton v-if="pending"
-        :rows="4"
-        :columns="4"
-     />
+    <TableSkeleton v-if="pending" :rows="2" :columns="2" />
 
     <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
@@ -282,14 +294,14 @@ definePageMeta({
 let timeoutFiltering = null;
 
 const handleSearch = () => {
-    pending.value = true;
-    if (timeoutFiltering) {
-        clearTimeout(timeoutFiltering);
-    }
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
 
-    timeoutFiltering = setTimeout(() => {
-        fetchUsers();
-    }, 500);
+  timeoutFiltering = setTimeout(() => {
+    fetchUsers();
+  }, 500);
 };
 
 const alertError = ref(false);
@@ -366,8 +378,8 @@ const pending = ref(true);
 const error = ref(null);
 
 const GetMajor = async () => {
-    setTimeout(() => setLoading(false), 5000);
-    setTimeout(() => setLoading(false), 5000);
+  setTimeout(() => setLoading(false), 5000);
+  setTimeout(() => setLoading(false), 5000);
   const response = await $fetch(`${url}/major`, {
     method: "GET",
     headers: {
@@ -381,13 +393,16 @@ const GetMajor = async () => {
 };
 
 const fetchUsers = async () => {
-  const response = await $fetch(`${url}/user?search=${accountStore.filter.search}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  });
+  const response = await $fetch(
+    `${url}/user?search=${accountStore.filter.search}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    }
+  );
 
   if (response.status === 200) {
     accountStore.Accounts = response.data;

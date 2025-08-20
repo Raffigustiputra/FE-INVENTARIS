@@ -961,28 +961,30 @@ const paginationItems = computed(() => {
 
 // Breadcrumbs Configuration
 const breadcrumbs = [
-    {
-        label: 'Manage Inventory',
-        icon: IconsNavbarIconsFile,
-    },
-    {
-        label: 'Create Borrowing',
-        icon: IconsNavbarIconsAddItem,
-    },
-    {
-        label: 'Print Selected',
-        icon: IconsNavbarIconsPrint,
-    },
-    {
-        label: 'Sort by Type',
-        icon: IconsNavbarIconsFilterMajor,
-        click: () => handleSort('type'),
-    },
-    {
-        label: 'Sort by Time',
-        icon: IconsNavbarIconsFilterRole,
-        click: () => handleSort('time'),
-    },
+  {
+    label: "Manage Inventory",
+    icon: IconsNavbarIconsFile,
+  },
+  {
+    label: "Create Borrowing",
+    icon: IconsNavbarIconsAddItem,
+    click: () => openModal("selection"),
+  },
+  {
+    label: "Export Selected",
+    icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData(),
+  },
+  {
+    label: "Sort by Type",
+    icon: IconsNavbarIconsFilterMajor,
+    click: () => handleSort("type"),
+  },
+  {
+    label: "Sort by Time",
+    icon: IconsNavbarIconsFilterRole,
+    click: () => handleSort("time"),
+  },
 ];
 
 // ===== MODAL FUNCTIONS =====
@@ -1795,7 +1797,7 @@ onMounted(() => {
 
 // ===== PAGE METADATA =====
 definePageMeta({
-    title: 'Inventory',
+  title: "Borrowed",
 });
 </script>
 

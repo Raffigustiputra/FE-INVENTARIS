@@ -6,9 +6,11 @@
         <NuxtLink to="/admin/inventory/">
           Inventory 
         </NuxtLink>
-        <span class="text-lg mx-1.5"> /</span> {{ subItemStore.subItems[0]?.item?.name }}
+        <span class="text-lg mx-1.5"> /</span>
+        <span v-if="pending">...</span>
+        <span v-else>{{ subItemStore.subItems[0]?.item?.name }}</span>
       </h1>
-      <SearchBox />
+      <SearchBox v-model="subItemStore.filter.search" @input="handleSearch" />
     </div>
 
      <TableSkeleton v-if="pending"
@@ -79,6 +81,20 @@
         </tbody>
       </table>
     </div>
+     <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500 mt-3 ml-2">
+        Showing {{ subItemStore.subItems.length > 0 ? 1 : 0 }} to {{ subItemStore.subItems.length }} of
+        {{ countSubItems }} Items
+      </p>
+      <Pagination
+        :currentPage="currentPage"
+        :lastPage="lastPage"
+        :paginationItems="paginationItems"
+        @prev="prevPage"
+        @next="nextPage"
+        @change="changePage"
+      />
+    </div>
   </div>
 </template>
 
@@ -100,25 +116,145 @@ definePageMeta({
 const selectedItems = ref([]);
 const authStore = useAuthStore();
 const subItemStore = useSubItemStore();
+const pending = ref(false);
 const url = useRuntimeConfig().public.authUrl;
 
 const viewItem = (item) => {
   navigateTo(`/admin/inventory/${item.item.id}/${item.id}`);
 };
 
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
+
+  timeoutFiltering = setTimeout(() => {
+    getSubItemInventory();
+  }, 400);
+};
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+const countSubItems = ref(0);
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  const filteredItems = subItemStore.subItems.filter(
+    (item) => item.item && String(item.item.id) === route.params.id
+  );
+
+  const totalPages = Math.ceil(filteredItems.length / maxVisiblePages);
+
+  if (totalPages <= maxVisiblePages) {
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(totalPages);
+    } else if (currentPage.value >= totalPages - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = totalPages - (maxVisiblePages - 2);
+        i <= totalPages;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(totalPages);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getSubItemInventory();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getSubItemInventory();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    getSubItemInventory();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
 const getSubItemInventory = async () => {
   setTimeout(() => setLoading(false), 2000);
-  const response = await $fetch(`${url}/subitem`, {
+  pending.value = true;
+  const response = await $fetch(`${url}/subitem/paginate?search=${subItemStore.filter.search}&page=${currentPage.value}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
-    },
+    },  
   });
 
   if (response.status === 200) {
     const id = route.params.id;
     subItemStore.subItems = response.data.filter(item => item.item && String(item.item.id) === id);
+    lastPage.value = response.meta.last_page;
+    countSubItems.value = response.data.filter(item => item.item && String(item.item.id) === id).length;
+    pending.value = false;
   }
 };
 
@@ -135,7 +271,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsFile,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
   },
   {
