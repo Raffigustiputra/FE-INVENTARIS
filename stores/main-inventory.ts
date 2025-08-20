@@ -5,6 +5,9 @@ export const useMainInventoryStore = defineStore("main-inventory", {
         input: {
             type: '',
         },
+        filter: {
+          search: '',
+        },
         inventory: [],
     }),
 });
@@ -12,33 +15,45 @@ export const useMainInventoryStore = defineStore("main-inventory", {
 export const useSubItemStore = defineStore("sub-item", {
     state: () => ({
         subItems: [],
+        filter: {
+            search: '',
+        },
     })
 });
 
 export const useUnitItemStore = defineStore("unit-item", {
-    state: () => ({
-        unitItems: [],
-        subItems: useSubItemStore(),
-        filter: {
-            search: '',
-        },
-    })
-});
+  state: () => ({
+    unitItems: [],
+    filter: {
+      search: '',
+    },
+  }),
+  getters: {
+    subItems: () => {
+      const subItemStore = useSubItemStore()
+      return subItemStore.subItems
+    }
+  }
+})
 
 export const useConsumableStore = defineStore("consumable", {
-    state: () => ({
-        input: {
-            name: '',
-            quantity: '',
-            unit: '',
-            major_id: '',
-        },
-        filter: {
-            search: '',
-        },
-        consumables: [],
-    })
-});
+  state: () => {
+    const authStore = useAuthStore() 
+    return {
+      input: {
+        id: '',
+        name: '',
+        quantity: '',
+        unit: '',
+        major_id: authStore.major_id,
+      },
+      filter: {
+        search: '',
+      },
+      consumables: [],
+    }
+  },
+})
 
 export const useAdminInventoryStore = defineStore("admin-inventory", {
     state: () => ({
@@ -48,6 +63,7 @@ export const useAdminInventoryStore = defineStore("admin-inventory", {
             merk: '',
             procurement_date: '',
             description: '',
+            condition: '',
         },
         inputConsumable: {
             name: '',

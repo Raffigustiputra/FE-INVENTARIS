@@ -56,5 +56,16 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const isActive = computed(() => route.path === props.navigateTo);
+
+const isActive = computed(() => {
+  const currentPath = route.path;
+  const basePath = props.navigateTo;
+  const isChildActive = props.childMenu?.some(child => currentPath.startsWith(child.path));
+
+  if (props.childMenu && props.childMenu.length > 0) {
+    return isChildActive;
+  }
+
+  return currentPath === basePath || currentPath.startsWith(basePath + "/");
+});
 </script>

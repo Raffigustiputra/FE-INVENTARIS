@@ -25,7 +25,7 @@
   <Transition name="fade">
     <div
       v-if="createModal"
-      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
     >
       <Modal
         title="Add New Major"
@@ -153,7 +153,9 @@
                           :is="menu.icon"
                           :class="[
                             'size-4 transition-colors duration-300',
-                            isActive ? 'text-white fill-white' : 'fill-[#727272]',
+                            isActive
+                              ? 'text-white fill-white'
+                              : 'fill-[#727272]',
                           ]"
                         />
                       </div>
@@ -221,9 +223,8 @@
                </Transition>
           </div>
         </div>
-
       </div>
-      
+
       <!-- LOGOUT -->
       <div>
         <div class="border-b border-black/10 mx-4"></div>
@@ -250,6 +251,9 @@ import {
   IconsInventory,
   NavLink,
   NavMajor,
+  IconsBorrowable,
+  IconsConsumable,
+  IconsInventorySA,
 } from "#components";
 
 import Tooltip from "@/components/Tooltip/index.vue";
@@ -348,7 +352,7 @@ const menuByRole = {
     {
       name: "Inventory",
       path: "/admin/inventory",
-      icon: IconsInventory,
+      icon: IconsInventorySA,
     },
     {
       name: "Manage Data",
@@ -385,16 +389,16 @@ const menuByRole = {
       icon: IconsInventory,
       childMenu: [
         {
-          name: "Borrowable",
+          name: "Reusable",
           path: "/kaprog/inventory/borrowable",
-          icon: IconsBorrowed,
+          icon: IconsBorrowable,
         },
         {
           name: "Consumable",
           path: "/kaprog/inventory/consumable",
-          icon: IconsHistory,
-        }
-      ]
+          icon: IconsConsumable,
+        },
+      ],
     },
     {
       name: "Activity",

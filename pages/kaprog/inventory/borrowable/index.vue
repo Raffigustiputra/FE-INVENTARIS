@@ -73,6 +73,7 @@
           title="Add New Item"
           @btnSubmit="createUnitItem"
           :isSubmitting="isSubmitting"
+          labelButton="Add Item"
         >
           <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
@@ -129,6 +130,7 @@
           @btnClose="closeModalUpdate"
           title="Update Item"
           :isSubmitting="isSubmitting"
+          labelButton="Update Item"
         >
           <div class="w-full flex items-center gap-2">
             <InputSelect
@@ -162,11 +164,22 @@
               v-model="adminInventoryStore.input.procurement_date"
             />
           </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
+          <div class="w-full flex items-center gap-2">
+            <InputTextarea
+              label="Description"
+              placeholder="Input Description Here.."
+              v-model="adminInventoryStore.input.description"
+              rows="1"
+            />
+            <InputSelect
+              class="w-full"
+              label="Condition"
+              v-model="adminInventoryStore.input.condition"
+            >
+              <option value="true">Good</option>
+              <option value="false">Damaged</option>
+            </InputSelect>
+          </div>
         </Modal>
       </div>
     </Transition>
@@ -183,6 +196,7 @@
         @btnClose="closeModalDelete"
         title="Confirm Deletion"
         :isSubmitting="isSubmitting"
+        labelButton="Delete"
       >
         <div class="">
           <p class="text-gray-600">
@@ -215,7 +229,7 @@
           </th>
           <th class="px-4 py-3 text-center">Type</th>
           <th class="px-4 py-3 text-center">Unit Code</th>
-          <th class="px-4 py-3">Brand</th>
+          <th class="px-4 py-3 text-center">Brand</th>
           <th class="px-4 py-3 text-center">Borrowed Time</th>
           <th class="px-4 py-3 text-center">Status</th>
           <th class="px-4 py-3 text-center">Condition</th>
@@ -233,7 +247,7 @@
           </td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
           <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
-          <td class="px-4 py-3">{{ item.sub_item.merk }}</td>
+          <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
           <td class="px-4 py-3 text-center">
             {{ formatDate(item.procurement_date) }}
           </td>
@@ -254,8 +268,12 @@
             </span>
           </td>
           <td class="px-4 py-3 flex justify-center gap-2">
-            <ButtonEdit @click="openModalUpdate(item)" />
-            <ButtonDelete @click="openModalDelete(item)" />
+            <Tooltip text="Edit" position="top">
+              <ButtonEdit @click="openModalUpdate(item)" />
+            </Tooltip>
+            <Tooltip text="Delete" position="top">
+              <ButtonDelete @click="openModalDelete(item)" />
+            </Tooltip>
           </td>
         </tr>
       </tbody>
@@ -268,15 +286,15 @@
       {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
     </p>
     <Pagination
-      :currentPage="currentPage"
-      :lastPage="lastPage"
-      :paginationItems="paginationItems"
+    :currentPage="currentPage"
+    :lastPage="lastPage"
+    :paginationItems="paginationItems"
       @prev="prevPage"
       @next="nextPage"
       @change="changePage"
-    />
-  </div>
-</template>
+      />
+    </div>
+  </template>
 <script setup>
 import {
   IconsNavbarIconsFile,
@@ -284,13 +302,20 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
   IconsNavbarIconsAddItem,
+  InputSelect,
 } from "#components";
 import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
+import { useUnitItemStore } from "@/stores/main-inventory";
 
 definePageMeta({
-  title: "Inventory",
+  title: "Borrowable",
 });
+const url = useRuntimeConfig().public.authUrl;
+const authStore = useAuthStore();
+const unitItemStore = useUnitItemStore();
+const mainInventoryStore = useMainInventoryStore();
+const adminInventoryStore = useAdminInventoryStore();
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
@@ -307,7 +332,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsFile,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
   },
   {
@@ -324,11 +349,6 @@ const breadcrumbs = [
   },
 ];
 
-const url = useRuntimeConfig().public.authUrl;
-const authStore = useAuthStore();
-const unitItemStore = useUnitItemStore();
-const mainInventoryStore = useMainInventoryStore();
-const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
   if (item.label === "Add Item Borrowable") {
@@ -345,13 +365,6 @@ const modalTitle = ref("");
 const isSubmitting = ref(false);
 const selectedItems = ref([]);
 const selectAll = ref(false);
-
-// Form state for modal form borrowing
-const selectedItemType = ref("");
-const formErrors = ref({
-  itemType: "",
-  general: ""
-});
 
 const alertError = ref(false);
 const alertSuccess = ref(false);
@@ -519,12 +532,21 @@ const openModalUpdate = (item) => {
   modalUpdate.value = true;
   isSubmitting.value = false;
 
+  // Convert condition to string for the select input
+  let conditionValue = "true"; // Default to "true" (good)
+  if (item.condition === false || item.condition === "false" || item.condition === "damaged") {
+    conditionValue = "false";
+  } else if (item.condition === true || item.condition === "true" || item.condition === "good") {
+    conditionValue = "true";
+  }
+
   adminInventoryStore.input = {
     id: item.id,
     item_id: item.sub_item?.item?.id || "",
     merk: item.sub_item?.merk || "",
     procurement_date: item.procurement_date || "",
     description: item.description || "",
+    condition: conditionValue,
   };
 };
 
@@ -643,12 +665,23 @@ const createUnitItem = async () => {
 
 const updateUnitItem = async () => {
   if (isSubmitting.value) return;
-  const { id, item_id, merk, description, procurement_date } =
+  const { id, item_id, merk, description, procurement_date, condition } =
     adminInventoryStore.input;
 
   if (!item_id || !merk) {
     showAlert("warning", "Item type and brand name must be filled");
     return;
+  }
+
+  // Convert string condition values to boolean for API
+  let conditionValue;
+  if (condition === 'true') {
+    conditionValue = true;
+  } else if (condition === 'false') {
+    conditionValue = false;
+  } else {
+    // Default to true (good) if not specified
+    conditionValue = true;
   }
 
   isSubmitting.value = true;
@@ -658,7 +691,10 @@ const updateUnitItem = async () => {
     description: description || "",
     procurement_date:
       procurement_date || new Date().toISOString().split("T")[0],
+    condition: conditionValue
   };
+
+  console.log("Sending update payload:", payload);
 
   try {
     const response = await $fetch(`${url}/unit-items/${id}`, {
@@ -729,15 +765,26 @@ const statusClass = (status) => {
 };
 
 const conditionClass = (condition) => {
-  switch ((condition || "").toUpperCase()) {
+  // Convert boolean values to string for display
+  const conditionStr = condition === true || condition === 'true' ? 'GOOD' : 
+                       condition === false || condition === 'false' ? 'DAMAGED' : 
+                       String(condition || '').toUpperCase();
+  
+  switch (conditionStr) {
     case "GOOD":
+    case "TRUE":
       return "bg-[#D2F3D8] text-[#59AE75]";
     case "DAMAGED":
+    case "FALSE":
       return "bg-red-200 text-red-700";
     default:
       return "bg-gray-100 text-gray-700";
   }
 };
 
-const toUpperCase = (str) => (str ? String(str).toUpperCase() : "");
+const toUpperCase = (str) => {
+  if (str === true || str === 'true') return "GOOD";
+  if (str === false || str === 'false') return "DAMAGED";
+  return str ? String(str).toUpperCase() : "";
+};
 </script>

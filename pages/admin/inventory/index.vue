@@ -55,7 +55,7 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
-      <SearchBox text="Search inventory..." />
+      <SearchBox text="Search inventory..." v-model="mainInventoryStore.filter.search" @input="handleSearch"/>
     </div>
 
     <!-- Modal Create -->
@@ -154,8 +154,7 @@
 
     <!-- SKELETON -->
      <TableSkeleton v-if="pending"
-        :rows="3"
-        :columns="5"
+        :columns="2"
      />
 
     <!-- Tabel -->
@@ -210,10 +209,20 @@
         </tbody>
       </table>
     </div>
-    <p class="text-xs text-gray-500 mt-3 ml-2">
-      Showing {{ mainInventoryStore.inventory.length > 0 ? 1 : 0 }} to {{ mainInventoryStore.inventory.length }} of
-      {{ mainInventoryStore.inventory.length }} Items
-    </p>
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500 mt-3 ml-2">
+        Showing {{ mainInventoryStore.inventory.length > 0 ? 1 : 0 }} to {{ mainInventoryStore.inventory.length }} of
+        {{ countItem }} Items
+      </p>
+      <Pagination
+        :currentPage="currentPage"
+        :lastPage="lastPage"
+        :paginationItems="paginationItems"
+        @prev="prevPage"
+        @next="nextPage"
+        @change="changePage"
+      />
+    </div>
   </div>
 </template>
 
@@ -233,6 +242,7 @@ definePageMeta({
 const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
 const mainInventoryStore = useMainInventoryStore();
+const countItem = ref(0);
 
 const selectedItemId = ref(null);
 
@@ -240,6 +250,7 @@ const alertError = ref(false);
 const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
+const pending = ref(false);
 
 const viewItem = (id) => {
   navigateTo(`/admin/inventory/${id}`);
@@ -269,6 +280,18 @@ const showAlert = (type, message) => {
   } else {
     alert(message);
   }
+};
+
+let timeoutFiltering = null;
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering) {
+    clearTimeout(timeoutFiltering);
+  }
+  timeoutFiltering = setTimeout(() => {
+    getMainInvetoryItems();
+  }, 400);
 };
 
 const modalCreate = ref(false);
@@ -304,8 +327,105 @@ const closeModalDelete = () => {
   deleteItemData.value = null;
 };
 
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getMainInvetoryItems();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getMainInvetoryItems();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    getMainInvetoryItems();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
 const getMainInvetoryItems = async () => {
-  const response = await $fetch(`${url}/item`, {
+    setTimeout(() => setLoading(false), 2000);
+    pending.value = true;
+  const response = await $fetch(`${url}/item/paginate?search=${mainInventoryStore.filter.search}&page=${currentPage.value}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -315,7 +435,9 @@ const getMainInvetoryItems = async () => {
 
   if (response.status === 200) {
     mainInventoryStore.inventory = response.data;
-    // pending.value = false;
+    lastPage.value = response.meta.last_page;
+    countItem.value = response.meta.total;
+    pending.value = false;
   }
 };
 
@@ -400,7 +522,7 @@ const breadcrumbs = [
     onClick: openCreateModal,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
   },
 ];

@@ -14,6 +14,11 @@
         placeholder="Enter brand name"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
+        :disabled="props.disabled"
+        :class="{
+          'bg-gray-100 cursor-not-allowed': props.disabled,
+          'bg-white cursor-pointer': !props.disabled
+        }"
       />
     </div>
   </div>
@@ -23,7 +28,11 @@
 const props = defineProps({
   label: String,
   modelValue: String,
-  type: String
+  type: String,
+  disabled: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(["update:modelValue"]);
