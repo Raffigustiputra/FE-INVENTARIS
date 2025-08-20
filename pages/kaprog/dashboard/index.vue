@@ -80,7 +80,7 @@
                             <p class="text-xs text-[#B0B0B0]">Select Years -</p>
                             <div>
                                 <VueDatePicker
-                                    v-model="superadminDashboardStore.filter.from"
+                                    v-model="adminDashboardStore.filter.from"
                                     year-picker
                                     placeholder="YYYY"
                                     teleport="body"
@@ -109,10 +109,10 @@
                                         border-radius: 6px;
                                     " />
                             </div>
-                            <p class="text-xs font-medium"> - </p>
+                            <p class="text-xs font-medium">-</p>
                             <div>
                                 <VueDatePicker
-                                    v-model="superadminDashboardStore.filter.to"
+                                    v-model="adminDashboardStore.filter.to"
                                     year-picker
                                     placeholder="YYYY"
                                     teleport="body"
@@ -191,10 +191,7 @@
             </div>
 
             <!-- right sections -->
-            <div class="w-3/12">
-                
-            </div>
-
+            <div class="w-3/12"></div>
         </div>
     </div>
 </template>
@@ -211,152 +208,164 @@ const adminDashboardStore = useAdminDashboardStore();
 const now = new Date();
 
 const getReport = async () => {
-  const response = await $fetch(`${url}/dashboard/loan-report?from=${adminDashboardStore.filter.from}&to=${adminDashboardStore.filter.to}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  });
+    const response = await $fetch(
+        `${url}/dashboard/loan-report?from=${adminDashboardStore.filter.from}&to=${adminDashboardStore.filter.to}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authStore.token}`,
+            },
+        }
+    );
 
-  if (response.status === 200 || response.status === 201) {
-    adminDashboardStore.data = response.data;
+    if (response.status === 200 || response.status === 201) {
+        adminDashboardStore.data = response.data;
 
-    // Convert object ke array sesuai urutan bulan
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const values = months.map(m => adminDashboardStore.data[m] ?? 0);
+        // Convert object ke array sesuai urutan bulan
+        const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ];
+        const values = months.map((m) => adminDashboardStore.data[m] ?? 0);
 
-    // update chart
-    series.value = [
-      {
-        name: "Total Borrowed",
-        data: values
-      }
-    ];
-  }
+        // update chart
+        series.value = [
+            {
+                name: 'Total Borrowed',
+                data: values,
+            },
+        ];
+    }
 };
 const chartOptions = {
-  chart: {
-    type: "bar",
-    height: 350,
-    toolbar: {
-      show: false,
+    chart: {
+        type: 'bar',
+        height: 350,
+        toolbar: {
+            show: false,
+        },
+        background: '#fff',
     },
-    background: "#fff",
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      columnWidth: "45%",
-      endingShape: "flat",
-      borderRadius: 0,
-      dataLabels: {
-        position: "top",
-      },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '45%',
+            endingShape: 'flat',
+            borderRadius: 0,
+            dataLabels: {
+                position: 'top',
+            },
+        },
     },
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  stroke: {
-    show: false,
-  },
-  colors: ["#2157AD"],
-  states: {
-    hover: {
-      filter: {
-        type: "none",
-      },
+    dataLabels: {
+        enabled: false,
     },
-    active: {
-      allowMultipleDataPointsSelection: false,
-      filter: {
-        type: "none",
-      },
-    },
-  },
-  xaxis: {
-    categories: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
-    labels: {
-      style: {
-        colors: "#666",
-        fontSize: "12px",
-        fontWeight: "500",
-      },
-    },
-  },
-  yaxis: {
-    min: 0,
-    // max lo bisa bikin dinamis, kalau mau fix bisa tentuin angka misalnya 120
-    tickAmount: 6,
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
-    labels: {
-      style: {
-        colors: "#666",
-        fontSize: "12px",
-      },
-    },
-  },
-  grid: {
-    show: true,
-    borderColor: "#e0e0e0",
-    strokeDashArray: 0,
-    xaxis: {
-      lines: {
+    stroke: {
         show: false,
-      },
+    },
+    colors: ['#2157AD'],
+    states: {
+        hover: {
+            filter: {
+                type: 'none',
+            },
+        },
+        active: {
+            allowMultipleDataPointsSelection: false,
+            filter: {
+                type: 'none',
+            },
+        },
+    },
+    xaxis: {
+        categories: [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ],
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+        labels: {
+            style: {
+                colors: '#666',
+                fontSize: '12px',
+                fontWeight: '500',
+            },
+        },
     },
     yaxis: {
-      lines: {
-        show: true,
-      },
+        min: 0,
+        // max lo bisa bikin dinamis, kalau mau fix bisa tentuin angka misalnya 120
+        tickAmount: 6,
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+        labels: {
+            style: {
+                colors: '#666',
+                fontSize: '12px',
+            },
+        },
     },
-  },
-  legend: {
-    show: false,
-  },
-  tooltip: {
-    enabled: true,
-    theme: "light",
-  },
+    grid: {
+        show: true,
+        borderColor: '#e0e0e0',
+        strokeDashArray: 0,
+        xaxis: {
+            lines: {
+                show: false,
+            },
+        },
+        yaxis: {
+            lines: {
+                show: true,
+            },
+        },
+    },
+    legend: {
+        show: false,
+    },
+    tooltip: {
+        enabled: true,
+        theme: 'light',
+    },
 };
-
-
 
 // CSS that you need to add to your stylesheet for hover effects
 
-
 const series = ref([
-  {
-    name: "Total Borrowed",
-    data: []
-  }
+    {
+        name: 'Total Borrowed',
+        data: [],
+    },
 ]);
-
 
 const options = {
     weekday: 'short', // Thu
@@ -375,8 +384,12 @@ const parts = formattedDate.replace(',', '').split(' ');
 // parts = ['Thu', 'July', '31', '2025', '07:30', 'AM']
 
 onMounted(() => {
-    getReport();
-})
+    watchEffect(() => {
+        if (adminDashboardStore.filter.from && adminDashboardStore.filter.to) {
+            getReport();
+        }
+    });
+});
 
 const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${parts[5]}`;
 </script>
