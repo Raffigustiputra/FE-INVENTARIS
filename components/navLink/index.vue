@@ -3,33 +3,41 @@
     <NuxtLink
       :to="props.navigateTo"
       class="px-4 py-2 rounded-lg flex items-center gap-3 duration-300 hover:cursor-pointer"
-      :class="isActive ? 'bg-[#0844A4]' : 'hover:bg-black/10'"
+      :class="[
+        isActive ? 'bg-[#0844A4]' : 'hover:bg-black/10',
+        props.isCollapsed ? 'justify-center' : '' // Pusatkan ikon saat collapsed
+      ]"
     >
       <div>
         <slot :isActive="isActive"></slot>
-      </div>
-      <h1
-        :class="[
-          'text-sm font-semibold select-none',
-          isActive ? 'text-white' : 'text-black/60',
-        ]"
-      >
-        {{ props.navigationItem }}
-      </h1>
-      <svg
-        v-if="props.childMenu"
-        :class="['w-4 h-4 transition-transform absolute right-10 select-none', isOpen ? 'rotate-180' : 'rotate-0']"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
+      </div>  
+     <template v-if="!props.isCollapsed">
+        <h1
+          :class="[
+            'text-sm font-semibold select-none transition-opacity duration-200 whitespace-nowrap',
+            isActive ? 'text-white' : 'text-black/60'
+          ]"
+        >
+          {{ props.navigationItem }}
+        </h1>
+        <svg
+          v-if="props.childMenu"
+          :class="[
+            'w-4 h-4 transition-transform absolute right-4 select-none',
+            isOpen ? 'rotate-180' : 'rotate-0'
+          ]"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </template>
     </NuxtLink>
   </div>
 </template>
@@ -43,7 +51,8 @@ const props = defineProps<{
   navigateTo: string;
   icons: Component | string;
   childMenu?: string | null;
-  isOpen?: boolean
+  isOpen?: boolean;
+  isCollapsed?: boolean; 
 }>();
 
 const route = useRoute();
