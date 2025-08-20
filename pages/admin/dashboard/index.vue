@@ -26,7 +26,7 @@
 
         <!-- upper sections -->
         <div class="border-b mt-3 flex py-4 items-center border-[#D9D9D9] border-t w-full">
-            <div v-for="i in 4" class="flex justify-between items-start w-full">
+            <div v-for="i in 4" class="flex justify-evenly items-start w-full">
                 <div class="flex items-center gap-3">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
@@ -69,19 +69,83 @@
         </div>
 
         <!-- main Sections -->
-        <div class="w-full">
+        <div class="w-full flex">
             <!-- left section -->
-            <div class="w-8/12 border-r border-[#D9D9D9] h-screen px-2 overflow-y-auto">
+            <div class="w-9/12 border-r border-[#D9D9D9] h-auto px-2 overflow-y-auto">
                 <!-- over view Section -->
-                <div>
+                <div class="mt-2 mr-2 border-b border-[#D9D9D9]">
+                    <div class="flex items-center justify-between">
+                        <h1 class="font-semibold text-md">Overview</h1>
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs text-[#B0B0B0]">Select Years -</p>
+                            <div>
+                                <VueDatePicker
+                                    v-model="superadminDashboardStore.filter.from"
+                                    year-picker
+                                    placeholder="YYYY"
+                                    teleport="body"
+                                    :clearable="false"
+                                    style="
+                                        /* Warna dasar */
+                                        --dp-background-color: #fff;
+                                        --dp-text-color: #212121;
+                                        --dp-border-color: #ddd;
+                                        --dp-hover-color: #f3f3f3;
+                                        --dp-hover-text-color: #212121;
 
-                     <div class="bg-white p-4 rounded-lg shadow">
-    <apexchart
-      type="line"
-      :options="chartOptions"
-      :series="series"
-    ></apexchart>
-  </div>
+                                        /* Warna utama */
+                                        --dp-primary-color: #1976d2;
+                                        --dp-primary-text-color: #fff;
+
+                                        /* Styling input */
+                                        --dp-border-radius: 6px;
+                                        --dp-font-size: 12px;
+                                        --dp-input-padding: 4px 6px;
+
+                                        /* Ukuran compact */
+                                        width: 70px;
+                                        height: 28px;
+                                        font-size: 12px;
+                                        border-radius: 6px;
+                                    " />
+                            </div>
+                            <p class="text-xs font-medium"> - </p>
+                            <div>
+                                <VueDatePicker
+                                    v-model="superadminDashboardStore.filter.to"
+                                    year-picker
+                                    placeholder="YYYY"
+                                    teleport="body"
+                                    :clearable="false"
+                                    style="
+                                        /* Warna dasar */
+                                        --dp-background-color: #fff;
+                                        --dp-text-color: #212121;
+                                        --dp-border-color: #ddd;
+                                        --dp-hover-color: #f3f3f3;
+                                        --dp-hover-text-color: #212121;
+
+                                        /* Warna utama */
+                                        --dp-primary-color: #1976d2;
+                                        --dp-primary-text-color: #fff;
+
+                                        /* Styling input */
+                                        --dp-border-radius: 6px;
+                                        --dp-font-size: 12px;
+                                        --dp-input-padding: 4px 6px;
+
+                                        /* Ukuran compact */
+                                        width: 70px;
+                                        height: 28px;
+                                        font-size: 12px;
+                                        border-radius: 6px;
+                                    " />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg">
+                        <apexchart type="bar" :options="chartOptions" :series="series"></apexchart>
+                    </div>
                 </div>
 
                 <!-- last Activity Section -->
@@ -125,35 +189,130 @@
                     </div>
                 </div>
             </div>
+
+            <!-- right sections -->
+            <div class="w-3/12">
+                
+            </div>
+
         </div>
     </div>
 </template>
 
 <script setup>
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+
 const authStore = useAuthStore();
+const superadminDashboardStore = useSuperadminDashboardStore();
 
 const now = new Date();
 
-const chartOptions = {
-  chart: {
-    type: 'line',
-    height: 350,
-    zoom: {
-      enabled: false
-    }
-  },
-  stroke: {
-    curve: 'smooth'
-  },
-  xaxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-  }
-}
+// CSS that you need to add to your stylesheet for hover effects
 
-const series = [{
-  name: 'Sales',
-  data: [30, 40, 35, 50, 49, 60, 70]
-}]
+const chartOptions = {
+    chart: {
+        type: 'bar',
+        height: 350,
+        toolbar: {
+            show: false
+        },
+        background: '#fff'
+    },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '45%', // Thinner bars
+            endingShape: 'flat',
+            borderRadius: 0,
+            dataLabels: {
+                position: 'top'
+            }
+        }
+    },
+    dataLabels: {
+        enabled: false // Disable data labels for cleaner look
+    },
+    stroke: {
+        show: false
+    },
+    colors: ['#2157AD'], // Default gray color for all bars
+    states: {
+        hover: {
+            filter: {
+                type: 'none' // We'll handle hover with CSS
+            }
+        },
+        active: {
+            allowMultipleDataPointsSelection: false,
+            filter: {
+                type: 'none'
+            }
+        }
+    },
+    xaxis: {
+        categories: ['PPLG', 'DKV', 'TJKT', 'MPLB', 'PMN', 'HTL', 'KLN'],
+        axisBorder: {
+            show: false
+        },
+        axisTicks: {
+            show: false
+        },
+        labels: {
+            style: {
+                colors: '#666',
+                fontSize: '12px',
+                fontWeight: '500'
+            }
+        }
+    },
+    yaxis: {
+        min: 0,
+        max: 120,
+        tickAmount: 6,
+        axisBorder: {
+            show: false
+        },
+        axisTicks: {
+            show: false
+        },
+        labels: {
+            style: {
+                colors: '#666',
+                fontSize: '12px'
+            }
+        }
+    },
+    grid: {
+        show: true,
+        borderColor: '#e0e0e0',
+        strokeDashArray: 0,
+        xaxis: {
+            lines: {
+                show: false
+            }
+        },
+        yaxis: {
+            lines: {
+                show: true
+            }
+        }
+    },
+    legend: {
+        show: false
+    },
+    tooltip: {
+        enabled: true,
+        theme: 'light'
+    }
+};
+
+const series = [
+    {
+        name: 'Total Borrowed',
+        data: [105, 53, 84, 36, 75, 55, 112]
+    }
+];
 
 const options = {
     weekday: 'short', // Thu
