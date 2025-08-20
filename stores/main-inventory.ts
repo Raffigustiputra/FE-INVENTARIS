@@ -1,7 +1,5 @@
 import { defineStore } from "pinia";
 
-const authStore = useAuthStore();
-
 export const useMainInventoryStore = defineStore("main-inventory", {
     state: () => ({
         input: {
@@ -18,30 +16,38 @@ export const useSubItemStore = defineStore("sub-item", {
 });
 
 export const useUnitItemStore = defineStore("unit-item", {
-    state: () => ({
-        unitItems: [],
-        subItems: useSubItemStore(),
-        filter: {
-            search: '',
-        },
-    })
-});
+  state: () => ({
+    unitItems: [],
+    filter: {
+      search: '',
+    },
+  }),
+  getters: {
+    subItems: () => {
+      const subItemStore = useSubItemStore()
+      return subItemStore.subItems
+    }
+  }
+})
 
 export const useConsumableStore = defineStore("consumable", {
-    state: () => ({
-        input: {
-            id: '',
-            name: '',
-            quantity: '',
-            unit: '',
-            major_id: authStore.major_id,
-        },
-        filter: {
-            search: '',
-        },
-        consumables: [],
-    })
-});
+  state: () => {
+    const authStore = useAuthStore() 
+    return {
+      input: {
+        id: '',
+        name: '',
+        quantity: '',
+        unit: '',
+        major_id: authStore.major_id,
+      },
+      filter: {
+        search: '',
+      },
+      consumables: [],
+    }
+  },
+})
 
 export const useAdminInventoryStore = defineStore("admin-inventory", {
     state: () => ({
