@@ -236,7 +236,7 @@ const chartOptions = {
     stroke: {
         show: false
     },
-    colors: ['#2157AD'], // Default gray color for all bars
+    colors: ['#2157AD'], // Default color for all bars
     states: {
         hover: {
             filter: {
