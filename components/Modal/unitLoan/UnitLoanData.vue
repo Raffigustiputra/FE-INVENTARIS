@@ -10,9 +10,9 @@
         :isSubmitting="false"
         :disableSubmit="true"
         :showActions="false"
-        class="max-h-[90vh] overflow-y-auto"
       >
-        <!-- Borrowable Student Form -->
+      <div class="max-h-[28rem] overflow-y">
+
         <BorrowableStudentForm
           v-if="modalType === 'borrowable-student'"
           :unitItem="unitItem"
@@ -21,7 +21,7 @@
           :selectedCollateralType="selectedCollateralType"
           :imagePreview="imagePreview"
         />
-
+  
         <!-- Borrowable Teacher Form -->
         <BorrowableTeacherForm
           v-else-if="modalType === 'borrowable-teacher'"
@@ -29,7 +29,7 @@
           :teacherData="teacherData"
           :formData="formData"
         />
-
+  
         <!-- Consumable Student Form -->
         <ConsumableStudentForm
           v-else-if="modalType === 'consumable-student'"
@@ -37,7 +37,7 @@
           :consumableItem="consumableItem"
           :studentData="studentData"
         />
-
+  
         <!-- Consumable Teacher Form -->
         <ConsumableTeacherForm
           v-else-if="modalType === 'consumable-teacher'"
@@ -45,6 +45,8 @@
           :consumableItem="consumableItem"
           :teacherData="teacherData"
         />
+      </div>
+        <!-- Borrowable Student Form -->
       </Modal>
     </div>
   </Transition>

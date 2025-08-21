@@ -336,7 +336,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsPrint,
   },
   {
-    label: "Add Item Borrowable",
+    label: "Add Item",
     icon: IconsNavbarIconsAddItem,
   },
   {

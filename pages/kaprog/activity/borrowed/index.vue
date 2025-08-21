@@ -72,7 +72,6 @@
           </th>
           <th class="px-4 py-3 text-center">Brand</th>
           <th class="px-4 py-3 text-center">Borrowed Time</th>
-          <th class="px-4 py-3 text-center">Returned Time</th>
           <th class="px-4 py-3 text-center">Action</th>
         </tr>
       </thead>
@@ -108,9 +107,6 @@
           </td>
           <td class="px-4 py-3 text-center">
             {{ formatDateTime(item.borrowed_at) }}
-          </td>
-          <td class="px-4 py-3 text-center">
-            {{ formatDateTime(item.returned_at) }}
           </td>
           <td class="px-4 py-3 flex justify-center gap-1">
             <Tooltip text="Detail" position="top">
@@ -462,7 +458,7 @@ const getHistoryData = async () => {
   try {
     pending.value = true;
     const response = await fetch(
-      `${url}/unit-loan/history?data=returning&sort_by_type=${sortByType.value}&sort_by_time=${sortByTime.value}&search=${searchQuery.value}&page=${currentPage.value}`,
+      `${url}/unit-loan/history?data=borrowing&sort_by_type=${sortByType.value}&sort_by_time=${sortByTime.value}&search=${searchQuery.value}&page=${currentPage.value}`,
       {
         method: "GET",
         headers: {
