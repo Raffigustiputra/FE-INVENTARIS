@@ -302,6 +302,7 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
   IconsNavbarIconsAddItem,
+  IconsNavbarIconsAddQr,
   InputSelect,
 } from "#components";
 import { ref, onMounted, watch } from "vue";
@@ -334,6 +335,10 @@ const breadcrumbs = [
   {
     label: "Print Selected",
     icon: IconsNavbarIconsPrint,
+  },
+  {
+    label: "Print QR-Code",
+    icon: IconsNavbarIconsAddQr,
   },
   {
     label: "Add Item Borrowable",
@@ -602,6 +607,7 @@ const getUnitItemsInventory = async () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authStore.token}`,
+          "ngrok-skip-browser-warning": "true",
         },
       }
     );
