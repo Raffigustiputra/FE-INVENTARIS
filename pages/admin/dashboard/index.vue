@@ -80,9 +80,10 @@
                             <p class="text-xs text-[#B0B0B0]">Select Years -</p>
                             <div>
                                 <VueDatePicker
-                                    v-model="superadminDashboardStore.filter.from"
-                                    year-picker
-                                    placeholder="YYYY"
+                                    v-model="fromDate"
+                                    :enable-time-picker="false"
+                                    @update:model-value="updateFrom"
+                                    placeholder="YYYY-MM-DD"
                                     teleport="body"
                                     :clearable="false"
                                     style="
@@ -103,18 +104,19 @@
                                         --dp-input-padding: 4px 6px;
 
                                         /* Ukuran compact */
-                                        width: 70px;
+                                        width: 150px;
                                         height: 28px;
                                         font-size: 12px;
                                         border-radius: 6px;
                                     " />
                             </div>
-                            <p class="text-xs font-medium"> - </p>
+                            <p class="text-xs font-medium">-</p>
                             <div>
                                 <VueDatePicker
-                                    v-model="superadminDashboardStore.filter.to"
-                                    year-picker
-                                    placeholder="YYYY"
+                                    v-model="toDate"
+                                    :enable-time-picker="false"
+                                    @update:model-value="updateTo"
+                                    placeholder="YYYY-MM-DD"
                                     teleport="body"
                                     :clearable="false"
                                     style="
@@ -135,7 +137,7 @@
                                         --dp-input-padding: 4px 6px;
 
                                         /* Ukuran compact */
-                                        width: 70px;
+                                        width: 150px;
                                         height: 28px;
                                         font-size: 12px;
                                         border-radius: 6px;
@@ -144,7 +146,11 @@
                         </div>
                     </div>
                     <div class="bg-white p-4 rounded-lg">
-                        <apexchart type="bar" :options="chartOptions" :series="series"></apexchart>
+                        <apexchart
+                            type="bar"
+                            height="350"
+                            :options="chartOptions"
+                            :series="series" />
                     </div>
                 </div>
 
@@ -191,10 +197,7 @@
             </div>
 
             <!-- right sections -->
-            <div class="w-3/12">
-                
-            </div>
-
+            <div class="w-3/12"></div>
         </div>
     </div>
 </template>
@@ -202,7 +205,9 @@
 <script setup>
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import dayjs from 'dayjs';
 
+const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
 const superadminDashboardStore = useSuperadminDashboardStore();
 
@@ -210,14 +215,12 @@ const now = new Date();
 
 // CSS that you need to add to your stylesheet for hover effects
 
-const chartOptions = {
+const chartOptions = ref({
     chart: {
         type: 'bar',
         height: 350,
-        toolbar: {
-            show: false
-        },
-        background: '#fff'
+        toolbar: { show: false },
+        background: '#fff',
     },
     plotOptions: {
         bar: {
@@ -226,94 +229,85 @@ const chartOptions = {
             endingShape: 'flat',
             borderRadius: 0,
             dataLabels: {
-                position: 'top'
-            }
-        }
+                position: 'top',
+            },
+        },
     },
     dataLabels: {
-        enabled: false // Disable data labels for cleaner look
+        enabled: false, // Disable data labels for cleaner look
     },
-    stroke: {
-        show: false
-    },
-    colors: ['#2157AD'], // Default color for all bars
-    states: {
-        hover: {
-            filter: {
-                type: 'none' // We'll handle hover with CSS
-            }
-        },
-        active: {
-            allowMultipleDataPointsSelection: false,
-            filter: {
-                type: 'none'
-            }
+    xaxis: { categories: [] }, // default kosong
+});
+const series = ref([{ name: 'Total Borrowed', data: [] }]);
+
+const getMajorLoansChart = async () => {
+    const response = await $fetch(
+        `${url}/dashboard/superadmin/major-loans?from=${superadminDashboardStore.filter.from}&to=${superadminDashboardStore.filter.to}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authStore.token}`,
+            },
         }
-    },
-    xaxis: {
-        categories: ['PPLG', 'DKV', 'TJKT', 'MPLB', 'PMN', 'HTL', 'KLN'],
-        axisBorder: {
-            show: false
-        },
-        axisTicks: {
-            show: false
-        },
-        labels: {
-            style: {
-                colors: '#666',
-                fontSize: '12px',
-                fontWeight: '500'
-            }
-        }
-    },
-    yaxis: {
-        min: 0,
-        max: 120,
-        tickAmount: 6,
-        axisBorder: {
-            show: false
-        },
-        axisTicks: {
-            show: false
-        },
-        labels: {
-            style: {
-                colors: '#666',
-                fontSize: '12px'
-            }
-        }
-    },
-    grid: {
-        show: true,
-        borderColor: '#e0e0e0',
-        strokeDashArray: 0,
+    );
+
+    if (response.status === 200) {
+        superadminDashboardStore.majorLoans = response.data;
+    }
+
+    const categories = superadminDashboardStore.majorLoans.map((item) => item.major);
+    const seriesData = superadminDashboardStore.majorLoans.map((item) => parseInt(item.count));
+
+    chartOptions.value = {
+        ...chartOptions.value, // merge biar ga hilang properti chart
         xaxis: {
-            lines: {
-                show: false
-            }
+            categories,
+            labels: {
+                style: { colors: '#666', fontSize: '12px', fontWeight: '500' },
+            },
         },
         yaxis: {
-            lines: {
-                show: true
-            }
-        }
-    },
-    legend: {
-        show: false
-    },
-    tooltip: {
-        enabled: true,
-        theme: 'light'
-    }
+            min: 0,
+            max: Math.max(...seriesData) + 5,
+            tickAmount: 6,
+            labels: { style: { colors: '#666', fontSize: '12px' } },
+        },
+    };
+
+    series.value = [{ name: 'Total Borrowed', data: seriesData }];
 };
 
-const series = [
-    {
-        name: 'Total Borrowed',
-        data: [105, 53, 84, 36, 75, 55, 112]
-    }
-];
+const formatDate = (date) => {
+  if (!date) return null;
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
+// hari ini
+const chartStartDay = dayjs().startOf('year').format('YYYY-MM-DD');
+const chartEndDay = dayjs().endOf('year').format('YYYY-MM-DD');
+
+// reactive datepicker model
+const fromDate = ref(chartStartDay);
+const toDate = ref(chartEndDay);
+
+// set langsung ke Pinia (biar default udah ada)
+superadminDashboardStore.filter.from = formatDate(chartStartDay);
+superadminDashboardStore.filter.to = formatDate(chartEndDay);
+
+const updateFrom = (date) => {
+  fromDate.value = date;
+  superadminDashboardStore.filter.from = formatDate(date);
+};
+
+const updateTo = (date) => {
+  toDate.value = date;
+  superadminDashboardStore.filter.to = formatDate(date);
+};
 const options = {
     weekday: 'short', // Thu
     day: '2-digit', // 31
@@ -323,6 +317,14 @@ const options = {
     minute: '2-digit',
     hour12: true, // AM/PM
 };
+
+onMounted(() => {
+    watchEffect(() => {
+        if (superadminDashboardStore.filter.from && superadminDashboardStore.filter.to) {
+            getMajorLoansChart();
+        }
+    });
+});
 
 const formattedDate = new Intl.DateTimeFormat('en-US', options).format(now);
 // contoh hasil asli: "Thu, July 31, 2025, 07:30 AM"
