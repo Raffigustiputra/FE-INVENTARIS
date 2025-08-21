@@ -286,15 +286,15 @@
       {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
     </p>
     <Pagination
-    :currentPage="currentPage"
-    :lastPage="lastPage"
-    :paginationItems="paginationItems"
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      :paginationItems="paginationItems"
       @prev="prevPage"
       @next="nextPage"
       @change="changePage"
-      />
-    </div>
-  </template>
+    />
+  </div>
+</template>
 <script setup>
 import {
   IconsNavbarIconsFile,
@@ -306,16 +306,10 @@ import {
 } from "#components";
 import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
-import { useUnitItemStore } from "@/stores/main-inventory";
 
 definePageMeta({
   title: "Borrowable",
 });
-const url = useRuntimeConfig().public.authUrl;
-const authStore = useAuthStore();
-const unitItemStore = useUnitItemStore();
-const mainInventoryStore = useMainInventoryStore();
-const adminInventoryStore = useAdminInventoryStore();
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
@@ -342,13 +336,20 @@ const breadcrumbs = [
   {
     label: "Sort by Type",
     icon: IconsNavbarIconsFilterMajor,
+    click: () => handleSortInventory("type"),
   },
   {
-    label: "Sort by Time",
+    label: "Sort by Date",
     icon: IconsNavbarIconsFilterRole,
+    click: () => handleSortInventory("date"),
   },
 ];
 
+const url = useRuntimeConfig().public.authUrl;
+const authStore = useAuthStore();
+const unitItemStore = useUnitItemStore();
+const mainInventoryStore = useMainInventoryStore();
+const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
   if (item.label === "Add Item Borrowable") {
@@ -364,6 +365,9 @@ const deleteItemData = ref(null);
 const modalTitle = ref("");
 const isSubmitting = ref(false);
 const selectedItems = ref([]);
+const sortByCondition = ref("asc");
+const sortByDate = ref("asc");
+const sortByType = ref("asc");
 const selectAll = ref(false);
 
 const alertError = ref(false);
@@ -586,36 +590,62 @@ const getMainInventoryItems = async () => {
 };
 
 const getUnitItemsInventory = async () => {
-  pending.value = true;
   try {
-    const response = await $fetch(
-      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authStore.token}`,
-        },
-      }
-    );
+    pending.value = true;
 
-    if (response.status === 200) {
-      unitItemStore.unitItems = response.data;
+    const response = await $fetch(`${url}/unit-items?sort_condition=${sortByCondition.value}&sort_date=${sortByDate.value}&sort_type=${sortByType.value}&`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      params: {
+        search: unitItemStore.filter.search,
+        page: currentPage.value,
+        sort_by_type: unitItemStore.filter.sortByType,
+        sort_by_time: unitItemStore.filter.sortByTime,
+      },
+    });
+
+    if (response) {
+      unitItemStore.unitItems = response.data ?? response;
 
       if (response.meta) {
         lastPage.value = response.meta.last_page;
         allItemCount.value = response.meta.total;
       }
-
-      pending.value = false;
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to fetch inventory items";
     }
   } catch (error) {
     console.error("Error fetching unit items:", error);
     alertError.value = true;
-    alertMessage.value = "Error loading inventory items";
+    alertMessage.value = "Network error while fetching inventory items";
+  } finally {
     pending.value = false;
   }
 };
+
+const handleSortInventory = (type) => {
+  if (type === "type") {
+    sortByType.value = sortByType.value === "asc" ? "desc" : "asc";
+    sortByCondition.value = "";
+    sortByDate.value = "";
+  } else if (type === "date") {
+    sortByType.value = "";
+    sortByCondition.value = "";
+    sortByDate.value = sortByDate.value === "asc" ? "desc" : "asc";
+  } else if (type === "condition") {
+    sortByType.value = "";
+    sortByDate.value = "";
+    sortByCondition.value = sortByCondition.value === "asc" ? "desc" : "asc";
+  }
+
+  getUnitItemsInventory();
+};
+
+
 
 const createUnitItem = async () => {
   if (isSubmitting.value) return;
