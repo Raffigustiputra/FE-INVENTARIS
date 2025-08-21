@@ -220,7 +220,7 @@ import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
 
 definePageMeta({
-  title: "Inventory",
+  title: "Consumable",
 });
 
 const formatDate = (dateStr) => {
@@ -238,7 +238,7 @@ const breadcrumbs = [
     icon: IconsNavbarIconsFile,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
   },
   {

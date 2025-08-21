@@ -15,6 +15,17 @@
 .alert-leave-active {
   transition: all 350ms ease;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
 </style>
 <template>
   <div>
@@ -40,7 +51,7 @@
     <Transition name="fade">
       <div
         v-if="modalImport"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           @btnSubmit="submitImportStudent"
@@ -92,7 +103,7 @@
     <Transition name="fade">
       <div
         v-if="modalEdit"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           title="Edit Student"
@@ -141,7 +152,7 @@
     <Transition name="fade">
       <div
         v-if="modalDelete"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen backdrop-blur-sm bg-black/30"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           @btnSubmit="submitDeleteStudent"
@@ -178,6 +189,7 @@
           v-model="studentStore.filter.search"
           @input="handleSearch"
           class="outline-none w-full"
+          placeholder="Search Anything"
         />
       </div>
     </div>
@@ -256,7 +268,7 @@
     <div class="flex items-center justify-between mt-4">
       <p class="text-xs text-gray-500">
         Showing {{ studentStore.students.length }} of
-        {{ allStudentCount }} Accounts
+        {{ allStudentCount }} Students
       </p>
       <Pagination
         :currentPage="currentPage"
@@ -587,7 +599,7 @@ const submitCreateStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Created");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while creating student");
@@ -624,7 +636,7 @@ const submitEditStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Updated");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while updating student");
@@ -641,7 +653,7 @@ const submitDeleteStudent = async () => {
   });
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Deleted");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while deleting student");

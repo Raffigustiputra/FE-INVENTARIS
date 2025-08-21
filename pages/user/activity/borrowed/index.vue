@@ -55,8 +55,7 @@
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
         >
-        <div class="max-h-[80vh] overflow-y">
-
+        <div class="max-h-[28rem] overflow-y">
           <div v-if="currentModal === 'selection'">
             <div>
               <label
@@ -1087,7 +1086,7 @@ const breadcrumbs = [
     click: () => openModal("selection"),
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
     click: () => exportSelectedData(),
   },
@@ -1980,7 +1979,7 @@ onMounted(() => {
 
 // ===== PAGE METADATA =====
 definePageMeta({
-  title: "Inventory",
+  title: "Borrowed",
 });
 </script>
 
