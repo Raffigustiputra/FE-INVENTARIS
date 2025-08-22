@@ -6,6 +6,9 @@ export const useSuperadminDashboardStore = defineStore("superadminDashboard", {
             from : dayjs().startOf('year').format('YYYY-MM-DD'),
             to : dayjs().endOf('year').format('YYYY-MM-DD'),
         },
-        majorLoans : []
+        majorLoans : [],
+        latestActivityRecords : [],
+        cardsData : [],
+        mostBorrowed : [],
     })
 });
