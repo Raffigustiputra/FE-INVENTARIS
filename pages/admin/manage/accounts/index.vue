@@ -394,7 +394,7 @@ const GetMajor = async () => {
 
 const fetchUsers = async () => {
   const response = await $fetch(
-    `${url}/user?search=${accountStore.filter.search}`,
+    `${url}/user/data?search=${accountStore.filter.search}`,
     {
       method: "GET",
       headers: {
