@@ -4,7 +4,7 @@
   </Head>
   <div class="w-full min-h-screen font-Poppins">
     <!-- Online checking -->
-    <div  v-if="!isOnline" class="h-screen flex flex-col text-center font-Poppins">
+    <div v-if="!isOnline" class="h-screen flex flex-col text-center font-Poppins">
       <header>
         <img
           src="/public/images/WV-BLACKLANDSCAPE.png"
@@ -26,9 +26,15 @@
       </main>
     </div>
 
+    
     <div v-else class="flex">
+      <div v-if="loading" class="flex fixed inset-0 items-center justify-center z-50 bg-black/20">
+         <Loading/>
+      </div>
       <div class="w-2/12">
-        <SidebarNav />
+        <SidebarNav 
+          @logout="handleLogout"
+        />
       </div>
       <div class="">
         <Navbar/>
@@ -43,6 +49,13 @@
   </div>
 </template>
 <script setup>
+import Loading from '@/components/loading/index.vue'
 const { isOnline } = useOnlineStatus()
 const route = useRoute();
+
+const loading = ref(true);
+
+function handleLogout(val) {
+  loading.value = val;
+}
 </script>

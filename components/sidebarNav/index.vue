@@ -222,6 +222,8 @@ const url = useRuntimeConfig().public.authUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
 
+const loading = ref(false);
+
 const createModal = ref(false);
 const openCreateModal = () => {
   createModal.value = true;
@@ -232,6 +234,8 @@ const closeCreateModal = () => {
   majorStore.input.icon = "";
   majorStore.input.color = "";
 };
+
+const emit = defineEmits(["logout"]);
 
 const props = defineProps({
   countKaprog: Number,
@@ -273,17 +277,24 @@ const submitCreateMajor = async () => {
 };
 
 const submitLogout = async () => {
-  const response = await $fetch(`${url}/logout`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  });
-  if (response.status === 200) {
-    authStore.$reset();
-    localStorage.clear();
-    router.push("/");
+  try {
+    emit("logout", true);
+    const response = await $fetch(`${url}/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+    if (response.status === 200) {
+      authStore.$reset();
+      localStorage.clear();
+      router.push("/");
+    }
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    emit("logout", false);
   }
 };
 
