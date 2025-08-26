@@ -320,6 +320,8 @@ const formatDate = (dateStr) => {
   return `${day} ${month} ${year}`;
 };
 
+const exportData = ref("selected");
+
 const breadcrumbs = [
   {
     label: "Manage Inventory",
@@ -328,6 +330,7 @@ const breadcrumbs = [
   {
     label: "Export Selected",
     icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData()
   },
   {
     label: "Add Item Borrowable",
@@ -377,8 +380,10 @@ const alertMessage = ref("");
 
 function toggleAll() {
   if (selectAll.value) {
+    exportData.value = "all";
     selectedItems.value = unitItemStore.unitItems.map((item) => item.id);
   } else {
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 }
@@ -571,6 +576,54 @@ const closeModalDelete = () => {
 
 const pending = ref(true);
 const error = ref(null);
+
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/unit-items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({
+        data: selectedItems.value,
+        export: exportData.value,
+        search: unitItemStore.filter.search,
+        sort_condition: sortByCondition.value,
+        sort_type: sortByType.value,
+        sort_date: sortByDate.value,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `borrowable_items_${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
+  }
+};
 
 const getMainInventoryItems = async () => {
   const response = await $fetch(

@@ -251,6 +251,7 @@ const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
 const pending = ref(false);
+const exportData = ref('selected');
 
 const viewItem = (id) => {
   navigateTo(`/admin/inventory/${id}`);
@@ -524,6 +525,7 @@ const breadcrumbs = [
   {
     label: "Export Selected",
     icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData(),
   },
 ];
 
@@ -532,11 +534,56 @@ const selectAll = ref(false);
 
 function toggleAll() {
   if (selectAll.value) {
+    exportData.value = 'all',
     selectedItems.value = mainInventoryStore.inventory.map((item) => item.id);
   } else {
+    exportData.value = 'selected';
     selectedItems.value = [];
   }
 }
+
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({  
+        export: exportData.value,
+        data: selectedItems.value,
+        search: mainInventoryStore.filter.search,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `items_selected_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
+  }
+};
 
 watch(selectedItems, (newVal) => {
   selectAll.value = newVal.length === mainInventoryStore.inventory.length && mainInventoryStore.inventory.length > 0;
