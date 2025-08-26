@@ -3,7 +3,7 @@ import { useAuthStore } from "~/stores/auth";
 export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore();
   // Kalau belum login
-  if (!authStore.getToken) {
+  if (authStore.getToken) {
     if (to.path !== "/") {
       return navigateTo("/");
     }
