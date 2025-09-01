@@ -33,29 +33,33 @@
       </main>
     </div>
 
-    <div v-else class="flex">
+    <div v-else>
       <div
         v-if="loading"
         class="flex fixed inset-0 items-center justify-center z-50 bg-black/20"
       >
         <Loading />
       </div>
-      <div class="w-2/12">
-        <SidebarNav @logout="handleLogout" />
-      </div>
-      <div class="">
-        <Navbar />
-      </div>
-      <div class="ml-12 w-8/10 flex py-4 px-10 flex-col">
-        <div class="w-full mt-20 h-auto">
+      <SidebarNav @logout="handleLogout" />
+      <div
+        :class="[
+          'transition-all duration-300 ease-in-out',
+          sidebarStore.isCollapsed ? 'ml-25' : 'ml-[320px]',
+        ]"
+      >
+        <main class="w-full h-full px-5">
           <slot></slot>
-        </div>
+        </main>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import Loading from "@/components/loading/index.vue";
+import { useSidebarStore } from "~/stores/sidebar"; 
+
+const sidebarStore = useSidebarStore(); 
 const { isOnline } = useOnlineStatus();
 const route = useRoute();
 
