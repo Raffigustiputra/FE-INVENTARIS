@@ -28,7 +28,7 @@
         <div class="border-b mt-3 flex py-4 items-center border-[#D9D9D9] border-t w-full">
             <div class="flex justify-evenly items-start w-full">
                 <div class="flex items-center gap-3">
-                    <div class="bg-[#D9D9D9] flex items-center justify-center p-3  rounded-full">
+                    <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
                             height="21"
@@ -62,7 +62,13 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Students</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalStudents : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalStudents
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -100,7 +106,13 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Teachers</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalTeachers : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalTeachers
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -138,7 +150,13 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Borrowable</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalUnitItems : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalUnitItems
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -176,7 +194,13 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Consumable</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalConsumables : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalConsumables
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -284,7 +308,10 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white">
-                                <tr v-for="i in superadminDashboardStore.latestActivityRecords" :key="i" class="border-b border-[#EEEEEE]">
+                                <tr
+                                    v-for="i in superadminDashboardStore.latestActivityRecords"
+                                    :key="i"
+                                    class="border-b border-[#EEEEEE]">
                                     <td class="flex items-center gap-2 px-6 py-4">
                                         <span class="text-xs font-medium">{{ i.item }}</span>
                                     </td>
@@ -295,12 +322,19 @@
                                         <span class="text-xs font-medium">{{ i.merk }}</span>
                                     </td>
                                     <td align="center" class="px-3 py-2">
-                                        <span class="text-xs">{{ dayjs(i.borrowed_at).format('YYYY-MM-DD | HH:mm') }} </span>
+                                        <span class="text-xs">
+                                            {{ dayjs(i.borrowed_at).format('YYYY-MM-DD | HH:mm') }}
+                                        </span>
                                     </td>
                                     <td align="center" class="px-3 py-2">
                                         <span
-                                            class="text-[0.7rem] bg-green-100 font-medium py-1 px-2.5 rounded-md text-green-900">
-                                            RETURNED
+                                            class="text-[0.7rem] font-medium py-1 px-2.5 rounded-md"
+                                            :class="
+                                                i.status
+                                                    ? 'bg-green-100 text-green-900'
+                                                    : 'bg-yellow-100 text-yellow-900'
+                                            ">
+                                            {{ i.status ? 'RETURNED' : 'BORROWED' }}
                                         </span>
                                     </td>
                                 </tr>
@@ -318,7 +352,7 @@
                 <div>
                     <apexchart
                         type="donut"
-                        height="270"
+                        height="290"
                         :options="donutOptions"
                         :series="donutSeries" />
                 </div>
@@ -424,106 +458,104 @@ const getCardsData = async () => {
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authStore.token}`,
-        }
+        },
     });
 
     if (response.status === 200) {
         superadminDashboardStore.cardsData = response.data;
     }
-}
+};
 
 const donutSeries = ref([]);
 const donutOptions = ref({
-  chart: {
-    type: "donut",
-    toolbar: {
-      show: false,
+    chart: {
+        type: 'donut',
+        toolbar: {
+            show: false,
+        },
     },
-  },
-  labels: [], // akan diisi dari API
-  colors: ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#3B82F6"],
-  legend: {
-    position: "bottom",
-    fontSize: "14px",
-    fontWeight: 500,
-    labels: {
-      colors: "#374151",
-    },
-    formatter: function (val, opts) {
-      // ambil value dari series sesuai index
-      const value = opts.w.globals.series[opts.seriesIndex];
-      // bikin legend custom: label di kiri, jumlah di kanan
-      return `<div style="display:flex; justify-content:space-between; width:150px;">
+    labels: [], // akan diisi dari API
+    colors: ['#6366F1', '#22C55E', '#F59E0B', '#EF4444', '#3B82F6'],
+    legend: {
+        position: 'bottom',
+        fontSize: '14px',
+        fontWeight: 500,
+        labels: {
+            colors: '#374151',
+        },
+        formatter: function (val, opts) {
+            // ambil value dari series sesuai index
+            const value = opts.w.globals.series[opts.seriesIndex];
+            // bikin legend custom: label di kiri, jumlah di kanan
+            return `<div style="display:flex; justify-content:space-between; width:180px; justify-items:center">
                 <span>${val}</span>
                 <span><b>${value}x</b></span>
               </div>`;
-    },
-  },
-  dataLabels: {
-    enabled: true,
-    formatter: (val) => val.toFixed(1) + "%",
-    style: {
-      fontSize: "12px",
-      fontWeight: "bold",
-      colors: ["#fff"],
-    },
-  },
-  tooltip: {
-    y: {
-      formatter: (val) => `${val}x dipinjam`,
-    },
-  },
-  stroke: {
-    show: true,
-    width: 2,
-    colors: ["#fff"],
-  },
-  plotOptions: {
-    pie: {
-      donut: {
-        size: "70%",
-        labels: {
-          show: true,
-          total: {
-            show: true,
-            label: "Total",
-            fontSize: "14px",
-            fontWeight: 600,
-            formatter: (w) => {
-              return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + "x";
-            },
-          },
         },
-      },
     },
-  },
+    dataLabels: {
+        enabled: false,
+        formatter: (val) => val.toFixed(1) + '%',
+        style: {
+            fontSize: '12px',
+            fontWeight: 'bold',
+            colors: ['#fff'],
+        },
+    },
+    tooltip: {
+        y: {
+            formatter: (val) => `${val}x dipinjam`,
+        },
+    },
+    stroke: {
+        show: true,
+        width: 2,
+        colors: ['#fff'],
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '65%',
+                labels: {
+                    show: true,
+                    total: {
+                        show: true,
+                        label: 'Total',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        formatter: (w) => {
+                            return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + 'x';
+                        },
+                    },
+                },
+            },
+        },
+    },
 });
 
-
-
 const getMostBorrowed = async () => {
-  try {
-    const response = await $fetch(`${url}/dashboard/superadmin/most-borrowed`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
+    try {
+        const response = await $fetch(`${url}/dashboard/superadmin/most-borrowed`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authStore.token}`,
+            },
+        });
 
-    if (response.status === 200) {
-      superadminDashboardStore.mostBorrowed = response.data;
+        if (response.status === 200) {
+            superadminDashboardStore.mostBorrowed = response.data;
 
-      // mapping ke ApexCharts
-      donutSeries.value = response.data.map((item) => item.total_borrowed);
-      donutOptions.value = {
-        ...donutOptions.value,
-        labels: response.data.map((item) => item.name),
-      };
+            // mapping ke ApexCharts
+            donutSeries.value = response.data.map((item) => item.total_borrowed);
+            donutOptions.value = {
+                ...donutOptions.value,
+                labels: response.data.map((item) => item.name),
+            };
+        }
+    } catch (err) {
+        console.error('Error fetching most borrowed:', err);
     }
-  } catch (err) {
-    console.error("Error fetching most borrowed:", err);
-  }
 };
 
 const formatDate = (date) => {
