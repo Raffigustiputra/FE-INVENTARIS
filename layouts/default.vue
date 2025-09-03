@@ -4,7 +4,7 @@
   </Head>
   <div class="w-full min-h-screen font-Poppins">
     <!-- Online checking -->
-    <div
+    <!-- <div
       v-if="!isOnline"
       class="h-screen flex flex-col text-center font-Poppins"
     >
@@ -31,9 +31,9 @@
           </p>
         </div>
       </main>
-    </div>
+    </div> -->
 
-    <div v-else>
+    <div>
       <div
         v-if="loading"
         class="flex fixed inset-0 items-center justify-center z-50 bg-black/20"
