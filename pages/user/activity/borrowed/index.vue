@@ -857,13 +857,15 @@
             <Tooltip text="Return" position="top">
               <div
                 class="bg-blue-400 p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
-              >
+                @click="openReturnModal(item)" 
+                >
                 <IconsReturn @click="openReturnModal(item)" />
               </div>
             </Tooltip>
             <Tooltip text="Detail" position="top">
               <div
                 class="bg-[#c89513] p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
+                @click="openDetailModal(item)"
               >
                 <IconsDetail @click="openDetailModal(item)" />
               </div>
@@ -1477,7 +1479,7 @@ const exportSelectedData = async () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
       },
-      body: JSON.stringify({
+      body: JSON.stringify({  
         export: exportData.value,
         data: selectedItems.value,
         type: "borrowing",

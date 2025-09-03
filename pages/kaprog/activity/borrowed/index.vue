@@ -188,6 +188,7 @@ const selectAll = ref(false);
 // Sorting & Filtering
 const sortByType = ref("");
 const sortByTime = ref("");
+const exportData = ref("selected");
 
 // Pagination
 const currentPage = ref(1);
@@ -305,7 +306,7 @@ const breadcrumbs = [
   {
     label: "Export Selected",
     icon: IconsNavbarIconsPrint,
-    click: () => openModalFromBreadcrumb({ label: "Export Selected" }),
+    click: () => exportSelectedData(),
   },
   {
     label: "Sort by Type",
@@ -492,6 +493,52 @@ const getHistoryData = async () => {
   }
 };
 
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/unit-loan`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({  
+        export: exportData.value,
+        data: selectedItems.value,
+        type: "borrowing",
+        search: searchQuery.value,
+        sort_by_type: sortByType.value,
+        sort_by_time: sortByTime.value,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `borrowed_items_selected_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
+  }
+};
+
 // =============================================================================
 // EVENT HANDLERS
 // =============================================================================
@@ -524,8 +571,10 @@ const handleSort = (type) => {
 
 const toggleAll = () => {
   if (selectAll.value) {
+    exportData.value = "all";
     selectedItems.value = loanStore.loan.map((item) => item.id);
   } else {
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 };
