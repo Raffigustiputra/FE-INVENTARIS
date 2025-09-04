@@ -306,6 +306,8 @@ const lastPage = ref(0);
 const currentPage = ref(1);
 const maxVisiblePages = 3;
 
+const sortByMajor = ref("");
+
 const paginationItems = computed(() => {
   const pages = [];
   const halfVisible = Math.floor(maxVisiblePages / 2);
@@ -551,7 +553,7 @@ const getMajor = async () => {
 
 const getStudent = async () => {
   const response = await $fetch(
-    `${url}/student/data?search=${studentStore.filter.search}&page=${currentPage.value}`,
+    `${url}/student/data?search=${studentStore.filter.search}&page=${currentPage.value}&sort_major=${sortByMajor.value}`,
     {
       method: "GET",
       headers: {
@@ -599,7 +601,7 @@ const submitCreateStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Created");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while creating student");
@@ -636,7 +638,7 @@ const submitEditStudent = async () => {
 
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Updated");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while updating student");
@@ -653,7 +655,7 @@ const submitDeleteStudent = async () => {
   });
   if (response.status === 200 || response.status === 201) {
     showAlert("success", "Student Successfully Deleted");
-    Closemodal();
+    closeModal();
     getStudent();
   } else {
     showAlert("error", "Something went wrong while deleting student");
@@ -696,6 +698,10 @@ const breadcrumbs = [
   {
     label: "Sort by Major",
     icon: IconsNavbarIconsFilterMajor,
+    onClick: () => {
+      sortByMajor.value = sortByMajor.value === "asc" ? "desc" : "asc";
+      getStudent();
+    }
   },
 ];
 

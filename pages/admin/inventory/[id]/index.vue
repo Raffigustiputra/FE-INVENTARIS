@@ -118,6 +118,9 @@ const authStore = useAuthStore();
 const subItemStore = useSubItemStore();
 const pending = ref(false);
 const url = useRuntimeConfig().public.authUrl;
+const sortByBrand = ref('');
+const sortByMajor = ref('');
+const exportData = ref('selected');
 
 const viewItem = (item) => {
   navigateTo(`/admin/inventory/${item.item.id}/${item.id}`);
@@ -241,7 +244,7 @@ const changePage = async (page) => {
 const getSubItemInventory = async () => {
   setTimeout(() => setLoading(false), 2000);
   pending.value = true;
-  const response = await $fetch(`${url}/subitem/paginate?search=${subItemStore.filter.search}&page=${currentPage.value}`, {
+  const response = await $fetch(`${url}/subitem/paginate?search=${subItemStore.filter.search}&page=${currentPage.value}&sort_major=${sortByMajor.value}&sort_brand=${sortByBrand.value}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -273,22 +276,83 @@ const breadcrumbs = [
   {
     label: "Export Selected",
     icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData(),
   },
   {
     label: "Sort by Major",
     icon: IconsNavbarIconsFilterMajor,
+    click: () => handleSort("major"),
   },
   {
-    label: "Sort by Stock",
+    label: "Sort by Brand",
     icon: IconsNavbarIconsFilterRole,
+    click: () => handleSort("brand"),
   },
 ];
 
 const toggleAll = () => {
   if (selectAll.value) {
+    exportData.value = 'all';
     selectedItems.value = subItemStore.subItems.map((item) => item.id);
   } else {
+    exportData.value = 'selected';
     selectedItems.value = [];
+  }
+};
+
+const handleSort = (type) => {  
+  if (type === "major") {
+    sortByMajor.value = sortByMajor.value === "asc" ? "desc" : "asc";
+    sortByBrand.value = '';
+  } else if (type === "brand") {
+    sortByBrand.value = sortByBrand.value === "asc" ? "desc" : "asc";
+    sortByMajor.value = '';
+  }
+  getSubItemInventory();
+};
+
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/sub-items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({  
+        export: exportData.value,
+        data: selectedItems.value,
+        search: subItemStore.filter.search,
+        sort_major: sortByMajor.value,
+        sort_brand: sortByBrand.value,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sub_items_selected_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
   }
 };
 </script>

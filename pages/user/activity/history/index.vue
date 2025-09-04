@@ -259,7 +259,7 @@ const historyStore = useHistory();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
 const route = useRoute();
-const exportData = ref("");
+const exportData = ref("selected");
 
 // =============================================================================
 // REACTIVE STATE

@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <div
-      class="w-8/10 h-18.5 flex flex-col fixed top-0 right-0 bg-white z-10 border-b border-black/10"
-    >
-      <div
-        class="container mx-auto flex items-center justify-between py-3 px-6"
-      >
+  <header class="w-full bg-white z-30 sticky top-0 left-0 right-0">
+      <div class=" mx-auto flex items-center justify-between">
+        <button @click="sidebarStore.toggle()" class="p-2 hover:bg-gray-200 cursor-pointer rounded-full">
+          <IconsBurgernav
+            class="size-8 text-gray-600 transition-transform duration-300"
+          />
+        </button>
         <nav class="flex items-center font-semibold text-lg"></nav>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 m-3">
           <div class="select-none text-right">
             <p class="font-medium text-gray-800">
               {{ authStore.name || "User" }}
@@ -23,11 +23,12 @@
         </div>
       </div>
 
+      <!-- <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-2.5 z-100"></div> -->
       <div
-        v-if="breadcrumbs && breadcrumbs.length > 0"
-        class="select-none w-8/10 border-t-2 border-b-2 bg-white fixed top-[73px] right-0 border-gray-100 py-3 px-9"
+      v-if="breadcrumbs && breadcrumbs.length > 0"
+      class="select-none w-full border-t-2 border-b-2 bg-white mt-2.5 -mb-5 border-gray-100 py-3 px-1"
       >
-        <div class="container mx-auto flex items-center gap-5">
+      <div class="mx-auto flex items-center gap-5">
           <div
             v-for="(item, index) in breadcrumbs"
             :key="index"
@@ -45,12 +46,15 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+      <!-- <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-4.5 -z-1"></div> -->
+  </header>
 </template>
 
 <script setup>
-import { useAuthStore } from "@/stores/auth";
+import { IconsBurgernav } from '#components';
+import { useAuthStore } from '@/stores/auth';
+import { useSidebarStore } from '~/stores/sidebar';
+const sidebarStore = useSidebarStore();
 
 const emit = defineEmits(["breadcrumbClick"]);
 const authStore = useAuthStore();
@@ -61,6 +65,13 @@ defineProps({
     default: () => [],
   },
 });
+
+function toggleMenu(path) {
+  if (sidebarStore.isCollapsed) {
+    sidebarStore.toggle(); // Or simply do nothing: return;
+    return;
+  }
+}
 
 // const formatRole = (role) => {
 //   if (!role) return 'Role';

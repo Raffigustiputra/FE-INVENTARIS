@@ -385,6 +385,7 @@ const GetMajor = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
+      'ngrok-skip-browser-warning': true
     },
   });
   if (response.status === 200) {
@@ -394,7 +395,7 @@ const GetMajor = async () => {
 
 const fetchUsers = async () => {
   const response = await $fetch(
-    `${url}/user?search=${accountStore.filter.search}`,
+    `${url}/user/data?search=${accountStore.filter.search}`,
     {
       method: "GET",
       headers: {
