@@ -943,6 +943,7 @@ import SearchableDropdown from "~/components/input/SearchableDropdown.vue";
 const loanStore = useLoanStore();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const storageUrl = useRuntimeConfig().public.storageUrl;
 
 // ===== REACTIVE DATA =====
 
@@ -1877,7 +1878,7 @@ const getDetailUnitItem = async (item) => {
       };
 
       selectedCollateralType.value = data.guarantee || "";
-      imagePreview.value = data.image || "";
+      imagePreview.value = storageUrl + "/" + (data.image || "");
       return data;
     } else {
       console.error("Failed to fetch unit item data:", response.statusText);
