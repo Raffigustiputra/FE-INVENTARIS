@@ -135,7 +135,7 @@
                     :isDisabled="true"
                     v-model="unitItem.type"
                   />
-                  <!-- <div class="relative flex items-center gap-2">
+                  <div class="relative flex items-center gap-2" v-if="isPreviewData || currentModal === 'return-borrowable-student'">
                     <InputText
                       label="Unit Code"
                       placeholder="Enter Unit Code"
@@ -158,8 +158,9 @@
                     >
                       <IconsSearchIcon />
                     </button>
-                  </div> -->
-                  <div class="relative flex items-center gap-2">
+                  </div>
+
+                  <div v-else class="relative flex items-center gap-2">
                     <SearchableDropdown
                       label="Unit Code"
                       placeholder="Enter unit code..."
@@ -167,6 +168,7 @@
                       :options="listData"
                       valueProperty="code_unit"
                       labelProperty="code_unit"
+                      :autoFocus="true"
                       sublabelProperty="item_name"
                       :disabled="isPreviewData || currentModal === 'return-borrowable-teacher'"
                       @select="handleUnitCodeSelect"
@@ -374,7 +376,7 @@
                     :isDisabled="true"
                     v-model="unitItem.type"
                   />
-                  <!-- <div class="relative flex items-center gap-2">
+                  <div class="relative flex items-center gap-2" v-if="isPreviewData || currentModal === 'return-borrowable-teacher'">
                     <InputText
                       label="Unit Code"
                       placeholder="Enter Unit Code"
@@ -396,9 +398,9 @@
                     >
                       <IconsSearchIcon />
                     </button>
-                  </div> -->
+                  </div>
 
-                  <div class="relative flex items-center gap-2">
+                  <div v-else class="relative flex items-center gap-2">
                     <SearchableDropdown
                       label="Unit Code"
                       placeholder="Enter unit code..."
@@ -406,6 +408,7 @@
                       :options="listData"
                       valueProperty="code_unit"
                       labelProperty="code_unit"
+                      :autoFocus="true"
                       sublabelProperty="item_name"
                       :disabled="isPreviewData || currentModal === 'return-borrowable-student'"
                       @select="handleUnitCodeSelect"
@@ -1217,6 +1220,7 @@ const isFormValid = () => {
 
 // Main Submit Handler
 const handleSubmit = async () => {
+  getListUnitItem();
   if (currentModal.value === "selection") {
     handleSelectionSubmit();
   } else {
@@ -1261,7 +1265,6 @@ const handleSelectionSubmit = () => {
 // Universal Submit Form
 const submitForm = async () => {
   isSubmitting.value = true;
-
   try {
     switch (currentModal.value) {
       case "borrowable-student":
@@ -2105,7 +2108,7 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
 onMounted(() => {
   getUnitLoan();
   getConsumableItemData();
-  getListUnitItem();
+  // getListUnitItem();
 });
 
 // ===== PAGE METADATA =====

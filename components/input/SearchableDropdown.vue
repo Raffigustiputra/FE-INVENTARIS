@@ -15,6 +15,7 @@
             @keydown.up.prevent="navigateDropdown(-1)"
             @keydown.enter.prevent="selectHighlightedOption"
             @keydown.esc="showDropdown = false"
+            :autofocus="autoFocus"
             :class="[
               'outline-none block w-full px-4 py-2 rounded-sm text-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC] focus:border-blue-500 focus:ring focus:ring-blue-200',
               { 'bg-gray-100 cursor-not-allowed': disabled }
@@ -46,7 +47,8 @@
             }"
             class="px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer transition-colors duration-200"
           >
-            <div class="font-normal">{{ option[labelProperty] }}</div>
+            <div class="font-normal text-[0.78rem]">{{ option[labelProperty] }}</div>
+            <div v-if="option[sublabelProperty]" class="text-[0.7rem] text-gray-500">{{ option[sublabelProperty] }}</div>
           </div>
         </div>
         <div
@@ -67,6 +69,10 @@ const props = defineProps({
   label: {
     type: String,
     default: 'Label'
+  },
+  autoFocus: {
+    type: Boolean,
+    default: true,
   },
   modelValue: {
     type: [String, Number, null],
@@ -116,7 +122,7 @@ const clearInput = () => {
 }
 
 const filteredOptions = computed(() => {
-  if (!searchText.value) return props.options.slice(0, 10) // Show first 10 when no search
+  // if (!searchText.value) return props.options.slice(0, 10) // Show first 10 when no search
   
   return props.options.filter((option) =>
     option[props.labelProperty].toLowerCase().includes(searchText.value.toLowerCase()) ||
