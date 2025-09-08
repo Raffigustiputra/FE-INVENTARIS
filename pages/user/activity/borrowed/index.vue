@@ -33,7 +33,7 @@
         Borrowed
       </h1>
       <SearchBox
-        :text="'Search Borrowed Items'"
+        :text="'Search Anything'"
         v-model="searchQuery"
         @input="handleSearch"
       />
@@ -55,7 +55,8 @@
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
         >
-        <div class="max-h-[28rem] overflow-y">
+        <div class="max-h-96 overflow-y">
+
           <div v-if="currentModal === 'selection'">
             <div>
               <label
@@ -1289,7 +1290,7 @@ const submitForm = async () => {
     }
   } catch (error) {
     alertError.value = true;
-    alertMessage.value = "An error occurred while submitting the form";
+    alertMessage.value = `Please fill in all required fields`;
   } finally {
     isSubmitting.value = false;
   }
@@ -1308,6 +1309,48 @@ const submitBorrowableStudent = async () => {
 
   if (formData.value.image) {
     formDataToSend.append("image", formData.value.image);
+  }
+  
+  if (!unitItem.value.code) {
+    alertWarning.value = true;
+    alertMessage.value = "Unit Code is required";
+    return;
+  }
+
+  if (!studentData.value.nis) {
+    alertWarning.value = true;
+    alertMessage.value = "Student NIS is required";
+    return;
+  }
+
+  if (!selectedCollateralType.value) {
+    alertWarning.value = true;
+    alertMessage.value = "Collateral Type is required";
+    return;
+  }
+
+  if (!formData.value.room) {
+    alertWarning.value = true;
+    alertMessage.value = "Room is required";
+    return;
+  }
+
+  if (!formData.value.purpose) {
+    alertWarning.value = true;
+    alertMessage.value = "Purpose is required";
+    return;
+  }
+
+  if (!formData.value.borrowDate) {
+    alertWarning.value = true;
+    alertMessage.value = "Borrow Date is required";
+    return;
+  }
+
+  if (!formData.value.borrowerName) {
+    alertWarning.value = true;
+    alertMessage.value = "Borrower's Name is required";
+    return;
   }
 
   const response = await fetch(`${url}/unit-loan`, {
@@ -2101,7 +2144,7 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
       alertError.value = false;
       alertSuccess.value = false;
       alertWarning.value = false;
-    }, 3000);
+    }, 1500);
   }
 });
 
