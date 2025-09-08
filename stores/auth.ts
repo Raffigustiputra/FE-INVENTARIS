@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
-import { useCookie } from "#app"; // Pastikan import ini sesuai dengan framework Anda
+import { useCookie } from "#app";
 
-let logoutTimer: any = null;
+// Hapus variable logoutTimer karena tidak digunakan lagi
+// let logoutTimer: any = null;
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -26,8 +27,20 @@ export const useAuthStore = defineStore("auth", {
     getUsid: (state) => state.usid,
     getUsername: (state) => state.username,
     getMajor: (state) => state.major_id,
-    isAuthenticated: (state) => 
-      !!state.token && !!state.expiresAt && Date.now() < state.expiresAt,
+    isAuthenticated: (state) => {
+      // Pengecekan langsung: jika token ada dan belum expired
+      if (!state.token || !state.expiresAt) return false;
+      
+      // Jika sudah expired, logout otomatis
+      if (Date.now() >= state.expiresAt) {
+        // Panggil logout secara langsung
+        const authStore = useAuthStore();
+        authStore.logout();
+        return false;
+      }
+      
+      return true;
+    },
   },
 
   actions: {
@@ -38,15 +51,14 @@ export const useAuthStore = defineStore("auth", {
       this.usid = data.usid;
       this.username = data.username;
       this.major_id = data.major_id;
+      this.expiresAt = data.expires_at || null;
       this.isAuth = true;
 
-      // Set expiration time (30 detik untuk testing)
-      const expiresIn = 30 * 1000; // 30 detik
-      this.expiresAt = Date.now() + expiresIn;
+      console.log(data);
 
       if (process.client) {
         // Simpan data ke localStorage
-        localStorage.setItem("auth-expiresAt", this.expiresAt.toString());
+        localStorage.setItem("auth-expiresAt", this.expiresAt ? this.expiresAt.toString() : "");
         localStorage.setItem("auth-token", data.token);
         localStorage.setItem("auth-role", data.role || "");
         localStorage.setItem("auth-name", data.name || "");
@@ -61,7 +73,7 @@ export const useAuthStore = defineStore("auth", {
         }
 
         // Simpan data ke cookies (jika diperlukan)
-        const tokenCookie = useCookie("auth-token", { maxAge: 30 }); // 30 detik
+        const tokenCookie = useCookie("auth-token", { maxAge: 30 });
         tokenCookie.value = data.token;
         
         const roleCookie = useCookie("auth-role", { maxAge: 30 });
@@ -85,13 +97,61 @@ export const useAuthStore = defineStore("auth", {
         isAuthCookie.value = "true";  
       }
 
-    // Mulai timer untuk logout otomatis
-    this.startTokenTimer();
-  },
+      // Hapus pemanggilan startTokenTimer() karena tidak digunakan lagi
+      // this.startTokenTimer();
+    },
 
-  // Do not call store methods during store definition; call loadFromStorage()
-  // from components or after creating the store instance.
-  loadFromStorage() {
+    async validateTokenAndFetchUser() {
+      // Cek expired terlebih dahulu
+      if (this.expiresAt && Date.now() >= this.expiresAt) {
+        this.logout();
+        return false;
+      }
+
+      if (!this.token) {
+        this.logout();
+        return false;
+      }
+
+      try {
+        const config = useRuntimeConfig();
+        const url = config.public.authUrl;
+
+        console.log(url)
+        const response = await $fetch(`${url}/user`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`,
+          },
+        }) as any;
+
+        if (response.status === 200) {
+          this.name = response.data.name || this.name;
+          this.username = response.data.username || this.username;
+          this.role = response.data.role || this.role;
+          this.major_id = response.data.major_id || this.major_id;
+          
+          return true;
+        }
+      } catch (error) {
+        console.error("Token validation failed:", error);
+        
+        // Check if it's a 401 error
+        if ((error as any)?.response?.status === 401 || (error as any)?.statusCode === 401) {
+          this.logout();
+          return false;
+        }
+        
+        // For other errors, still consider token valid but log the error
+        console.warn("Network error during token validation, keeping current session");
+        return true;
+      }
+      
+      return false;
+    },
+
+    loadFromStorage() {
       if (process.client) {
         // Ambil data dari localStorage
         const token = localStorage.getItem("auth-token");
@@ -106,7 +166,7 @@ export const useAuthStore = defineStore("auth", {
         // Cek expired
         if (expiresAtStr) {
           const expiresAt = parseInt(expiresAtStr);
-          if (Date.now() > expiresAt) {
+          if (Date.now() >= expiresAt) {
             this.logout(); // otomatis logout kalau udah expired
             return;
           }
@@ -124,18 +184,16 @@ export const useAuthStore = defineStore("auth", {
         }
 
         if (token) {
-          console.log(token);
           this.token = token;
           this.role = role;
           this.name = name;
           this.usid = usid;
           this.username = username;
           this.major_id = major;
-          this.isAuth = isAuth === "true";
+          this.isAuth = true;
           
-          // Mulai timer untuk logout otomatis
-          this.startTokenTimer();
-          console.log(this.startTokenTimer);
+          // Hapus pemanggilan startTokenTimer()
+          // this.startTokenTimer();
         }
       }
     },
@@ -152,10 +210,11 @@ export const useAuthStore = defineStore("auth", {
       this.input.username = "";
       this.input.password = "";
 
-      if (logoutTimer) {
-        clearTimeout(logoutTimer);
-        logoutTimer = null;
-      }
+      // Hapus timer logic karena tidak digunakan lagi
+      // if (logoutTimer) {
+      //   clearTimeout(logoutTimer);
+      //   logoutTimer = null;
+      // }
 
       if (process.client) {
         // Hapus data dari localStorage
@@ -178,26 +237,8 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    startTokenTimer() {
-      if (!this.expiresAt) return;
-
-      const timeout = this.expiresAt - Date.now();
-      if (timeout > 0) {
-        if (logoutTimer) clearTimeout(logoutTimer);
-
-        logoutTimer = setTimeout(() => {
-          this.logout();
-          if (process.client) {
-            window.location.href = "/login"; // redirect
-          }
-        }, timeout);
-      } else {
-        this.logout();
-        if (process.client) {
-          window.location.href = "/login";
-        }
-      }
-    },
+    // Hapus method startTokenTimer() karena tidak digunakan lagi
+    // startTokenTimer() { ... }
   },
 
   persist: true,

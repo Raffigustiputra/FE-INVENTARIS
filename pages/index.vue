@@ -72,6 +72,7 @@ const login = async () => {
       usid: response.data.usid,
       username: response.data.username,
       major_id: response.data.major_id, // Store the complete major object
+      expires_at: response.expires_at, // Store the expiration time
     });
 
     if (response.data.role === "superadmin") {
