@@ -166,6 +166,7 @@ definePageMeta({
 const loanStore = useLoanStore();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const storageUrl = useRuntimeConfig().public.storageUrl;
 
 // =============================================================================
 // REACTIVE STATE
@@ -406,7 +407,7 @@ const openDetailModal = async (item) => {
     };
 
     selectedCollateralType.value = item.guarantee || "";
-    imagePreview.value = item.image || "";
+    imagePreview.value = item.image ? storageUrl + "/" + item.image : "";
 
     // Determine borrower type
     if (item.student) {
@@ -449,6 +450,7 @@ const openDetailModal = async (item) => {
       formData.value.department = item.teacher.department || "";
       currentModal.value = "consumable-teacher";
     }
+    imagePreview.value = item.image ? storageUrl + "/" + item.image : "";
   }
 };
 
