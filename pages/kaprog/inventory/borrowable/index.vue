@@ -333,7 +333,7 @@ const breadcrumbs = [
     click: () => exportSelectedData()
   },
   {
-    label: "Add Item Borrowable",
+    label: "Add Item",
     icon: IconsNavbarIconsAddItem,
   },
   {
@@ -355,7 +355,7 @@ const mainInventoryStore = useMainInventoryStore();
 const adminInventoryStore = useAdminInventoryStore();
 
 const openModalFromBreadcrumb = (item) => {
-  if (item.label === "Add Item Borrowable") {
+  if (item.label === "Add Item") {
     modalCreate.value = true;
   }
 };

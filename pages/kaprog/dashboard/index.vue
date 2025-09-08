@@ -200,6 +200,9 @@
 </template>
 
 <script setup>
+definePageMeta({
+  title: 'Dashboard',
+})
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 

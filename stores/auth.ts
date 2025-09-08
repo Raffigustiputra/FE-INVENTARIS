@@ -1,67 +1,118 @@
 import { defineStore } from "pinia";
+import { useCookie } from "#app"; // Pastikan import ini sesuai dengan framework Anda
+
+let logoutTimer: any = null;
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuth: false,
-
     input: {
       username: "",
       password: "",
     },
-
     token: null as string | null,
     username: null as string | null,
     role: null as string | null,
     name: null as string | null,
     usid: null as string | null,
-    major_id: null as any | null, // Changed to any type to support full major object structure
+    major_id: null as any | null,
+    expiresAt: null as number | null,
   }),
 
-    getters: {
-        getToken: (state) => state.token,
-        getRole: (state) => state.role,
-        getName: (state) => state.name,
-        getUsid: (state) => state.usid,
-        getUsername: (state) => state.username,
-        getMajor: (state) => state.major_id,
-        isAuthenticated: (state) => !!state.token,
-    },
+  getters: {
+    getToken: (state) => state.token,
+    getRole: (state) => state.role,
+    getName: (state) => state.name,
+    getUsid: (state) => state.usid,
+    getUsername: (state) => state.username,
+    getMajor: (state) => state.major_id,
+    isAuthenticated: (state) => 
+      !!state.token && !!state.expiresAt && Date.now() < state.expiresAt,
+  },
 
-    actions: {
-        setAuthData(data: any) {
-            this.token = data.token;
-            this.role = data.role;
-            this.name = data.name;
-            this.usid = data.usid;
-            this.username = data.username;
-            this.major_id = data.major_id; // This will now store the full major object
-            this.isAuth = true;
-            
-            if (process.client) {
-                localStorage.setItem('auth-token', data.token);
-                localStorage.setItem('auth-usid', data.usid);
-                localStorage.setItem('auth-isAuth', 'true');
-                
-                // Store major as JSON if it's an object
-                if (data.major_id && typeof data.major_id === 'object') {
-                    localStorage.setItem('auth-major', JSON.stringify(data.major_id));
-                } else {
-                    localStorage.setItem('auth-major', data.major_id || '');
-                }
-            }
-        },
+  actions: {
+    setAuthData(data: any) {
+      this.token = data.token;
+      this.role = data.role;
+      this.name = data.name;
+      this.usid = data.usid;
+      this.username = data.username;
+      this.major_id = data.major_id;
+      this.isAuth = true;
 
-    loadFromStorage() {
+      // Set expiration time (30 detik untuk testing)
+      const expiresIn = 30 * 1000; // 30 detik
+      this.expiresAt = Date.now() + expiresIn;
+
       if (process.client) {
-        // Ambil dari cookies, fallback ke null jika undefined
-        const token = useCookie("auth-token").value ?? null;
-        const role = useCookie("auth-role").value ?? null;
-        const name = useCookie("auth-name").value ?? null;
-        const usid = useCookie("auth-usid").value ?? null;
-        const username = useCookie("auth-username").value ?? null;
-        const majorStr = localStorage.getItem('auth-major');
-        const isAuth = useCookie("auth-isAuth").value ?? null;
+        // Simpan data ke localStorage
+        localStorage.setItem("auth-expiresAt", this.expiresAt.toString());
+        localStorage.setItem("auth-token", data.token);
+        localStorage.setItem("auth-role", data.role || "");
+        localStorage.setItem("auth-name", data.name || "");
+        localStorage.setItem("auth-usid", data.usid || "");
+        localStorage.setItem("auth-username", data.username || "");
+        localStorage.setItem("auth-isAuth", "true");
+
+        if (data.major_id && typeof data.major_id === "object") {
+          localStorage.setItem("auth-major", JSON.stringify(data.major_id));
+        } else {
+          localStorage.setItem("auth-major", data.major_id || "");
+        }
+
+        // Simpan data ke cookies (jika diperlukan)
+        const tokenCookie = useCookie("auth-token", { maxAge: 30 }); // 30 detik
+        tokenCookie.value = data.token;
         
+        const roleCookie = useCookie("auth-role", { maxAge: 30 });
+        roleCookie.value = data.role;
+        
+        const nameCookie = useCookie("auth-name", { maxAge: 30 });
+        nameCookie.value = data.name;
+        
+        const usidCookie = useCookie("auth-usid", { maxAge: 30 });
+        usidCookie.value = data.usid;
+        
+        const usernameCookie = useCookie("auth-username", { maxAge: 30 });
+        usernameCookie.value = data.username;
+        
+        const majorCookie = useCookie("auth-major", { maxAge: 30 });
+        majorCookie.value = typeof data.major_id === "object" 
+          ? JSON.stringify(data.major_id) 
+          : data.major_id || "";
+          
+        const isAuthCookie = useCookie("auth-isAuth", { maxAge: 30 });
+        isAuthCookie.value = "true";  
+      }
+
+    // Mulai timer untuk logout otomatis
+    this.startTokenTimer();
+  },
+
+  // Do not call store methods during store definition; call loadFromStorage()
+  // from components or after creating the store instance.
+  loadFromStorage() {
+      if (process.client) {
+        // Ambil data dari localStorage
+        const token = localStorage.getItem("auth-token");
+        const role = localStorage.getItem("auth-role");
+        const name = localStorage.getItem("auth-name");
+        const usid = localStorage.getItem("auth-usid");
+        const username = localStorage.getItem("auth-username");
+        const majorStr = localStorage.getItem("auth-major");
+        const isAuth = localStorage.getItem("auth-isAuth");
+        const expiresAtStr = localStorage.getItem("auth-expiresAt");
+
+        // Cek expired
+        if (expiresAtStr) {
+          const expiresAt = parseInt(expiresAtStr);
+          if (Date.now() > expiresAt) {
+            this.logout(); // otomatis logout kalau udah expired
+            return;
+          }
+          this.expiresAt = expiresAt;
+        }
+
         // Parse major object if it exists
         let major = null;
         if (majorStr) {
@@ -73,6 +124,7 @@ export const useAuthStore = defineStore("auth", {
         }
 
         if (token) {
+          console.log(token);
           this.token = token;
           this.role = role;
           this.name = name;
@@ -80,48 +132,73 @@ export const useAuthStore = defineStore("auth", {
           this.username = username;
           this.major_id = major;
           this.isAuth = isAuth === "true";
+          
+          // Mulai timer untuk logout otomatis
+          this.startTokenTimer();
+          console.log(this.startTokenTimer);
         }
       }
     },
 
-        logout() {
-            this.token = null;
-            this.role = null;
-            this.name = null;
-            this.usid = null;
-            this.username = null;
-            this.major_id = null;
-            this.isAuth = false;
-            this.input.username = '';
-            this.input.password = '';
-            
-            if (process.client) {
-                localStorage.removeItem('auth-token');
-                localStorage.removeItem('auth-role');
-                localStorage.removeItem('auth-name');
-                localStorage.removeItem('auth-usid');
-                localStorage.removeItem('auth-username');
-                localStorage.removeItem('auth-major_id');
-                localStorage.removeItem('auth-isAuth');
-                
-                // Also clear cookies if they exist
-                const tokenCookie = useCookie("auth-token");
-                const roleCookie = useCookie("auth-role");
-                const nameCookie = useCookie("auth-name");
-                const usidCookie = useCookie("auth-usid");
-                const usernameCookie = useCookie("auth-username");
-                const majorCookie = useCookie("auth-major_id");
-                const isAuthCookie = useCookie("auth-isAuth");
-                
-                if (tokenCookie.value) tokenCookie.value = null;
-                if (roleCookie.value) roleCookie.value = null;
-                if (nameCookie.value) nameCookie.value = null;
-                if (usidCookie.value) usidCookie.value = null;
-                if (usernameCookie.value) usernameCookie.value = null;
-                if (majorCookie.value) majorCookie.value = null;
-                if (isAuthCookie.value) isAuthCookie.value = null;
-            }
-        }
+    logout() {
+      this.token = null;
+      this.role = null;
+      this.name = null;
+      this.usid = null;
+      this.username = null;
+      this.major_id = null;
+      this.isAuth = false;
+      this.expiresAt = null;
+      this.input.username = "";
+      this.input.password = "";
+
+      if (logoutTimer) {
+        clearTimeout(logoutTimer);
+        logoutTimer = null;
+      }
+
+      if (process.client) {
+        // Hapus data dari localStorage
+        const keys = [
+          "auth-token", "auth-role", "auth-name", "auth-usid", 
+          "auth-username", "auth-major", "auth-isAuth", "auth-expiresAt"
+        ];
+        keys.forEach((k) => localStorage.removeItem(k));
+
+        // Hapus cookies
+        const cookies = [
+          "auth-token", "auth-role", "auth-name", "auth-usid",
+          "auth-username", "auth-major", "auth-isAuth"
+        ];
+        
+        cookies.forEach(name => {
+          const cookie = useCookie(name);
+          cookie.value = null;
+        });
+      }
     },
-    persist : true
+
+    startTokenTimer() {
+      if (!this.expiresAt) return;
+
+      const timeout = this.expiresAt - Date.now();
+      if (timeout > 0) {
+        if (logoutTimer) clearTimeout(logoutTimer);
+
+        logoutTimer = setTimeout(() => {
+          this.logout();
+          if (process.client) {
+            window.location.href = "/login"; // redirect
+          }
+        }, timeout);
+      } else {
+        this.logout();
+        if (process.client) {
+          window.location.href = "/login";
+        }
+      }
+    },
+  },
+
+  persist: true,
 });
