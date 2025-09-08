@@ -47,7 +47,7 @@
           sidebarStore.isCollapsed ? 'ml-25' : 'ml-[320px]',
         ]"
       >
-        <main class="w-full h-full p-5">
+        <main class="w-full h-full px-5 pb-5">
           <slot></slot>
         </main>
       </div>

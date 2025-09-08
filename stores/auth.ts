@@ -48,6 +48,7 @@ export const useAuthStore = defineStore("auth", {
       this.isAuth = true;
 
       localStorage.setItem("auth_token", this.token || "");
+      localStorage.setItem("token_expires", this.expiresAt?.toString() || "");
     },
 
     async validateTokenAndFetchUser() {
