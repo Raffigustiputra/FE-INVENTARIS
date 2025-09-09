@@ -300,13 +300,13 @@ const toggleAll = () => {
   }
 };
 
-const handleSort = (type) => {
+const handleSort = (type) => {  
   if (type === "major") {
     sortByMajor.value = sortByMajor.value === "asc" ? "desc" : "asc";
-    sortByBrand.value = null;
+    sortByBrand.value = '';
   } else if (type === "brand") {
     sortByBrand.value = sortByBrand.value === "asc" ? "desc" : "asc";
-    sortByMajor.value = null;
+    sortByMajor.value = '';
   }
   getSubItemInventory();
 };

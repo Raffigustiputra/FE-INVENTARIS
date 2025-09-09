@@ -28,7 +28,8 @@
      
      // Add the plugin for vue3-apexcharts
      plugins: [
-       { src: '~/plugins/vue3-apexcharts.js', mode: 'client' } // Ensure this is added
+       { src: '~/plugins/vue3-apexcharts.js', mode: 'client' },
+       { src: '~/plugins/api-error-handler.client.ts', mode: 'client' }
      ],
 
      imports: {

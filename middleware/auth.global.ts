@@ -1,5 +1,13 @@
 import { useAuthStore } from "~/stores/auth";
 
+// Utility function to clear last_path cookie (can be called when 403/forbidden occurs)
+export const clearLastPathCookie = () => {
+  const lastPathCookie = useCookie('last_path');
+  if (lastPathCookie.value) {
+    lastPathCookie.value = null;
+  }
+};
+
 export default defineNuxtRouteMiddleware((to, from) => {
   // Skip middleware on server-side
   if (process.server) return;
@@ -12,9 +20,10 @@ export default defineNuxtRouteMiddleware((to, from) => {
   
   // If route requires auth and user isn't authenticated
   if (!token && !publicRoutes.includes(to.path) && !to.path.startsWith('/public')) {
-    // Save the intended destination
-    if (to.fullPath) {
-      useCookie('last_path').value = to.fullPath; // 1 hour
+    // Clear last_path cookie if user was trying to access a protected route but is not authenticated
+    const lastPathCookie = useCookie('last_path');
+    if (lastPathCookie.value) {
+      lastPathCookie.value = null;
     }
     return navigateTo('/login');
   }

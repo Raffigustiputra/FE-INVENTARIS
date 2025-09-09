@@ -80,9 +80,9 @@
             <input type="checkbox" class="cursor-pointer" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="px-4 py-3 text-center">Type</th>
-          <th class="px-4 py-3">Unit Code</th>
+          <th class="px-4 py-3 text-center">Unit Code</th>
           <th class="px-4 py-3 text-center">Brand</th>
-          <th class="px-4 py-3">Added Date</th>
+          <th class="px-4 py-3 text-center">Added Date</th>
           <th class="px-4 py-3 text-center">Status</th>
           <th class="px-4 py-3 text-center">Condition</th>
         </tr>
@@ -97,9 +97,9 @@
             <input type="checkbox" class="cursor-pointer" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
-          <td class="px-4 py-3">{{ item.code_unit }}</td>
+          <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
-          <td class="px-4 py-3">{{ formatDate(item.procurement_date) }}</td>
+          <td class="px-4 py-3 text-center">{{ formatDate(item.procurement_date) }}</td>
           <td class="px-4 py-3 text-center">
             <span
               :class="statusClass(item.status)"
@@ -162,18 +162,18 @@ const breadcrumbs = [
     click: () => exportSelectedData()
   },
   {
-    label: "Sort by Major",
+    label: "Sort by Time",
     icon: IconsNavbarIconsFilterMajor,
-    click: () => handleSort("major")
+    click: () => handleSort("date")
   },
-  {
-    label: "Sort by Condition",
-    icon: IconsNavbarIconsFilterRole,
-    click: () => handleSort("condition")
-  },
+  // {
+  //   label: "Sort by Condition",
+  //   icon: IconsNavbarIconsFilterRole,
+  //   click: () => handleSort("condition")
+  // },
 ];
 
-const sortByMajor = ref("");
+const sortByDate = ref("");
 const sortByCondition = ref("");
 const exportData = ref("selected");
 
@@ -311,7 +311,7 @@ const getUnitItemsInventory = async () => {
   pending.value = true;
   try {
     const response = await $fetch(
-      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}&sort_major=${sortByMajor.value}&sort_condition=${sortByCondition.value}`, 
+      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}&sort_date=${sortByDate.value}&sort_condition=${sortByCondition.value}`, 
       {
         method: "GET",
         headers: {
@@ -367,12 +367,12 @@ function toggleAll() {
 }
 
 const handleSort = (type) => {
-  if (type === "major") {
-    sortByMajor.value = sortByMajor.value === "asc" ? "desc" : "asc";
+  if (type === "date") {
+    sortByDate.value = sortByDate.value === "asc" ? "desc" : "asc";
     sortByCondition.value = '';
   } else if (type === "condition") {
     sortByCondition.value = sortByCondition.value === "asc" ? "desc" : "asc";
-    sortByMajor.value = '';
+    sortByDate.value = '';
   }
   getUnitItemsInventory();
 };
@@ -396,7 +396,7 @@ const exportSelectedData = async () => {
         export: exportData.value,
         search: unitItemStore.filter.search,
         sort_condition: sortByCondition.value,
-        sort_major: sortByMajor.value,
+        sort_status: sortByDate.value,
       }),
     });
 

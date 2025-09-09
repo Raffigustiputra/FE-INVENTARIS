@@ -424,7 +424,6 @@ const changePage = async (page) => {
 };
 
 const getMainInvetoryItems = async () => {
-    setTimeout(() => setLoading(false), 2000);
     pending.value = true;
   const response = await $fetch(`${url}/item/paginate?search=${mainInventoryStore.filter.search}&page=${currentPage.value}`, {
     method: "GET",

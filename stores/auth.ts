@@ -41,7 +41,8 @@ export const useAuthStore = defineStore("auth", {
       this.isAuth = true;
 
       // Set expiration time (30 detik untuk testing)
-      const expiresIn = 30 * 1000; // 30 detik
+      const expiresIn = 3500 * 1000; // 30 detik
+      console.log(expiresIn);
       this.expiresAt = Date.now() + expiresIn;
 
       if (process.client) {
@@ -168,7 +169,7 @@ export const useAuthStore = defineStore("auth", {
         // Hapus cookies
         const cookies = [
           "auth-token", "auth-role", "auth-name", "auth-usid",
-          "auth-username", "auth-major", "auth-isAuth"
+          "auth-username", "auth-major", "auth-isAuth", "last_path"
         ];
         
         cookies.forEach(name => {
