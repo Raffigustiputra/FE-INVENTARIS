@@ -66,7 +66,6 @@ export const useAuthStore = defineStore("auth", {
         const config = useRuntimeConfig();
         const url = config.public.authUrl;
 
-        console.log(url);
         const response = await $fetch(`${url}/user`, {
           method: "GET",
           headers: {
@@ -99,16 +98,17 @@ export const useAuthStore = defineStore("auth", {
     },
 
     loadFromStorage() {
-      const storedToken = localStorage.getItem("auth_token");
-      if (storedToken) {
-        this.token = storedToken;
-        this.isAuth = true;
-      } else {
-        this.isAuth = false;
+      if (process.client) {
+        const token = localStorage.getItem("auth_token");
+
+        if (token) {
+          this.token = token;
+          this.isAuth = true;
+        }
       }
     },
 
-    logout() {
+    async logout() {
       this.token = null;
       this.role = null;
       this.name = null;
@@ -120,7 +120,8 @@ export const useAuthStore = defineStore("auth", {
       this.input.username = "";
       this.input.password = "";
 
-      console.log("User logged out");
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("token_expires");
     },
   },
 
