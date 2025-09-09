@@ -1,7 +1,4 @@
 import { defineStore } from "pinia";
-import { useCookie } from "#app"; // Pastikan import ini sesuai dengan framework Anda
-
-let logoutTimer: any = null;
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -26,8 +23,17 @@ export const useAuthStore = defineStore("auth", {
     getUsid: (state) => state.usid,
     getUsername: (state) => state.username,
     getMajor: (state) => state.major_id,
-    isAuthenticated: (state) => 
-      !!state.token && !!state.expiresAt && Date.now() < state.expiresAt,
+    isAuthenticated: (state) => {
+      if (!state.token || !state.expiresAt) return false;
+
+      if (Date.now() >= state.expiresAt) {
+        const authStore = useAuthStore();
+        authStore.logout();
+        return false;
+      }
+
+      return true;
+    },
   },
 
   actions: {
@@ -38,106 +44,67 @@ export const useAuthStore = defineStore("auth", {
       this.usid = data.usid;
       this.username = data.username;
       this.major_id = data.major_id;
+      this.expiresAt = data.expires_at || null;
       this.isAuth = true;
 
-      // Set expiration time (30 detik untuk testing)
-      const expiresIn = 3500 * 1000; // 30 detik
-      console.log(expiresIn);
-      this.expiresAt = Date.now() + expiresIn;
+      localStorage.setItem("auth_token", this.token || "");
+      localStorage.setItem("token_expires", this.expiresAt?.toString() || "");
+    },
 
-      if (process.client) {
-        // Simpan data ke localStorage
-        localStorage.setItem("auth-expiresAt", this.expiresAt.toString());
-        localStorage.setItem("auth-token", data.token);
-        localStorage.setItem("auth-role", data.role || "");
-        localStorage.setItem("auth-name", data.name || "");
-        localStorage.setItem("auth-usid", data.usid || "");
-        localStorage.setItem("auth-username", data.username || "");
-        localStorage.setItem("auth-isAuth", "true");
-
-        if (data.major_id && typeof data.major_id === "object") {
-          localStorage.setItem("auth-major", JSON.stringify(data.major_id));
-        } else {
-          localStorage.setItem("auth-major", data.major_id || "");
-        }
-
-        // Simpan data ke cookies (jika diperlukan)
-        const tokenCookie = useCookie("auth-token", { maxAge: 30 }); // 30 detik
-        tokenCookie.value = data.token;
-        
-        const roleCookie = useCookie("auth-role", { maxAge: 30 });
-        roleCookie.value = data.role;
-        
-        const nameCookie = useCookie("auth-name", { maxAge: 30 });
-        nameCookie.value = data.name;
-        
-        const usidCookie = useCookie("auth-usid", { maxAge: 30 });
-        usidCookie.value = data.usid;
-        
-        const usernameCookie = useCookie("auth-username", { maxAge: 30 });
-        usernameCookie.value = data.username;
-        
-        const majorCookie = useCookie("auth-major", { maxAge: 30 });
-        majorCookie.value = typeof data.major_id === "object" 
-          ? JSON.stringify(data.major_id) 
-          : data.major_id || "";
-          
-        const isAuthCookie = useCookie("auth-isAuth", { maxAge: 30 });
-        isAuthCookie.value = "true";  
+    async validateTokenAndFetchUser() {
+      if (this.expiresAt && Date.now() >= this.expiresAt) {
+        this.logout();
+        return false;
       }
 
-    // Mulai timer untuk logout otomatis
-    this.startTokenTimer();
-  },
+      if (!this.token) {
+        this.logout();
+        return false;
+      } 
 
-  // Do not call store methods during store definition; call loadFromStorage()
-  // from components or after creating the store instance.
-  loadFromStorage() {
-      if (process.client) {
-        // Ambil data dari localStorage
-        const token = localStorage.getItem("auth-token");
-        const role = localStorage.getItem("auth-role");
-        const name = localStorage.getItem("auth-name");
-        const usid = localStorage.getItem("auth-usid");
-        const username = localStorage.getItem("auth-username");
-        const majorStr = localStorage.getItem("auth-major");
-        const isAuth = localStorage.getItem("auth-isAuth");
-        const expiresAtStr = localStorage.getItem("auth-expiresAt");
+      try {
+        const config = useRuntimeConfig();
+        const url = config.public.authUrl;
 
-        // Cek expired
-        if (expiresAtStr) {
-          const expiresAt = parseInt(expiresAtStr);
-          if (Date.now() > expiresAt) {
-            this.logout(); // otomatis logout kalau udah expired
-            return;
-          }
-          this.expiresAt = expiresAt;
+        console.log(url);
+        const response = await $fetch(`${url}/user`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`,
+          },
+        }) as any;
+
+        if (response.status === 200) {
+          this.name = response.data.name || this.name;
+          this.username = response.data.username || this.username;
+          this.role = response.data.role || this.role;
+          this.major_id = response.data.major_id || this.major_id;
+
+          return true;
+        }
+      } catch (error) {
+        console.error("Token validation failed:", error);
+
+        if ((error as any)?.response?.status === 401 || (error as any)?.statusCode === 401) {
+          this.logout();
+          return false;
         }
 
-        // Parse major object if it exists
-        let major = null;
-        if (majorStr) {
-          try {
-            major = JSON.parse(majorStr);
-          } catch (e) {
-            major = majorStr;
-          }
-        }
+        console.warn("Network error during token validation, keeping current session");
+        return true;
+      }
 
-        if (token) {
-          console.log(token);
-          this.token = token;
-          this.role = role;
-          this.name = name;
-          this.usid = usid;
-          this.username = username;
-          this.major_id = major;
-          this.isAuth = isAuth === "true";
-          
-          // Mulai timer untuk logout otomatis
-          this.startTokenTimer();
-          console.log(this.startTokenTimer);
-        }
+      return false;
+    },
+
+    loadFromStorage() {
+      const storedToken = localStorage.getItem("auth_token");
+      if (storedToken) {
+        this.token = storedToken;
+        this.isAuth = true;
+      } else {
+        this.isAuth = false;
       }
     },
 
@@ -153,51 +120,7 @@ export const useAuthStore = defineStore("auth", {
       this.input.username = "";
       this.input.password = "";
 
-      if (logoutTimer) {
-        clearTimeout(logoutTimer);
-        logoutTimer = null;
-      }
-
-      if (process.client) {
-        // Hapus data dari localStorage
-        const keys = [
-          "auth-token", "auth-role", "auth-name", "auth-usid", 
-          "auth-username", "auth-major", "auth-isAuth", "auth-expiresAt"
-        ];
-        keys.forEach((k) => localStorage.removeItem(k));
-
-        // Hapus cookies
-        const cookies = [
-          "auth-token", "auth-role", "auth-name", "auth-usid",
-          "auth-username", "auth-major", "auth-isAuth", "last_path"
-        ];
-        
-        cookies.forEach(name => {
-          const cookie = useCookie(name);
-          cookie.value = null;
-        });
-      }
-    },
-
-    startTokenTimer() {
-      if (!this.expiresAt) return;
-
-      const timeout = this.expiresAt - Date.now();
-      if (timeout > 0) {
-        if (logoutTimer) clearTimeout(logoutTimer);
-
-        logoutTimer = setTimeout(() => {
-          this.logout();
-          if (process.client) {
-            window.location.href = "/login"; // redirect
-          }
-        }, timeout);
-      } else {
-        this.logout();
-        if (process.client) {
-          window.location.href = "/login";
-        }
-      }
+      console.log("User logged out");
     },
   },
 

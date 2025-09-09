@@ -372,9 +372,9 @@
 </template>
 
 <script setup>
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
-import dayjs from "dayjs";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import dayjs from 'dayjs';
 
 const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
@@ -390,27 +390,27 @@ const now = new Date();
 // CSS that you need to add to your stylesheet for hover effects
 
 const chartOptions = ref({
-  chart: {
-    type: "bar",
-    height: 350,
-    toolbar: { show: false },
-    background: "#fff",
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      columnWidth: "45%", // Thinner bars
-      endingShape: "flat",
-      borderRadius: 0,
-      dataLabels: {
-        position: "top",
-      },
+    chart: {
+        type: 'bar',
+        height: 350,
+        toolbar: { show: false },
+        background: '#fff',
     },
-  },
-  dataLabels: {
-    enabled: false, // Disable data labels for cleaner look
-  },
-  xaxis: { categories: [] }, // default kosong
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '45%', // Thinner bars
+            endingShape: 'flat',
+            borderRadius: 0,
+            dataLabels: {
+                position: 'top',
+            },
+        },
+    },
+    dataLabels: {
+        enabled: false, // Disable data labels for cleaner look
+    },
+    xaxis: { categories: [] }, // default kosong
 });
 
 const series = ref([{ name: 'Total Borrowed', data: [] }]);
@@ -433,12 +433,8 @@ const getMajorLoansChart = async () => {
         superadminDashboardStore.majorLoans = response.data;
     }
 
-  const categories = superadminDashboardStore.majorLoans.map(
-    (item) => item.major
-  );
-  const seriesData = superadminDashboardStore.majorLoans.map((item) =>
-    parseInt(item.count)
-  );
+    const categories = superadminDashboardStore.majorLoans.map((item) => item.major);
+    const seriesData = superadminDashboardStore.majorLoans.map((item) => parseInt(item.count));
 
     chartOptions.value = {
         ...chartOptions.value, // merge biar ga hilang properti chart
@@ -595,8 +591,8 @@ const formatDate = (date) => {
 };
 
 // hari ini
-const chartStartDay = dayjs().startOf("year").format("YYYY-MM-DD");
-const chartEndDay = dayjs().endOf("year").format("YYYY-MM-DD");
+const chartStartDay = dayjs().startOf('year').format('YYYY-MM-DD');
+const chartEndDay = dayjs().endOf('year').format('YYYY-MM-DD');
 
 // reactive datepicker model
 const fromDate = ref(chartStartDay);
@@ -616,13 +612,13 @@ const updateTo = (date) => {
     superadminDashboardStore.filter.to = formatDate(date);
 };
 const options = {
-  weekday: "short", // Thu
-  day: "2-digit", // 31
-  month: "long", // July
-  year: "numeric", // 2025
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: true, // AM/PM
+    weekday: 'short', // Thu
+    day: '2-digit', // 31
+    month: 'long', // July
+    year: 'numeric', // 2025
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // AM/PM
 };
 
 onMounted(() => {
@@ -636,10 +632,10 @@ onMounted(() => {
     });
 });
 
-const formattedDate = new Intl.DateTimeFormat("en-US", options).format(now);
+const formattedDate = new Intl.DateTimeFormat('en-US', options).format(now);
 // contoh hasil asli: "Thu, July 31, 2025, 07:30 AM"
 
-const parts = formattedDate.replace(",", "").split(" ");
+const parts = formattedDate.replace(',', '').split(' ');
 // parts = ['Thu', 'July', '31', '2025', '07:30', 'AM']
 
 const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${parts[5]}`;
@@ -648,18 +644,18 @@ const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${
 <style scoped>
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px) scale(0.95);
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
 }
 
 .fade-enter-to,
 .fade-leave-from {
-  opacity: 1;
-  transform: translateY(0) scale(1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1); /* spring-like easing */
+    transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1); /* spring-like easing */
 }
 </style>

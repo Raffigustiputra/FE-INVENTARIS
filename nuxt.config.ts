@@ -18,6 +18,7 @@
      runtimeConfig: {
        public: {
          authUrl: process.env.NUXT_AUTH_URL,
+         storageUrl: process.env.NUXT_STORAGE_URL,
        }
      },
 
@@ -29,7 +30,6 @@
      // Add the plugin for vue3-apexcharts
      plugins: [
        { src: '~/plugins/vue3-apexcharts.js', mode: 'client' },
-       { src: '~/plugins/api-error-handler.client.ts', mode: 'client' }
      ],
 
      imports: {

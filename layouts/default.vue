@@ -33,7 +33,7 @@
       </main>
     </div>
 
-    <div v-else>
+    <div>
       <div
         v-if="loading"
         class="flex fixed inset-0 items-center justify-center z-50 bg-black/20"
@@ -47,7 +47,7 @@
           sidebarStore.isCollapsed ? 'ml-25' : 'ml-[320px]',
         ]"
       >
-        <main class="w-full h-full px-5">
+        <main class="w-full h-full px-5 pb-5">
           <slot></slot>
         </main>
       </div>
