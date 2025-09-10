@@ -26,6 +26,122 @@
   opacity: 0;
   transform: translateY(-4px);
 }
+
+@media print {
+  /* Hide everything by default */
+  * {
+    visibility: hidden !important;
+  }
+  
+  /* Only show print area and its contents */
+  #print-area,
+  #print-area * {
+    visibility: visible !important;
+  }
+  
+  /* Hide the entire body content except print area */
+  body > *:not(#print-area) {
+    display: none !important;
+  }
+  
+  /* Force print area to be the only visible content */
+  #print-area {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Hide all navigation, sidebar, and layout elements */
+  nav,
+  aside,
+  header,
+  footer,
+  .sidebar,
+  .navbar,
+  .breadcrumb,
+  .breadcrumbs,
+  .alert,
+  .modal,
+  .tooltip,
+  .dropdown,
+  button,
+  .btn,
+  [class*="sidebar"],
+  [class*="nav"],
+  [class*="header"],
+  [class*="footer"],
+  [class*="alert"],
+  [class*="modal"],
+  [class*="tooltip"],
+  [class*="dropdown"],
+  [class*="transition"],
+  .fixed,
+  .absolute:not(#print-area):not(#print-area *),
+  .z-50,
+  .z-40,
+  .z-30,
+  .z-20,
+  .z-10 {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Hide layout containers */
+  .ml-25,
+  .ml-\[320px\] {
+    margin-left: 0 !important;
+  }
+  
+  /* Ensure no background colors or borders interfere */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Force colors to print */
+  #print-area * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Remove page margins */
+  @page {
+    margin: 0 !important;
+    size: A4;
+  }
+  
+  /* Hide Vue transitions */
+  .fade-enter-active,
+  .fade-leave-active,
+  .alert-enter-active,
+  .alert-leave-active {
+    display: none !important;
+  }
+}
+
+@media print {
+  .hidden {
+    display: block !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+}
 </style>
 <template>
   <transition name="alert">
@@ -317,6 +433,11 @@
       />
     </div>
   </div>
+
+  <div ref="printSection" class="hidden">
+    <IndexQR :selectedItems="selectedUnitItems"/>
+  </div>
+
 </template>
 <script setup>
 import {
@@ -330,6 +451,8 @@ import {
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { statusClass, conditionClass, toUpperCase } from "@/lib/helper";
+import IndexQR from "@/pages/kaprog/qr/index.vue";
+import { useVueToPrint } from 'vue-to-print';
 
 definePageMeta({
   title: "Inventory",
@@ -352,6 +475,7 @@ const breadcrumbs = [
   {
     label: "Print QR-Code",
     icon: IconsNavbarIconsQr,
+    click: () => printSelected(),
   },
   {
     label: "Sort by Time",
@@ -387,6 +511,33 @@ const lastPage = ref(0);
 const currentPage = ref(1);
 const allItemCount = ref(0);
 const maxVisiblePages = 3;
+
+const selectedUnitItems = computed(() =>
+  unitItemStore.unitItems.filter((item) => selectedItems.value.includes(item.id))
+);
+
+const printRef = ref()
+
+const { print } = useVueToPrint({
+  target: printRef,
+  bodyClass: 'print-qr-body',
+})
+
+const printSection = ref(null);
+
+const { handlePrint } = useVueToPrint({
+  content: () => printSection.value,
+  documentTitle: "QR-Codes-Borrowable-Items",
+  removeAfterPrint: true,
+});
+
+const printSelected = async () => {
+  if (selectedItems.value.length === 0) {
+    showAlert("warning", "Please select at least one item to print QR codes.");
+    return;
+  }
+  handlePrint()
+};
 
 const getMainInventoryItems = async () => {
   pending.value = true;
@@ -780,8 +931,22 @@ const getUnitItemsInventory = async () => {
 };
 
 onMounted(() => {
-  getUnitItemsInventory();
   getMainInventoryItems();
+  getUnitItemsInventory();
+
+  window.addEventListener('beforeprint', () => {
+    console.log('Print dialog opened');
+  });
+  
+  window.addEventListener('afterprint', () => {
+    console.log('Print dialog closed');
+    printing.value = false;
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('beforeprint', () => {});
+  window.removeEventListener('afterprint', () => {});
 });
 
 const selectedItems = ref([]);

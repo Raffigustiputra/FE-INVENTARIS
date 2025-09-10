@@ -204,10 +204,7 @@ import {
   InputSelect,
 } from "#components";
 import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
-import { useVueToPrint } from 'vue-to-print';
-import Pagination from "@/components/pagination/index.vue";
 import { useUnitItemStore } from "@/stores/main-inventory";
-import IndexQR from "@/pages/kaprog/qr/index.vue";
 
 definePageMeta({
   title: "Borrowable",
@@ -266,38 +263,10 @@ const sortByDate = ref("asc");
 const sortByType = ref("asc");
 const selectAll = ref(false);
 const modalPrintQR = ref(false);
-const printing = ref(false);
 
 const selectedUnitItems = computed(() =>
   unitItemStore.unitItems.filter((item) => selectedItems.value.includes(item.id))
 );
-
-const closeModalPrintQR = () => {
-  modalPrintQR.value = false;
-};
-
-const printRef = ref()
-
-const { print } = useVueToPrint({
-  target: printRef,
-  bodyClass: 'print-qr-body',
-})
-
-const printSection = ref(null);
-
-const { handlePrint } = useVueToPrint({
-  content: () => printSection.value,
-  documentTitle: "QR-Codes-Borrowable-Items",
-  removeAfterPrint: true,
-});
-
-const openModalQR = async () => {
-  if (selectedItems.value.length === 0) {
-    showAlert("warning", "Please select at least one item to print QR codes.");
-    return;
-  }
-  handlePrint()
-};
 
 const alertError = ref(false);
 const alertSuccess = ref(false);

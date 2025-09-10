@@ -147,14 +147,16 @@
                             ? toggleMenu(menu.path)
                             : $router.push(menu.path)
                         "
-                        class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
+                        class="flex justify-center items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
                       >
-                        <div class="flex items-center gap-2">
+                        <div
+                          class="flex justify-center items-center gap-2"
+                        >
                           <component
                             :is="menu.icon"
                             :class="[
                               'size-4 transition-colors duration-300',
-                              isActive
+                              isActive && !menu.childMenu
                                 ? 'text-white fill-white'
                                 : 'fill-[#727272]',
                             ]"
@@ -314,6 +316,8 @@ const closeCreateModal = () => {
   majorStore.input.icon = "";
   majorStore.input.color = "";
 };
+
+const emit = defineEmits(['logout']);
 
 const props = defineProps({
   countKaprog: Number,
