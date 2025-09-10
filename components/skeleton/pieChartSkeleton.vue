@@ -6,7 +6,7 @@
       <div class="w-36 h-36 bg-gray-300 rounded-full"></div>
 
       <div class="w-full space-y-4">
-        <div v-for="i in 5" :key="i" class="flex items-center justify-center space-x-2 ">
+        <div v-for="i in 3" :key="i" class="flex items-center justify-center space-x-2 ">
           <div class="h-3 w-3 bg-gray-300 rounded-full"></div>
           <div class="h-4 bg-gray-300 rounded w-3/4"></div>
         </div>

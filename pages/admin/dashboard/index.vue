@@ -359,7 +359,7 @@
 
             <!-- right sections -->
             <div class="w-3/12">
-                <div class="w-full flex mt-2 font-medium justify-center">
+                <div class="w-full flex my-6 font-medium justify-center">
                     <p>Most of Borrowing</p>
                 </div>
                 <div>
