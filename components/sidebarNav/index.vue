@@ -69,7 +69,7 @@
           v-if="!sidebarStore.isCollapsed"
           src="../../public/images/wv-logo.png"
           alt="Logo"
-          class="w-[150px] my-1.5"
+          class="w-[200px]"
         />
         <img
           v-else
