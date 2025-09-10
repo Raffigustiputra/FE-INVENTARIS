@@ -153,7 +153,7 @@
                           :is="menu.icon"
                           :class="[
                             'size-4 transition-colors duration-300',
-                            isActive
+                            isActive && !menu.childMenu
                               ? 'text-white fill-white'
                               : 'fill-[#727272]',
                           ]"
@@ -165,7 +165,7 @@
               </div>
 
               <!-- CHILD MENU -->
-              <transition name="fade">
+              <!-- <transition name="fade"> -->
                 <div
                   v-if="expandedMenu === menu.path && !sidebarStore.isCollapsed"
                   class="pl-8 mt-1 space-y-1"
@@ -192,7 +192,7 @@
                     </template>
                   </NavLink>
                 </div>
-              </transition>
+              <!-- </transition> -->
             </template>
           </div>
         </div>
@@ -364,11 +364,6 @@ const menuByRole = {
       name: "Inventory",
       path: "/admin/inventory",
       icon: IconsInventorySA,
-    },
-    {
-      name: "QR",
-      path: "/admin/qr",
-      icon: IconsDashboard,
     },
     {
       name: "Manage Data",

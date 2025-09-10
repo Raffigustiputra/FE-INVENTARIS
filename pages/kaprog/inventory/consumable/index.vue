@@ -95,7 +95,7 @@
               v-model="consumableItemStore.input.quantity"
             />
             <InputText
-              label="QTY(pcs/pack)"
+              label="Unit(pcs/pack)"
               v-model="consumableItemStore.input.unit"
               placeholder="Enter Unit"
             />

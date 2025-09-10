@@ -28,219 +28,298 @@
 }
 
 @media print {
-  body * {
+  /* Hide everything by default */
+  * {
     visibility: hidden !important;
   }
-  #print-area, #print-area * {
+  
+  /* Only show print area and its contents */
+  #print-area,
+  #print-area * {
     visibility: visible !important;
-    display: block !important;
   }
+  
+  /* Hide the entire body content except print area */
+  body > *:not(#print-area) {
+    display: none !important;
+  }
+  
+  /* Force print area to be the only visible content */
   #print-area {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: white; /* opsional kalau mau putih */
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Hide all navigation, sidebar, and layout elements */
+  nav,
+  aside,
+  header,
+  footer,
+  .sidebar,
+  .navbar,
+  .breadcrumb,
+  .breadcrumbs,
+  .alert,
+  .modal,
+  .tooltip,
+  .dropdown,
+  button,
+  .btn,
+  [class*="sidebar"],
+  [class*="nav"],
+  [class*="header"],
+  [class*="footer"],
+  [class*="alert"],
+  [class*="modal"],
+  [class*="tooltip"],
+  [class*="dropdown"],
+  [class*="transition"],
+  .fixed,
+  .absolute:not(#print-area):not(#print-area *),
+  .z-50,
+  .z-40,
+  .z-30,
+  .z-20,
+  .z-10 {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Hide layout containers */
+  .ml-25,
+  .ml-\[320px\] {
+    margin-left: 0 !important;
+  }
+  
+  /* Ensure no background colors or borders interfere */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Force colors to print */
+  #print-area * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Remove page margins */
+  @page {
+    margin: 0 !important;
+    size: A4;
+  }
+  
+  /* Hide Vue transitions */
+  .fade-enter-active,
+  .fade-leave-active,
+  .alert-enter-active,
+  .alert-leave-active {
+    display: none !important;
   }
 }
 
+@media print {
+  .hidden {
+    display: block !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+}
 </style>
 
 <template>
-  <transition name="alert">
-    <AlertError class="z-50" v-if="alertError" :title="alertMessage" @hide="alertError = false" />
-  </transition>
-  <transition name="alert">
-    <AlertSuccess class="z-50" v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
-  </transition>
-  <transition name="alert">
-    <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
-  </transition>
-  <div>
-    <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="openModalFromBreadcrumb" />
-    <div class="flex items-center justify-between mt-12 mb-4">
-      <h1 class="font-semibold text-2xl">Inventory
-        <div class="inline text-lg">/</div>
-        Borrowed Items
-      </h1>
-      <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
-    </div>
-  </div>
-
-  <!-- Modal Create Borrowable -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div v-if="modalCreate"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
-        <Modal @btnClose="closeModalCreate" title="Add New Item" @btnSubmit="createUnitItem"
-          :isSubmitting="isSubmitting" labelButton="Add Item">
-          <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
-          <div class="w-full flex items-center gap-2">
-            <InputSelect class="w-1/2" label="Item Type" v-model="adminInventoryStore.input.item_id" @change="
-              (event) =>
-                console.log('Selected item type:', event.target.value)
-            ">
-              <option v-for="type in mainInventoryStore.inventory" :key="type.id" :value="type.id">
-                {{ type.name }}
-              </option>
-            </InputSelect>
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk" />
-            <InputDate class="w-1/2" label="Added Date" v-model="adminInventoryStore.input.procurement_date" />
-          </div>
-          <InputTextarea label="Description" placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description" />
-        </Modal>
+  <!-- Modal Print QR -->
+    <transition name="alert">
+      <AlertError class="z-50" v-if="alertError" :title="alertMessage" @hide="alertError = false" />
+    </transition>
+    <transition name="alert">
+      <AlertSuccess class="z-50" v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
+    </transition>
+    <transition name="alert">
+      <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
+    </transition>
+    <div>
+      <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="openModalFromBreadcrumb" />
+      <div class="flex items-center justify-between mt-12 mb-4">
+        <h1 class="font-semibold text-2xl">Inventory
+          <div class="inline text-lg">/</div>
+          Borrowed Items
+        </h1>
+        <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
       </div>
-    </Transition>
-  </div>
-
-  <!-- Modal Update Borrowable -->
-  <div class="w-full">
-    <Transition name="fade">
-      <div v-if="modalUpdate"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
-        <Modal @btnSubmit="updateUnitItem" @btnClose="closeModalUpdate" title="Update Item" :isSubmitting="isSubmitting"
-          labelButton="Update Item">
-          <div class="w-full flex items-center gap-2">
-            <InputSelect class="w-1/2" label="Item Type" v-model="adminInventoryStore.input.item_id" @change="
-              (event) =>
-                console.log('Selected item type:', event.target.value)
-            ">
-              <option v-for="type in mainInventoryStore.inventory" :key="type.id" :value="type.id">
-                {{ type.name }}
-              </option>
-            </InputSelect>
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk" />
-            <InputDate class="w-1/2" label="Added Date" v-model="adminInventoryStore.input.procurement_date" />
-          </div>
-          <div class="w-full flex items-center gap-2">
+    </div>
+    
+    <!-- Modal Create Borrowable -->
+    <div class="w-full">
+      <Transition name="fade">
+        <div v-if="modalCreate"
+          class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+          <Modal @btnClose="closeModalCreate" title="Add New Item" @btnSubmit="createUnitItem"
+            :isSubmitting="isSubmitting" labelButton="Add Item">
+            <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
+            <div class="w-full flex items-center gap-2">
+              <InputSelect class="w-1/2" label="Item Type" v-model="adminInventoryStore.input.item_id" @change="
+                (event) =>
+                  console.log('Selected item type:', event.target.value)
+              ">
+                <option v-for="type in mainInventoryStore.inventory" :key="type.id" :value="type.id">
+                  {{ type.name }}
+                </option>
+              </InputSelect>
+            </div>
+            <div class="w-full flex items-center gap-2">
+              <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.."
+                v-model="adminInventoryStore.input.merk" />
+              <InputDate class="w-1/2" label="Added Date" v-model="adminInventoryStore.input.procurement_date" />
+            </div>
             <InputTextarea label="Description" placeholder="Input Description Here.."
-              v-model="adminInventoryStore.input.description" rows="1" />
-            <InputSelect class="w-full" label="Condition" v-model="adminInventoryStore.input.condition">
-              <option value="true">Good</option>
-              <option value="false">Damaged</option>
-            </InputSelect>
+              v-model="adminInventoryStore.input.description" />
+          </Modal>
+        </div>
+      </Transition>
+    </div>
+    
+    <!-- Modal Update Borrowable -->
+    <div class="w-full">
+      <Transition name="fade">
+        <div v-if="modalUpdate"
+          class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+          <Modal @btnSubmit="updateUnitItem" @btnClose="closeModalUpdate" title="Update Item" :isSubmitting="isSubmitting"
+            labelButton="Update Item">
+            <div class="w-full flex items-center gap-2">
+              <InputSelect class="w-1/2" label="Item Type" v-model="adminInventoryStore.input.item_id" @change="
+                (event) =>
+                  console.log('Selected item type:', event.target.value)
+              ">
+                <option v-for="type in mainInventoryStore.inventory" :key="type.id" :value="type.id">
+                  {{ type.name }}
+                </option>
+              </InputSelect>
+            </div>
+            <div class="w-full flex items-center gap-2">
+              <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.."
+                v-model="adminInventoryStore.input.merk" />
+              <InputDate class="w-1/2" label="Added Date" v-model="adminInventoryStore.input.procurement_date" />
+            </div>
+            <div class="w-full flex items-center gap-2">
+              <InputTextarea label="Description" placeholder="Input Description Here.."
+                v-model="adminInventoryStore.input.description" rows="1" />
+              <InputSelect class="w-full" label="Condition" v-model="adminInventoryStore.input.condition">
+                <option value="true">Good</option>
+                <option value="false">Damaged</option>
+              </InputSelect>
+            </div>
+          </Modal>
+        </div>
+      </Transition>
+    </div>
+    
+    <!-- Modal Delete Borrowable -->
+    <Transition name="fade">
+      <div v-if="modalDelete"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+        <Modal @btnSubmit="deleteUnitItem" @btnClose="closeModalDelete" title="Confirm Deletion"
+          :isSubmitting="isSubmitting" labelButton="Delete">
+          <div class="">
+            <p class="text-gray-600">
+              Are you sure you want to delete
+              <span class="font-semibold">{{
+                deleteItemData?.sub_item.item.name
+              }}</span>
+              with item code
+              <span class="block"><span class="font-semibold">{{ deleteItemData?.code_unit }}</span>?</span>
+            </p>
           </div>
         </Modal>
       </div>
     </Transition>
-  </div>
-
-  <!-- Modal Delete Borrowable -->
-  <Transition name="fade">
-    <div v-if="modalDelete"
-      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
-      <Modal @btnSubmit="deleteUnitItem" @btnClose="closeModalDelete" title="Confirm Deletion"
-        :isSubmitting="isSubmitting" labelButton="Delete">
-        <div class="">
-          <p class="text-gray-600">
-            Are you sure you want to delete
-            <span class="font-semibold">{{
-              deleteItemData?.sub_item.item.name
-            }}</span>
-            with item code
-            <span class="block"><span class="font-semibold">{{ deleteItemData?.code_unit }}</span>?</span>
-          </p>
-        </div>
-      </Modal>
+    
+    <TableSkeleton v-if="pending" :rows="4" :columns="7" />
+    
+    <div v-else class="overflow-x-auto overflow-y-auto rounded-lg bg-white max-h-[65vh]">
+      <table class="min-w-full text-sm text-left relative">
+        <thead class="bg-gray-100 sticky top-0 z-10">
+          <tr class="text-sm font-semibold text-gray-700">
+            <th class="px-4 py-3">
+              <input type="checkbox" class="cursor-pointer" v-model="selectAll" @change="toggleAll" />
+            </th>
+            <th class="px-4 py-3 text-center">Type</th>
+            <th class="px-4 py-3 text-center">Unit Code</th>
+            <th class="px-4 py-3 text-center">Brand</th>
+            <th class="px-4 py-3 text-center">Borrowed Time</th>
+            <th class="px-4 py-3 text-center">Status</th>
+            <th class="px-4 py-3 text-center">Condition</th>
+            <th class="px-4 py-3 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr v-for="item in unitItemStore.unitItems" :key="item.id" class="hover:bg-gray-50">
+            <td class="px-4 py-3">
+              <input type="checkbox" class="cursor-pointer" v-model="selectedItems" :value="item.id" />
+            </td>
+            <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
+            <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
+            <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
+            <td class="px-4 py-3 text-center">
+              {{ formatDate(item.procurement_date) }}
+            </td>
+            <td class="px-4 py-3 text-center">
+              <span :class="statusClass(item.status)"
+                class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium">
+                {{ toUpperCase(item.status) }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <span :class="conditionClass(item.condition)"
+                class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium">
+                {{ toUpperCase(item.condition) }}
+              </span>
+            </td>
+            <td class="px-4 py-3 flex justify-center gap-2">
+              <Tooltip text="Edit" position="top">
+                <ButtonEdit @click="openModalUpdate(item)" />
+              </Tooltip>
+              <Tooltip text="Delete" position="top">
+                <ButtonDelete @click="openModalDelete(item)" />
+              </Tooltip>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </Transition>
+    
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500">
+        Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
+        {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
+      </p>
+      <Pagination :currentPage="currentPage" :lastPage="lastPage" :paginationItems="paginationItems" @prev="prevPage"
+        @next="nextPage" @change="changePage" />
+    </div>
 
-  <TableSkeleton v-if="pending" :rows="4" :columns="7" />
-
-  <div v-else class="overflow-x-auto overflow-y-auto rounded-lg bg-white max-h-[65vh]">
-    <table class="min-w-full text-sm text-left relative">
-      <thead class="bg-gray-100 sticky top-0 z-10">
-        <tr class="text-sm font-semibold text-gray-700">
-          <th class="px-4 py-3">
-            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
-          </th>
-          <th class="px-4 py-3 text-center">Type</th>
-          <th class="px-4 py-3 text-center">Unit Code</th>
-          <th class="px-4 py-3 text-center">Brand</th>
-          <th class="px-4 py-3 text-center">Borrowed Time</th>
-          <th class="px-4 py-3 text-center">Status</th>
-          <th class="px-4 py-3 text-center">Condition</th>
-          <th class="px-4 py-3 text-center">Action</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="item in unitItemStore.unitItems" :key="item.id" class="hover:bg-gray-50">
-          <td class="px-4 py-3">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" />
-          </td>
-          <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
-          <td class="px-4 py-3 text-center">{{ item.code_unit }}</td>
-          <td class="px-4 py-3 text-center">{{ item.sub_item.merk }}</td>
-          <td class="px-4 py-3 text-center">
-            {{ formatDate(item.procurement_date) }}
-          </td>
-          <td class="px-4 py-3 text-center">
-            <span :class="statusClass(item.status)"
-              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium">
-              {{ toUpperCase(item.status) }}
-            </span>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <span :class="conditionClass(item.condition)"
-              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium">
-              {{ toUpperCase(item.condition) }}
-            </span>
-          </td>
-          <td class="px-4 py-3 flex justify-center gap-2">
-            <Tooltip text="Edit" position="top">
-              <ButtonEdit @click="openModalUpdate(item)" />
-            </Tooltip>
-            <Tooltip text="Delete" position="top">
-              <ButtonDelete @click="openModalDelete(item)" />
-            </Tooltip>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div ref="printSection" class="hidden">
+    <IndexQR :selectedItems="selectedUnitItems"/>
   </div>
-
-  <div class="flex items-center justify-between mt-4">
-    <p class="text-xs text-gray-500">
-      Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
-      {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
-    </p>
-    <Pagination :currentPage="currentPage" :lastPage="lastPage" :paginationItems="paginationItems" @prev="prevPage"
-      @next="nextPage" @change="changePage" />
-  </div>
-
-  <template>
-    <!-- Modal Print QR -->
-    <Transition name="fade">
-      <div v-if="modalPrintQR"
-        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/60">
-        <div class="bg-white w-[90%] h-[90%] rounded-lg overflow-auto relative p-4">
-          <!-- Tombol Close -->
-          <button class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded" @click="closeModalPrintQR">
-            X
-          </button>
-
-          <!-- Hanya ini yang akan diprint -->
-          <div id="print-area" class="bg-gray-900 p-4">
-            <IndexQR :items="selectedUnitItems" />
-          </div>
-        </div>
-      </div>
-    </Transition>
-
-
-  </template>
-
-
-
-
+  
 </template>
+
 <script setup>
 import {
   IconsNavbarIconsFile,
@@ -251,10 +330,11 @@ import {
   IconsNavbarIconsAddQr,
   InputSelect,
 } from "#components";
-import { ref, onMounted, watch, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
+import { useVueToPrint } from 'vue-to-print';
 import Pagination from "@/components/pagination/index.vue";
 import { useUnitItemStore } from "@/stores/main-inventory";
-import IndexQR from "@/pages/admin/qr/index.vue";
+import IndexQR from "@/pages/kaprog/qr/index.vue";
 
 definePageMeta({
   title: "Borrowable",
@@ -284,6 +364,7 @@ const breadcrumbs = [
   {
     label: "Print QR-Code",
     icon: IconsNavbarIconsAddQr,
+    click: () => openModalQR(),
   },
   {
     label: "Add Item",
@@ -333,6 +414,7 @@ const sortByDate = ref("asc");
 const sortByType = ref("asc");
 const selectAll = ref(false);
 const modalPrintQR = ref(false);
+const printing = ref(false);
 
 const selectedUnitItems = computed(() =>
   unitItemStore.unitItems.filter((item) => selectedItems.value.includes(item.id))
@@ -342,14 +424,28 @@ const closeModalPrintQR = () => {
   modalPrintQR.value = false;
 };
 
-watch(modalPrintQR, async (newVal) => {
-  if (newVal) {
-    await nextTick();
-    setTimeout(() => {
-      window.print();
-    }, 300);
-  }
+const printRef = ref()
+
+const { print } = useVueToPrint({
+  target: printRef,
+  bodyClass: 'print-qr-body',
+})
+
+const printSection = ref(null);
+
+const { handlePrint } = useVueToPrint({
+  content: () => printSection.value,
+  documentTitle: "QR-Codes-Borrowable-Items",
+  removeAfterPrint: true,
 });
+
+const openModalQR = async () => {
+  if (selectedItems.value.length === 0) {
+    showAlert("warning", "Please select at least one item to print QR codes.");
+    return;
+  }
+  handlePrint()
+};
 
 const alertError = ref(false);
 const alertSuccess = ref(false);
@@ -810,6 +906,20 @@ const deleteUnitItem = async () => {
 onMounted(() => {
   getMainInventoryItems();
   getUnitItemsInventory();
+
+  window.addEventListener('beforeprint', () => {
+    console.log('Print dialog opened');
+  });
+  
+  window.addEventListener('afterprint', () => {
+    console.log('Print dialog closed');
+    printing.value = false;
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('beforeprint', () => {});
+  window.removeEventListener('afterprint', () => {});
 });
 
 const statusClass = (status) => {
