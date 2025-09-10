@@ -2,7 +2,7 @@
   <Navbar />
     <div>
         <!-- welome and time secion -->
-        <div class="flex justify-between items-center border-[#D9D9D9] border-t mt-2 py-6">
+        <div class="flex justify-between items-center border-[#D9D9D9] border-t mt-2 py-4">
             <div>
                 <h1 class="text-xl font-semibold">Welcome Back, {{ authStore.getName }}</h1>
                 <p class="text-[#B0B0B0] text-sm font-light">
