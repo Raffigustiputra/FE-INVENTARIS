@@ -275,7 +275,7 @@
                         <apexchart
                             v-else
                             type="donut"
-                            height="290"
+                            height="270"
                             :options="donutOptions"
                             :series="donutSeries" />
                     </div>
