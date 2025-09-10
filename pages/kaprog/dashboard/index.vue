@@ -29,7 +29,10 @@
             <div class="w-9/12">
                 <div
                     class="border-b mt-3 flex py-4 items-center border-[#D9D9D9] border-t border-r">
-                    <div class="flex justify-between pr-20 pl-2 items-start w-full">
+                    <SkeletonCardSkeleton v-for="i in 3" v-if="loadingCards"  />
+                    <div
+                    v-else
+                    class="flex justify-between pr-20 pl-2 items-start w-full">
                         <div class="flex items-center gap-3">
                             <div
                                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
@@ -181,7 +184,9 @@
                                 </div>
                             </div>
                             <div class="bg-white p-4 rounded-lg">
+                                <SkeletonBarChartSkeleton v-if="loadingBar" />
                                 <apexchart
+                                    v-else
                                     type="bar"
                                     :options="chartOptions"
                                     :series="series"></apexchart>
@@ -189,7 +194,10 @@
                         </div>
 
                         <!-- last Activity Section -->
-                        <div class="mt-2 border-t border-[#D9D9D9]">
+                        <SkeletonLatestActivitySkeleton v-if="loadingLatestActivity" />
+                        <div
+                        v-else
+                        class="mt-2 border-t border-[#D9D9D9]">
                             <h1 class="font-semibold mt-4 text-md">Latest Activity</h1>
 
                             <div class="mt-4 mr-2">
@@ -276,7 +284,10 @@
                     <div class="my-4 flex justify-center">
                         <h1 class="font-semibold text-md">Latest Item</h1>
                     </div>
-                    <div class="flex flex-col ml-3 gap-3">
+                    <SkeletonLatestItemsSkeleton v-if="loadingLatestItems" />
+                    <div
+                    v-else
+                    class="flex flex-col ml-3 gap-3">
                         <div
                             v-for="i in adminDashboardStore.latestItems"
                             class="bg-[#F7F8F9] flex items-center rounded-md justify-between px-2 py-2">
@@ -320,10 +331,14 @@ const adminDashboardStore = useAdminDashboardStore();
 
 let loadingDonut = ref(true);
 let loadingBar = ref(true);
+let loadingLatestActivity = ref(true);
+let loadingLatestItems = ref(true);
+let loadingCards = ref(true);
 
 const now = new Date();
 
 const getReport = async () => {
+    loadingBar.value = true;
     const response = await $fetch(
         `${url}/dashboard/loan-report?from=${adminDashboardStore.filter.from}&to=${adminDashboardStore.filter.to}`,
         {
@@ -337,6 +352,7 @@ const getReport = async () => {
 
     if (response.status === 200 || response.status === 201) {
         adminDashboardStore.data = response.data;
+        loadingBar.value = false;
 
         // Convert object ke array sesuai urutan bulan
         const months = [
@@ -528,6 +544,7 @@ const donutOptions = ref({
 });
 
 const getLastActivity = async () => {
+    loadingLatestActivity.value = true;
     const response = await $fetch(`${url}/dashboard/admin-user/latest-activity`, {
         method: 'GET',
         headers: {
@@ -538,6 +555,7 @@ const getLastActivity = async () => {
 
     if (response.status === 200) {
         adminDashboardStore.lastActivityRecords = response.data;
+        loadingLatestActivity.value = false;
     }
     adminDashboardStore.lastActivityRecords.forEach((item) => {
         item.created_at = new Date(item.created_at).toLocaleString();
@@ -545,6 +563,7 @@ const getLastActivity = async () => {
 };
 
 const getLastItems = async () => {
+    loadingLatestItems.value = true;
     const response = await $fetch(`${url}/dashboard/admin-user/items-loans-history`, {
         method: 'GET',
         headers: {
@@ -555,10 +574,12 @@ const getLastItems = async () => {
 
     if (response.status === 200) {
         adminDashboardStore.latestItems = response.data;
+        loadingLatestItems.value = false;
     }
 };
 
 const getCardsData = async () => {
+    loadingCards.value = true;
     const response = await $fetch(`${url}/dashboard/admin-user/card`, {
         method: 'GET',
         headers: {
@@ -569,6 +590,7 @@ const getCardsData = async () => {
 
     if (response.status === 200) {
         adminDashboardStore.cardsData = response.data;
+        loadingCards.value = false;
     }
 };
 
