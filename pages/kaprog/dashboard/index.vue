@@ -266,7 +266,7 @@
             </div>
 
             <div class="w-3/12">
-                <div class="w-full mt-3 h-[28.5rem] border-b border-[#D9D9D9] border-t">
+                <div class="w-full mt-3 min-h-[28.5rem] border-b border-[#D9D9D9] border-t">
                     <div class="w-full flex justify-center my-6">
                         <h1 class="font-semibold text-md">Most Of Borrowing</h1>
                     </div>
