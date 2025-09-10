@@ -1156,6 +1156,14 @@ const openModal = (modalType) => {
 };
 
 const closeModal = () => {
+  const router = useRouter();
+  const route = useRoute();
+  
+  // if (Object.keys(route.query).length > 0) {
+  //   router.push({ path: route.path, query: {} });
+  // }
+  router.replace({ path: '/user/activity/borrowed' });
+  
   currentModal.value = null;
   isPreviewData.value = false;
   resetFormData();
@@ -2156,23 +2164,17 @@ onMounted(() => {
   
   // Handle auto-opening modal from dashboard
   const route = useRoute();
-  console.log('Route query:', route.query); // Debug log
   
   if (route.query.autoOpen === 'true') {
     selectedItemType.value = route.query.itemType || "";
     selectedBorrowerType.value = route.query.borrowerType || "";
     
-    console.log('Auto-opening modal with:', selectedItemType.value, selectedBorrowerType.value); // Debug log
-    
     if (selectedItemType.value && selectedBorrowerType.value) {
-      // Small delay to ensure page is fully loaded
       setTimeout(() => {
-        // Auto-open the appropriate modal
         const nextModal = `${selectedItemType.value}-${selectedBorrowerType.value}`;
-        console.log('Opening modal:', nextModal); // Debug log
         currentModal.value = nextModal;
         resetLoanData();
-      }, 300); // Increase delay slightly
+      }, 300);
     }
   }
 });
