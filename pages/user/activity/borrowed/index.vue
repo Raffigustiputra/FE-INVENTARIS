@@ -931,6 +931,7 @@
 import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { useLoanStore } from "~/stores/loan";
 import { useAuthStore } from "~/stores/auth";
+import { useRoute } from "vue-router";
 import {
   IconsNavbarIconsAddItem,
   IconsNavbarIconsFile,
@@ -2152,7 +2153,28 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
 onMounted(() => {
   getUnitLoan();
   getConsumableItemData();
-  // getListUnitItem();
+  
+  // Handle auto-opening modal from dashboard
+  const route = useRoute();
+  console.log('Route query:', route.query); // Debug log
+  
+  if (route.query.autoOpen === 'true') {
+    selectedItemType.value = route.query.itemType || "";
+    selectedBorrowerType.value = route.query.borrowerType || "";
+    
+    console.log('Auto-opening modal with:', selectedItemType.value, selectedBorrowerType.value); // Debug log
+    
+    if (selectedItemType.value && selectedBorrowerType.value) {
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        // Auto-open the appropriate modal
+        const nextModal = `${selectedItemType.value}-${selectedBorrowerType.value}`;
+        console.log('Opening modal:', nextModal); // Debug log
+        currentModal.value = nextModal;
+        resetLoanData();
+      }, 300); // Increase delay slightly
+    }
+  }
 });
 
 // ===== PAGE METADATA =====
