@@ -33,7 +33,7 @@
         Borrowed
       </h1>
       <SearchBox
-        :text="'Search Borrowed Items'"
+        :text="'Search Anything'"
         v-model="searchQuery"
         @input="handleSearch"
       />
@@ -55,7 +55,8 @@
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
         >
-        <div class="max-h-[28rem] overflow-y">
+        <div class="max-h-96 overflow-y">
+
           <div v-if="currentModal === 'selection'">
             <div>
               <label
@@ -135,7 +136,7 @@
                     :isDisabled="true"
                     v-model="unitItem.type"
                   />
-                  <div class="relative flex items-center gap-2">
+                  <div class="relative flex items-center gap-2" v-if="isPreviewData || currentModal === 'return-borrowable-student'">
                     <InputText
                       label="Unit Code"
                       placeholder="Enter Unit Code"
@@ -158,6 +159,22 @@
                     >
                       <IconsSearchIcon />
                     </button>
+                  </div>
+
+                  <div v-else class="relative flex items-center gap-2">
+                    <SearchableDropdown
+                      label="Unit Code"
+                      placeholder="Enter unit code..."
+                      v-model="unitItem.code"
+                      :options="listData"
+                      valueProperty="code_unit"
+                      labelProperty="code_unit"
+                      :autoFocus="true"
+                      sublabelProperty="item_name"
+                      :disabled="isPreviewData || currentModal === 'return-borrowable-teacher'"
+                      @select="handleUnitCodeSelect"
+                      @keydown.enter="getUnitItemData(unitItem.code)"
+                    />
                   </div>
                   <InputText
                     label="Brand Name"
@@ -360,7 +377,7 @@
                     :isDisabled="true"
                     v-model="unitItem.type"
                   />
-                  <div class="relative flex items-center gap-2">
+                  <div class="relative flex items-center gap-2" v-if="isPreviewData || currentModal === 'return-borrowable-teacher'">
                     <InputText
                       label="Unit Code"
                       placeholder="Enter Unit Code"
@@ -383,6 +400,23 @@
                       <IconsSearchIcon />
                     </button>
                   </div>
+
+                  <div v-else class="relative flex items-center gap-2">
+                    <SearchableDropdown
+                      label="Unit Code"
+                      placeholder="Enter unit code..."
+                      v-model="unitItem.code"
+                      :options="listData"
+                      valueProperty="code_unit"
+                      labelProperty="code_unit"
+                      :autoFocus="true"
+                      sublabelProperty="item_name"
+                      :disabled="isPreviewData || currentModal === 'return-borrowable-student'"
+                      @select="handleUnitCodeSelect"
+                      @keydown.enter="getUnitItemData(unitItem.code)"
+                    />
+                  </div>
+                  
                   <InputText
                     label="Brand Name"
                     placeholder="Brand Name"
@@ -856,13 +890,15 @@
             <Tooltip text="Return" position="top">
               <div
                 class="bg-blue-400 p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
-              >
+                @click="openReturnModal(item)" 
+                >
                 <IconsReturn @click="openReturnModal(item)" />
               </div>
             </Tooltip>
             <Tooltip text="Detail" position="top">
               <div
                 class="bg-[#c89513] p-1.5 rounded-md flex justify-center items-center hover:cursor-pointer"
+                @click="openDetailModal(item)"
               >
                 <IconsDetail @click="openDetailModal(item)" />
               </div>
@@ -902,11 +938,13 @@ import {
   IconsNavbarIconsFilterRole,
   IconsNavbarIconsPrint,
 } from "#components";
+import SearchableDropdown from "~/components/input/SearchableDropdown.vue";
 
 // ===== STORES =====
 const loanStore = useLoanStore();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const storageUrl = useRuntimeConfig().public.storageUrl;
 
 // ===== REACTIVE DATA =====
 
@@ -1011,6 +1049,9 @@ const pending = ref(false);
 const searchQuery = ref("");
 const sortByType = ref("");
 const sortByTime = ref("");
+
+// Get List Data For Borrowing
+const listData = ref([]);
 
 // Alert States
 const alertError = ref(false);
@@ -1181,6 +1222,7 @@ const isFormValid = () => {
 
 // Main Submit Handler
 const handleSubmit = async () => {
+  getListUnitItem();
   if (currentModal.value === "selection") {
     handleSelectionSubmit();
   } else {
@@ -1225,7 +1267,6 @@ const handleSelectionSubmit = () => {
 // Universal Submit Form
 const submitForm = async () => {
   isSubmitting.value = true;
-
   try {
     switch (currentModal.value) {
       case "borrowable-student":
@@ -1249,7 +1290,7 @@ const submitForm = async () => {
     }
   } catch (error) {
     alertError.value = true;
-    alertMessage.value = "An error occurred while submitting the form";
+    alertMessage.value = `Please fill in all required fields`;
   } finally {
     isSubmitting.value = false;
   }
@@ -1268,6 +1309,48 @@ const submitBorrowableStudent = async () => {
 
   if (formData.value.image) {
     formDataToSend.append("image", formData.value.image);
+  }
+  
+  if (!unitItem.value.code) {
+    alertWarning.value = true;
+    alertMessage.value = "Unit Code is required";
+    return;
+  }
+
+  if (!studentData.value.nis) {
+    alertWarning.value = true;
+    alertMessage.value = "Student NIS is required";
+    return;
+  }
+
+  if (!selectedCollateralType.value) {
+    alertWarning.value = true;
+    alertMessage.value = "Collateral Type is required";
+    return;
+  }
+
+  if (!formData.value.room) {
+    alertWarning.value = true;
+    alertMessage.value = "Room is required";
+    return;
+  }
+
+  if (!formData.value.purpose) {
+    alertWarning.value = true;
+    alertMessage.value = "Purpose is required";
+    return;
+  }
+
+  if (!formData.value.borrowDate) {
+    alertWarning.value = true;
+    alertMessage.value = "Borrow Date is required";
+    return;
+  }
+
+  if (!formData.value.borrowerName) {
+    alertWarning.value = true;
+    alertMessage.value = "Borrower's Name is required";
+    return;
   }
 
   const response = await fetch(`${url}/unit-loan`, {
@@ -1434,7 +1517,7 @@ const exportSelectedData = async () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
       },
-      body: JSON.stringify({
+      body: JSON.stringify({  
         export: exportData.value,
         data: selectedItems.value,
         type: "borrowing",
@@ -1669,6 +1752,43 @@ const getTeacherData = async (nip) => {
   }
 };
 
+const getListUnitItem = async () => {
+  try {
+    const response = await fetch(`${url}/unit-items/list`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+  
+    if (response.ok) {
+      const result = await response.json();
+      const data = Array.isArray(result.data) ? result.data : [result.data];
+      
+      // Transform data untuk dropdown
+      listData.value = data.map(item => ({
+        id: item.id,
+        code_unit: item.code_unit,
+        item_name: item.sub_item?.item?.name || '',
+        sub_item_id: item.sub_item?.id || '',
+        merk: item.sub_item?.merk || '',
+        condition: item.condition,
+        status: item.status,
+        full_item: item // Simpan data lengkap untuk digunakan nanti
+      }));
+      
+      return data;
+    } else {
+      console.error("Failed to fetch unit item data:", response.statusText);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching unit item data:", error);
+    return null;
+  }
+}
+
 // Get Unit Item Data
 const getUnitItemData = async (code) => {
   try {
@@ -1801,7 +1921,7 @@ const getDetailUnitItem = async (item) => {
       };
 
       selectedCollateralType.value = data.guarantee || "";
-      imagePreview.value = data.image || "";
+      imagePreview.value = storageUrl + "/" + (data.image || "");
       return data;
     } else {
       console.error("Failed to fetch unit item data:", response.statusText);
@@ -1814,6 +1934,63 @@ const getDetailUnitItem = async (item) => {
 };
 
 // ===== EVENT HANDLERS =====
+const handleUnitCodeSelect = async (option) => {
+  if (option) {
+    const item = option.full_item;
+    
+    // Check if item is borrowed
+    const checkResponse = await fetch(`${url}/unit-loan/check`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({ code_unit: option.code_unit }),
+    });
+
+    if (checkResponse.ok) {
+      const result = await checkResponse.json();
+      
+      if (result.is_borrowed) {
+        alertWarning.value = true;
+        alertMessage.value = `Item is already borrowed by ${
+          result.data.student?.name || result.data.teacher?.name || "unknown"
+        } on ${formatDate(result.data.borrowed_at)}`;
+        
+        // Clear selection
+        unitItem.value = {
+          code: "",
+          brand: "",
+          condition: "",
+          type: "",
+          status: "",
+        };
+        return;
+      }
+    }
+    
+    // Update unitItem dengan data yang dipilih
+    unitItem.value = {
+      code: option.code_unit,
+      brand: option.merk,
+      condition: option.condition,
+      type: option.item_name,
+      status: option.status,
+    };
+    
+    formData.value.unitItemId = option.id;
+  } else {
+    // Clear data jika tidak ada yang dipilih
+    unitItem.value = {
+      code: "",
+      brand: "",
+      condition: "",
+      type: "",
+      status: "",
+    };
+    formData.value.unitItemId = "";
+  }
+};
 
 // File Input Handler
 const handleFileInput = (file) => {
@@ -1967,7 +2144,7 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
       alertError.value = false;
       alertSuccess.value = false;
       alertWarning.value = false;
-    }, 3000);
+    }, 1500);
   }
 });
 
@@ -1975,6 +2152,7 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
 onMounted(() => {
   getUnitLoan();
   getConsumableItemData();
+  // getListUnitItem();
 });
 
 // ===== PAGE METADATA =====

@@ -10,41 +10,42 @@
         :isSubmitting="false"
         :disableSubmit="true"
         :showActions="false"
-        class="max-h-[90vh] overflow-y-auto"
       >
-        <!-- Borrowable Student Form -->
-        <BorrowableStudentForm
-          v-if="modalType === 'borrowable-student'"
-          :unitItem="unitItem"
-          :studentData="studentData"
-          :formData="formData"
-          :selectedCollateralType="selectedCollateralType"
-          :imagePreview="imagePreview"
-        />
-
-        <!-- Borrowable Teacher Form -->
-        <BorrowableTeacherForm
-          v-else-if="modalType === 'borrowable-teacher'"
-          :unitItem="unitItem"
-          :teacherData="teacherData"
-          :formData="formData"
-        />
-
-        <!-- Consumable Student Form -->
-        <ConsumableStudentForm
-          v-else-if="modalType === 'consumable-student'"
-          :formData="formData"
-          :consumableItem="consumableItem"
-          :studentData="studentData"
-        />
-
-        <!-- Consumable Teacher Form -->
-        <ConsumableTeacherForm
-          v-else-if="modalType === 'consumable-teacher'"
-          :formData="formData"
-          :consumableItem="consumableItem"
-          :teacherData="teacherData"
-        />
+        <div class="max-h-[28rem] overflow-y">
+          <!-- Borrowable Student Form -->
+          <BorrowableStudentForm
+            v-if="modalType === 'borrowable-student'"
+            :unitItem="unitItem"
+            :studentData="studentData"
+            :formData="formData"
+            :selectedCollateralType="selectedCollateralType"
+            :imagePreview="imagePreview"
+          />
+          
+          <!-- Borrowable Teacher Form -->
+          <BorrowableTeacherForm
+            v-else-if="modalType === 'borrowable-teacher'"
+            :unitItem="unitItem"
+            :teacherData="teacherData"
+            :formData="formData"
+          />
+          
+          <!-- Consumable Student Form -->
+          <ConsumableStudentForm
+            v-else-if="modalType === 'consumable-student'"
+            :formData="formData"
+            :consumableItem="consumableItem"
+            :studentData="studentData"
+          />
+          
+          <!-- Consumable Teacher Form -->
+          <ConsumableTeacherForm
+            v-else-if="modalType === 'consumable-teacher'"
+            :formData="formData"
+            :consumableItem="consumableItem"
+            :teacherData="teacherData"
+          />
+        </div>
       </Modal>
     </div>
   </Transition>

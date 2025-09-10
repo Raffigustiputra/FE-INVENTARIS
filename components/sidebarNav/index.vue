@@ -1,7 +1,7 @@
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.9s ease;
+  transition: all 0.3s ease;
 }
 
 .fade-enter-from,
@@ -69,7 +69,7 @@
           v-if="!sidebarStore.isCollapsed"
           src="../../public/images/wv-logo.png"
           alt="Logo"
-          class="w-[150px] my-1.5"
+          class="w-[200px]"
         />
         <img
           v-else
@@ -265,6 +265,8 @@ const url = useRuntimeConfig().public.authUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
 
+const loading = ref(false);
+
 const createModal = ref(false);
 const openCreateModal = () => {
   createModal.value = true;
@@ -275,6 +277,8 @@ const closeCreateModal = () => {
   majorStore.input.icon = "";
   majorStore.input.color = "";
 };
+
+const emit = defineEmits(["logout"]);
 
 const props = defineProps({
   countKaprog: Number,
@@ -317,17 +321,24 @@ const submitCreateMajor = async () => {
 };
 
 const submitLogout = async () => {
-  const response = await $fetch(`${url}/logout`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  });
-  if (response.status === 200) {
-    authStore.$reset();
-    localStorage.clear();
-    router.push("/");
+  try {
+    emit("logout", true);
+    const response = await $fetch(`${url}/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+    if (response.status === 200) {
+      authStore.$reset();
+      localStorage.clear();
+      router.push("/");
+    }
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    emit("logout", false);
   }
 };
 
@@ -353,6 +364,11 @@ const menuByRole = {
       name: "Inventory",
       path: "/admin/inventory",
       icon: IconsInventorySA,
+    },
+    {
+      name: "QR",
+      path: "/admin/qr",
+      icon: IconsDashboard,
     },
     {
       name: "Manage Data",
@@ -386,7 +402,7 @@ const menuByRole = {
     {
       name: "Inventory",
       path: "/kaprog/inventory",
-      icon: IconsInventory,
+      icon: IconsInventorySA,
       childMenu: [
         {
           name: "Reusable",

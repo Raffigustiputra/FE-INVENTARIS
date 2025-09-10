@@ -80,7 +80,6 @@
               class="w-1/2"
               label="Role"
             >
-              <option value="superadmin">Super Admin</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
             </InputSelect>
@@ -141,7 +140,6 @@
               class="w-1/2"
               label="Role"
             >
-              <option value="superadmin">Super Admin</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
             </InputSelect>
@@ -406,7 +404,7 @@ const fetchUsers = async () => {
   );
 
   if (response.status === 200) {
-    accountStore.Accounts = response.data;
+    accountStore.Accounts = response.data.filter(user => user.role !== "superadmin");
     pending.value = false;
   }
 };

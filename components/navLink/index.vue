@@ -23,8 +23,8 @@
         <svg
           v-if="props.childMenu"
           :class="[
-            'w-4 h-4 transition-transform absolute right-4 select-none',
-            isOpen ? 'rotate-180' : 'rotate-0'
+            'w-4 h-4 transition-transform absolute right-6 select-none',
+            isOpen ? 'rotate-180' : 'rotate-0', isActive ? 'text-white' : 'text-black/60'
           ]"
           fill="none"
           stroke="currentColor"

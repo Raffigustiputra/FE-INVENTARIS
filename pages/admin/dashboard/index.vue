@@ -1,65 +1,40 @@
 <template>
-  <div>
-    <!-- welome and time secion -->
-    <div class="flex justify-between items-center">
-      <div>
-        <h1 class="text-xl font-semibold">
-          Welcome Back, {{ authStore.getName }}
-        </h1>
-        <p class="text-[#B0B0B0] text-sm font-light">
-          Here’s a summary of your dashboard for today
-        </p>
-      </div>
-      <div class="flex items-center gap-3">
-        <p class="font-medium text-sm">{{ today }}</p>
-        <div
-          class="flex items-center rounded-full bg-[#EBEBEB] p-2.5 justify-center"
-        >
-          <svg
-            class="size-4"
-            viewBox="0 0 18 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6 14.5C5.3 14.5 4.70833 14.2583 4.225 13.775C3.74167 13.2917 3.5 12.7 3.5 12C3.5 11.3 3.74167 10.7083 4.225 10.225C4.70833 9.74167 5.3 9.5 6 9.5C6.7 9.5 7.29167 9.74167 7.775 10.225C8.25833 10.7083 8.5 11.3 8.5 12C8.5 12.7 8.25833 13.2917 7.775 13.775C7.29167 14.2583 6.7 14.5 6 14.5ZM2 20C1.45 20 0.979167 19.8042 0.5875 19.4125C0.195833 19.0208 0 18.55 0 18V4C0 3.45 0.195833 2.97917 0.5875 2.5875C0.979167 2.19583 1.45 2 2 2H3V0H5V2H13V0H15V2H16C16.55 2 17.0208 2.19583 17.4125 2.5875C17.8042 2.97917 18 3.45 18 4V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H2ZM2 18H16V8H2V18ZM2 6H16V4H2V6Z"
-              fill="#1D1D1D"
-            />
-          </svg>
+  <Navbar />
+    <div>
+        <!-- welome and time secion -->
+        <div class="flex justify-between items-center border-[#D9D9D9] border-t mt-2 py-4">
+            <div>
+                <h1 class="text-xl font-semibold">Welcome Back, {{ authStore.getName }}</h1>
+                <p class="text-[#B0B0B0] text-sm font-light">
+                    Here’s a summary of your dashboard for today
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <p class="font-medium text-sm">{{ today }}</p>
+                <div class="flex items-center rounded-full bg-[#EBEBEB] p-2.5 justify-center">
+                    <svg
+                        class="size-4"
+                        viewBox="0 0 18 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M6 14.5C5.3 14.5 4.70833 14.2583 4.225 13.775C3.74167 13.2917 3.5 12.7 3.5 12C3.5 11.3 3.74167 10.7083 4.225 10.225C4.70833 9.74167 5.3 9.5 6 9.5C6.7 9.5 7.29167 9.74167 7.775 10.225C8.25833 10.7083 8.5 11.3 8.5 12C8.5 12.7 8.25833 13.2917 7.775 13.775C7.29167 14.2583 6.7 14.5 6 14.5ZM2 20C1.45 20 0.979167 19.8042 0.5875 19.4125C0.195833 19.0208 0 18.55 0 18V4C0 3.45 0.195833 2.97917 0.5875 2.5875C0.979167 2.19583 1.45 2 2 2H3V0H5V2H13V0H15V2H16C16.55 2 17.0208 2.19583 17.4125 2.5875C17.8042 2.97917 18 3.45 18 4V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H2ZM2 18H16V8H2V18ZM2 6H16V4H2V6Z"
+                            fill="#1D1D1D" />
+                    </svg>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-
-    <!-- SKELETON -->
-    <div v-if="loading">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-3 border-gray-300 border-b border-t">
-        <template v-if="loading">
-          <CardSkeleton v-for="i in 4" :key="i" />
-        </template>
-      </div>
-
-      <div class="h-full">
-      <div class="w-full flex">
-        <div class="w-9/12 h-full">
-          <BarChartSkeleton v-if="loading" />
-        </div>
-        <div class="w-2 h-full bg-gray-300"></div>
-        <div class="w-1/4" >
-          <PieChartSkeleton v-if="loading" />
-        </div>
-      </div>
-
-      <div class="w-9/12 border-t pt-5 border-gray-300">
-        <TableSkeleton :rows="2" :columns="2" v-if="loading" />
-      </div>
-      </div>
-    </div>
 
         <!-- upper sections -->
-        <div class="border-b mt-3 flex py-4 items-center border-[#D9D9D9] border-t w-full">
-            <div class="flex justify-evenly items-start w-full">
-                <div class="flex items-center gap-3">
-                    <div class="bg-[#D9D9D9] flex items-center justify-center p-3  rounded-full">
+        <div class="border-b flex py-3 items-center border-[#D9D9D9] border-t w-full">
+            <SkeletonCardSkeleton v-for="i in 4" v-if="loadingCards"  />
+            <div
+            v-else
+            class="flex justify-between space-x-4 items-center w-full">
+                <div 
+                class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
+
+                    <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
                             height="21"
@@ -93,10 +68,16 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Students</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalStudents : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalStudents
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -131,10 +112,16 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Teachers</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalTeachers : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalTeachers
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -169,10 +156,16 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Borrowable</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalUnitItems : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalUnitItems
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 p-4 w-full">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -207,7 +200,13 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium">Consumable</p>
-                        <p class="text-xs">{{ superadminDashboardStore.cardsData ? superadminDashboardStore.cardsData.totalConsumables : '0' }}</p>
+                        <p class="text-xs">
+                            {{
+                                superadminDashboardStore.cardsData
+                                    ? superadminDashboardStore.cardsData.totalConsumables
+                                    : '0'
+                            }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -216,7 +215,7 @@
         <!-- main Sections -->
         <div class="w-full flex">
             <!-- left section -->
-            <div class="w-9/12 border-r border-[#D9D9D9] h-auto px-2 overflow-y-auto">
+            <div class="w-9/12 border-r border-[#D9D9D9] h-auto mx-1 overflow-y-auto">
                 <!-- over view Section -->
                 <div class="mt-2 mr-2 border-b border-[#D9D9D9]">
                     <div class="flex items-center justify-between">
@@ -239,47 +238,48 @@
                                         --dp-hover-color: #f3f3f3;
                                         --dp-hover-text-color: #212121;
 
-                      /* Warna utama */
-                      --dp-primary-color: #1976d2;
-                      --dp-primary-text-color: #fff;
+                    /* Warna utama */
+                    --dp-primary-color: #1976d2;
+                    --dp-primary-text-color: #fff;
 
-                      /* Styling input */
-                      --dp-border-radius: 6px;
-                      --dp-font-size: 12px;
-                      --dp-input-padding: 4px 6px;
+                    /* Styling input */
+                    --dp-border-radius: 6px;
+                    --dp-font-size: 12px;
+                    --dp-input-padding: 4px 6px;
 
-                                        /* Ukuran compact */
-                                        width: 150px;
-                                        height: 28px;
-                                        font-size: 12px;
-                                        border-radius: 6px;
-                                    " />
-                            </div>
-                            <p class="text-xs font-medium">-</p>
-                            <div>
-                                <VueDatePicker
-                                    v-model="toDate"
-                                    :enable-time-picker="false"
-                                    @update:model-value="updateTo"
-                                    placeholder="YYYY-MM-DD"
-                                    teleport="body"
-                                    :clearable="false"
-                                    style="
-                                        /* Warna dasar */
-                                        --dp-background-color: #fff;
-                                        --dp-text-color: #212121;
-                                        --dp-border-color: #ddd;
-                                        --dp-hover-color: #f3f3f3;
-                                        --dp-hover-text-color: #212121;
+                    /* Ukuran compact */
+                    width: 150px;
+                    height: 28px;
+                    font-size: 12px;
+                    border-radius: 6px;
+                  "
+                />
+              </div>
+              <p class="text-xs font-medium">-</p>
+              <div>
+                <VueDatePicker
+                  v-model="toDate"
+                  :enable-time-picker="false"
+                  @update:model-value="updateTo"
+                  placeholder="YYYY-MM-DD"
+                  teleport="body"
+                  :clearable="false"
+                  style="
+                    /* Warna dasar */
+                    --dp-background-color: #fff;
+                    --dp-text-color: #212121;
+                    --dp-border-color: #ddd;
+                    --dp-hover-color: #f3f3f3;
+                    --dp-hover-text-color: #212121;
 
-                      /* Warna utama */
-                      --dp-primary-color: #1976d2;
-                      --dp-primary-text-color: #fff;
+                    /* Warna utama */
+                    --dp-primary-color: #1976d2;
+                    --dp-primary-text-color: #fff;
 
-                      /* Styling input */
-                      --dp-border-radius: 6px;
-                      --dp-font-size: 12px;
-                      --dp-input-padding: 4px 6px;
+                    /* Styling input */
+                    --dp-border-radius: 6px;
+                    --dp-font-size: 12px;
+                    --dp-input-padding: 4px 6px;
 
                                         /* Ukuran compact */
                                         width: 150px;
@@ -291,7 +291,9 @@
                         </div>
                     </div>
                     <div class="bg-white p-4 rounded-lg">
+                        <SkeletonBarChartSkeleton v-if="loadingBarChart" />
                         <apexchart
+                            v-else
                             type="bar"
                             height="350"
                             :options="chartOptions"
@@ -299,11 +301,15 @@
                     </div>
                 </div>
 
-          <!-- last Activity Section -->
-          <div class="mt-2 mr-2">
-            <h1 class="font-semibold text-md">Lastest Activity</h1>
+                <!-- last Activity Section -->
+                <SkeletonLatestActivitySkeleton v-if="loadingLatestActivity" />
+                <div
+                v-else
+                class="mt-2 mr-2">
+                    <h1 class="font-semibold text-md">Lastest Activity</h1>
 
-                    <div class="mt-2">
+                    <TableSkeleton v-if="pending" :rows="4" :columns="7" />
+                    <div v-else class="mt-2">
                         <table class="min-w-full text-xs text-left rounded-t-lg overflow-hidden">
                             <thead class="h-6 bg-[#F7F8F9]">
                                 <tr class="font-semibold text-gray-700">
@@ -315,7 +321,10 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white">
-                                <tr v-for="i in superadminDashboardStore.latestActivityRecords" :key="i" class="border-b border-[#EEEEEE]">
+                                <tr
+                                    v-for="i in superadminDashboardStore.latestActivityRecords"
+                                    :key="i"
+                                    class="border-b border-[#EEEEEE]">
                                     <td class="flex items-center gap-2 px-6 py-4">
                                         <span class="text-xs font-medium">{{ i.item }}</span>
                                     </td>
@@ -326,12 +335,19 @@
                                         <span class="text-xs font-medium">{{ i.merk }}</span>
                                     </td>
                                     <td align="center" class="px-3 py-2">
-                                        <span class="text-xs">{{ dayjs(i.borrowed_at).format('YYYY-MM-DD | HH:mm') }} </span>
+                                        <span class="text-xs">
+                                            {{ dayjs(i.borrowed_at).format('YYYY-MM-DD | HH:mm') }}
+                                        </span>
                                     </td>
                                     <td align="center" class="px-3 py-2">
                                         <span
-                                            class="text-[0.7rem] bg-green-100 font-medium py-1 px-2.5 rounded-md text-green-900">
-                                            RETURNED
+                                            class="text-[0.7rem] font-medium py-1 px-2.5 rounded-md"
+                                            :class="
+                                                i.status
+                                                    ? 'bg-yellow-100 text-yellow-900'
+                                                    : 'bg-green-100 text-green-900'
+                                            ">
+                                            {{ i.status ? 'BORROWED' : 'RETURNED' }}
                                         </span>
                                     </td>
                                 </tr>
@@ -347,9 +363,11 @@
                     <p>Most of Borrowing</p>
                 </div>
                 <div>
+                    <SkeletonPieChartSkeleton v-if="loadingDonut" />
                     <apexchart
+                        v-else
                         type="donut"
-                        height="270"
+                        height="290"
                         :options="donutOptions"
                         :series="donutSeries" />
                 </div>
@@ -363,13 +381,19 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import dayjs from 'dayjs';
 
+definePageMeta({
+    title: 'Dashboard',
+});
+
 const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
 const superadminDashboardStore = useSuperadminDashboardStore();
-const loading = ref(true);
-setTimeout(() => {
-  loading.value = false;
-}, 5000);
+
+const loadingCards = ref(true);
+const loadingBarChart = ref(true);
+const loadingList = ref(true);
+const loadingDonut = ref(true);
+const pending = ref(false);
 
 const now = new Date();
 
@@ -402,6 +426,7 @@ const chartOptions = ref({
 const series = ref([{ name: 'Total Borrowed', data: [] }]);
 
 const getMajorLoansChart = async () => {
+    loadingBarChart.value = true;
     const response = await $fetch(
         `${url}/dashboard/superadmin/major-loans?from=${superadminDashboardStore.filter.from}&to=${superadminDashboardStore.filter.to}`,
         {
@@ -414,6 +439,7 @@ const getMajorLoansChart = async () => {
     );
 
     if (response.status === 200) {
+        loadingBarChart.value = false;
         superadminDashboardStore.majorLoans = response.data;
     }
 
@@ -440,6 +466,8 @@ const getMajorLoansChart = async () => {
 };
 
 const getLatestActivty = async () => {
+    pending.value = true;
+    loadingList.value = true;
     const response = await $fetch(`${url}/dashboard/superadmin/items-loans-history`, {
         method: 'GET',
         headers: {
@@ -449,116 +477,121 @@ const getLatestActivty = async () => {
     });
 
     if (response.status === 200) {
+        pending.value = false;
+        loadingList.value = false;
         superadminDashboardStore.latestActivityRecords = response.data;
+        loadingLatestActivity.value = false;
     }
 };
 
 const getCardsData = async () => {
+    loadingCards.value = true;
     const response = await $fetch(`${url}/dashboard/superadmin/card`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authStore.token}`,
-        }
+        },
     });
 
     if (response.status === 200) {
+        loadingCards.value = false;
         superadminDashboardStore.cardsData = response.data;
     }
-}
+};
 
 const donutSeries = ref([]);
 const donutOptions = ref({
-  chart: {
-    type: "donut",
-    toolbar: {
-      show: false,
+    chart: {
+        type: 'donut',
+        toolbar: {
+            show: false,
+        },
     },
-  },
-  labels: [], // akan diisi dari API
-  colors: ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#3B82F6"],
-  legend: {
-    position: "bottom",
-    fontSize: "14px",
-    fontWeight: 500,
-    labels: {
-      colors: "#374151",
-    },
-    formatter: function (val, opts) {
-      // ambil value dari series sesuai index
-      const value = opts.w.globals.series[opts.seriesIndex];
-      // bikin legend custom: label di kiri, jumlah di kanan
-      return `<div style="display:flex; justify-content:space-between; width:150px;">
+    labels: [], // akan diisi dari API
+    colors: ['#6366F1', '#22C55E', '#F59E0B', '#EF4444', '#3B82F6'],
+    legend: {
+        position: 'bottom',
+        fontSize: '14px',
+        fontWeight: 500,
+        labels: {
+            colors: '#374151',
+        },
+        formatter: function (val, opts) {
+            // ambil value dari series sesuai index
+            const value = opts.w.globals.series[opts.seriesIndex];
+            // bikin legend custom: label di kiri, jumlah di kanan
+            return `<div style="display:flex; justify-content:space-between; width:180px; justify-items:center">
                 <span>${val}</span>
                 <span><b>${value}x</b></span>
               </div>`;
-    },
-  },
-  dataLabels: {
-    enabled: true,
-    formatter: (val) => val.toFixed(1) + "%",
-    style: {
-      fontSize: "12px",
-      fontWeight: "bold",
-      colors: ["#fff"],
-    },
-  },
-  tooltip: {
-    y: {
-      formatter: (val) => `${val}x dipinjam`,
-    },
-  },
-  stroke: {
-    show: true,
-    width: 2,
-    colors: ["#fff"],
-  },
-  plotOptions: {
-    pie: {
-      donut: {
-        size: "70%",
-        labels: {
-          show: true,
-          total: {
-            show: true,
-            label: "Total",
-            fontSize: "14px",
-            fontWeight: 600,
-            formatter: (w) => {
-              return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + "x";
-            },
-          },
         },
-      },
     },
-  },
+    dataLabels: {
+        enabled: false,
+        formatter: (val) => val.toFixed(1) + '%',
+        style: {
+            fontSize: '12px',
+            fontWeight: 'bold',
+            colors: ['#fff'],
+        },
+    },
+    tooltip: {
+        y: {
+            formatter: (val) => `${val}x dipinjam`,
+        },
+    },
+    stroke: {
+        show: true,
+        width: 2,
+        colors: ['#fff'],
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '65%',
+                labels: {
+                    show: true,
+                    total: {
+                        show: true,
+                        label: 'Total',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        formatter: (w) => {
+                            return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + 'x';
+                        },
+                    },
+                },
+            },
+        },
+    },
 });
 
-
-
 const getMostBorrowed = async () => {
-  try {
-    const response = await $fetch(`${url}/dashboard/superadmin/most-borrowed`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
+    try {
+        loadingDonut.value = true;
+        const response = await $fetch(`${url}/dashboard/superadmin/most-borrowed`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authStore.token}`,
+            },
+        });
 
-    if (response.status === 200) {
-      superadminDashboardStore.mostBorrowed = response.data;
+        if (response.status === 200) {
+            loadingDonut.value = false;
+            superadminDashboardStore.mostBorrowed = response.data;
 
-      // mapping ke ApexCharts
-      donutSeries.value = response.data.map((item) => item.total_borrowed);
-      donutOptions.value = {
-        ...donutOptions.value,
-        labels: response.data.map((item) => item.name),
-      };
+            // mapping ke ApexCharts
+            donutSeries.value = response.data.map((item) => item.total_borrowed);
+            donutOptions.value = {
+                ...donutOptions.value,
+                labels: response.data.map((item) => item.name),
+            };
+        }
+    } catch (err) {
+        console.error('Error fetching most borrowed:', err);
     }
-  } catch (err) {
-    console.error("Error fetching most borrowed:", err);
-  }
 };
 
 const formatDate = (date) => {
@@ -592,13 +625,13 @@ const updateTo = (date) => {
     superadminDashboardStore.filter.to = formatDate(date);
 };
 const options = {
-  weekday: "short", // Thu
-  day: "2-digit", // 31
-  month: "long", // July
-  year: "numeric", // 2025
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: true, // AM/PM
+    weekday: 'short', // Thu
+    day: '2-digit', // 31
+    month: 'long', // July
+    year: 'numeric', // 2025
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // AM/PM
 };
 
 onMounted(() => {
@@ -615,7 +648,7 @@ onMounted(() => {
 const formattedDate = new Intl.DateTimeFormat('en-US', options).format(now);
 // contoh hasil asli: "Thu, July 31, 2025, 07:30 AM"
 
-const parts = formattedDate.replace(",", "").split(" ");
+const parts = formattedDate.replace(',', '').split(' ');
 // parts = ['Thu', 'July', '31', '2025', '07:30', 'AM']
 
 const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${parts[5]}`;
@@ -624,18 +657,18 @@ const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${
 <style scoped>
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px) scale(0.95);
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
 }
 
 .fade-enter-to,
 .fade-leave-from {
-  opacity: 1;
-  transform: translateY(0) scale(1);
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1); /* spring-like easing */
+    transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1); /* spring-like easing */
 }
 </style>

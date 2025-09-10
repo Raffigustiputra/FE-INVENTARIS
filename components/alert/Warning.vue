@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed top-0 right-0 z-10 w-2/12">
+    <div class="fixed bottom-3 right-0 z-10 w-2/12">
         <div class="w-full flex justify-end items-start">
             <div
                 @click="$emit('hide')"

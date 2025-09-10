@@ -1,7 +1,7 @@
 <template>
-  <header class="w-full bg-white sticky top-0 left-0 right-0">
+  <header class="w-full bg-white z-30 sticky top-0 left-0 right-0">
       <div class=" mx-auto flex items-center justify-between">
-        <button @click="sidebarStore.toggle()" class="p-2 hover:bg-gray-200 rounded-full">
+        <button @click="sidebarStore.toggle()" class="p-2 hover:bg-gray-200 cursor-pointer rounded-full">
           <IconsBurgernav
             class="size-8 text-gray-600 transition-transform duration-300"
           />
@@ -23,10 +23,10 @@
         </div>
       </div>
 
-      <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-2.5 z-100"></div>
+      <!-- <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-2.5 z-100"></div> -->
       <div
       v-if="breadcrumbs && breadcrumbs.length > 0"
-      class="select-none w-full border-t-2 border-b-2 bg-white mt-2.5 -mb-5 border-gray-100 py-3 px-1"
+      class="select-none w-full border-t-2 border-b-2 bg-white mt-1 -mb-5 border-gray-100 py-3 px-1"
       >
       <div class="mx-auto flex items-center gap-5">
           <div
@@ -46,7 +46,7 @@
           </div>
         </div>
       </div>
-      <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-4.5 -z-1"></div>
+      <!-- <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-4.5 -z-1"></div> -->
   </header>
 </template>
 
