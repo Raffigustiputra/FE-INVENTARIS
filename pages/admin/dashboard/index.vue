@@ -300,7 +300,10 @@
                 </div>
 
                 <!-- last Activity Section -->
-                <div class="mt-2 mr-2">
+                <SkeletonLatestActivitySkeleton v-if="loadingLatestActivity" />
+                <div
+                v-else
+                class="mt-2 mr-2">
                     <h1 class="font-semibold text-md">Lastest Activity</h1>
 
                     <div class="mt-2">
@@ -383,6 +386,7 @@ const loadingCards = ref(true);
 const loadingBarChart = ref(true);
 const loadingList = ref(true);
 const loadingDonut = ref(true);
+const loadingLatestActivity = ref(true);
 
 const now = new Date();
 
@@ -455,7 +459,7 @@ const getMajorLoansChart = async () => {
 };
 
 const getLatestActivty = async () => {
-    loadingList.value = true;
+    loadingLatestActivity.value = true;
     const response = await $fetch(`${url}/dashboard/superadmin/items-loans-history`, {
         method: 'GET',
         headers: {
@@ -465,8 +469,9 @@ const getLatestActivty = async () => {
     });
 
     if (response.status === 200) {
-        loadingList.value = false;
+        
         superadminDashboardStore.latestActivityRecords = response.data;
+        loadingLatestActivity.value = false;
     }
 };
 
