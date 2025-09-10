@@ -60,6 +60,7 @@
         Consumable Items
       </h1>
       <SearchBox
+        text="Search Anything..."
         v-model="consumableItemStore.filter.search"
         @input="handleSearch"
       />

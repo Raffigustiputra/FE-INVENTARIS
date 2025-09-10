@@ -62,7 +62,7 @@
       <h1 class="font-semibold text-2xl">Inventory
         <div class="inline text-lg">/</div>
         Reusable Items</h1>
-      <SearchBox v-model="mainInventoryStore.filter.search" @input="handleSearch" />
+      <SearchBox text="Search Anything..." v-model="mainInventoryStore.filter.search" @input="handleSearch" />
     </div>
   </div>
 

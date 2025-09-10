@@ -56,7 +56,7 @@
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
       <SearchBox
-        text="Search inventory..."
+        text="Search Anything..."
         v-model="mainInventoryStore.filter.search"
         @input="handleSearch"
       />

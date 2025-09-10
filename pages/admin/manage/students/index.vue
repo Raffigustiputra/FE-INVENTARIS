@@ -189,7 +189,7 @@
           v-model="studentStore.filter.search"
           @input="handleSearch"
           class="outline-none w-full"
-          placeholder="Search Anything"
+          placeholder="Search Anything..."
         />
       </div>
     </div>

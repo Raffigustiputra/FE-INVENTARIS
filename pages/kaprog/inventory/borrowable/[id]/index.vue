@@ -65,7 +65,7 @@
             <span class="text-lg">/ </span>{{ matchingItemName }}
           </template>
       </h1>
-      <SearchBox v-model="subItemStore.filter.search" @input="handleSearch" />
+      <SearchBox text="Search Anything..." v-model="subItemStore.filter.search" @input="handleSearch" />
     </div>
   </div>
 

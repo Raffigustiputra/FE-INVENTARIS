@@ -35,7 +35,7 @@
         {{ viewData === "borrowable" ? "Borrowable" : "Consumable" }}
       </h1>
       <SearchBox
-        :text="'Search History'"
+        :text="'Search Anything...'"
         v-model="searchQuery"
         @input="handleSearch"
       />
