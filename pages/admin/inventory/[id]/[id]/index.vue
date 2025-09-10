@@ -1,4 +1,53 @@
+
+<style scoped>
+.alert-enter-from,
+.alert-leave-to {
+  opacity: 0;
+  transform: translateX(50%);
+}
+
+.alert-enter-to,
+.alert-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.alert-enter-active,
+.alert-leave-active {
+  transition: all 350ms ease;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+</style>
 <template>
+  <transition name="alert">
+    <AlertError
+      class="z-50"
+      v-if="alertError"
+      :title="alertMessage"
+      @hide="alertError = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertSuccess
+      class="z-50"
+      v-if="alertSuccess"
+      :title="alertMessage"
+      @hide="alertSuccess = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
+  </transition>
   <div>
     <Navbar :breadcrumbs="breadcrumbs" />
     <div class="flex items-center justify-between mt-12 mb-4">
@@ -6,26 +55,29 @@
         <NuxtLink to="/admin/inventory"
           >Inventory <span class="text-lg mx-1.5"> / </span>
         </NuxtLink>
-        <NuxtLink
-          :to="`/admin/inventory/${unitItemStore.unitItems[0]?.sub_item.item_id}`"
-        >
-          {{ unitItemStore.unitItems[0]?.sub_item.item.name || "Unknown Item" }}
-        </NuxtLink>
-        <span class="text-lg mx-1.5"> /</span>
-        {{ unitItemStore.unitItems[0]?.sub_item.merk || "Unknown Sub Item" }}
+        <span v-if="pending">... <span class="text-lg mx-1.5"> / </span> ...</span>
+        <template v-else>
+          <NuxtLink
+            :to="`/admin/inventory/${unitItemStore.unitItems[0]?.sub_item.item_id}`"
+          >
+            {{ unitItemStore.unitItems[0]?.sub_item.item.name || "Unknown Item" }}
+          </NuxtLink>
+          <span class="text-lg mx-1.5"> /</span>
+          {{ unitItemStore.unitItems[0]?.sub_item.merk || "Unknown Sub Item" }}
+        </template>
       </h1>
-      <SearchBox />
+      <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
     </div>
   </div>
 
-  <TableSkeleton v-if="pending" :rows="4" :columns="6" />
+  <TableSkeleton v-if="pending" :rows="6" :columns="6" />
 
   <div v-else class="overflow-x-auto rounded-lg bg-white">
     <table class="min-w-full text-sm text-left">
       <thead class="bg-gray-100">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3">
-            <input type="checkbox" v-model="selectAll" @change="toggleAll" />
+            <input type="checkbox" class="cursor-pointer" v-model="selectAll" @change="toggleAll" />
           </th>
           <th class="px-4 py-3 text-center">Type</th>
           <th class="px-4 py-3">Unit Code</th>
@@ -42,7 +94,7 @@
           class="hover:bg-gray-50"
         >
           <td class="px-4 py-3">
-            <input type="checkbox" v-model="selectedItems" :value="item.id" />
+            <input type="checkbox" class="cursor-pointer" v-model="selectedItems" :value="item.id" />
           </td>
           <td class="px-4 py-3 text-center">{{ item.sub_item.item.name }}</td>
           <td class="px-4 py-3">{{ item.code_unit }}</td>
@@ -67,10 +119,21 @@
         </tr>
       </tbody>
     </table>
-    <p class="text-xs text-gray-500 mt-3 ml-2">
-      Showing 1 to {{ unitItemStore.unitItems.length }} of
-      {{ unitItemStore.unitItems.length }} Laptop Lenovo
-    </p>
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500 mt-3 ml-2">
+        Showing 1 to {{ unitItemStore.unitItems.length }} of
+        {{ allItemCount }} {{ unitItemStore.unitItems[0]?.sub_item.merk || "Unknown Sub Item" }} 
+      </p>
+
+      <Pagination
+        :currentPage="currentPage"
+        :lastPage="lastPage"
+        :paginationItems="paginationItems"
+        @prev="prevPage"
+        @next="nextPage"
+        @change="changePage"
+      />
+    </div>
   </div>
 </template>
 <script setup>
@@ -94,38 +157,195 @@ const breadcrumbs = [
     icon: IconsNavbarIconsFile,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData()
   },
   {
     label: "Sort by Major",
     icon: IconsNavbarIconsFilterMajor,
+    click: () => handleSort("major")
   },
   {
     label: "Sort by Condition",
     icon: IconsNavbarIconsFilterRole,
+    click: () => handleSort("condition")
   },
 ];
 
+const sortByMajor = ref("");
+const sortByCondition = ref("");
+const exportData = ref("selected");
+
 const url = useRuntimeConfig().public.authUrl;
 const unitItemStore = useUnitItemStore();
+const pending = ref(false);
 const route = useRoute();
+const timeoutFiltering = ref(null);
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const allItemCount = ref(0);
+const maxVisiblePages = 3;
+
+const alertError = ref(false);
+const alertSuccess = ref(false);
+const alertWarning = ref(false);
+const alertMessage = ref("");
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  // Filter only items with the current merk
+  const currentMerk = unitItemStore.unitItems[0]?.sub_item.merk;
+  const filteredItems = currentMerk
+    ? unitItemStore.unitItems.filter(item => item.sub_item?.merk === currentMerk)
+    : unitItemStore.unitItems;
+
+  // Calculate total pages based on filtered items
+  const totalFiltered = filteredItems.length;
+  const itemsPerPage = 10; // adjust if needed
+  const filteredLastPage = Math.max(1, Math.ceil(totalFiltered / itemsPerPage));
+
+  if (currentPage.value > filteredLastPage) {
+    currentPage.value = 1;
+  }
+
+  if (filteredLastPage <= maxVisiblePages) {
+    for (let i = 1; i <= filteredLastPage; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(filteredLastPage);
+    } else if (currentPage.value >= filteredLastPage - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = filteredLastPage - (maxVisiblePages - 2);
+        i <= filteredLastPage;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(filteredLastPage);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getUnitItemsInventory();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      getUnitItemsInventory();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    getUnitItemsInventory();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
+const handleSearch = () => {
+  pending.value = true;
+  if (timeoutFiltering.value) {
+    clearTimeout(timeoutFiltering.value);
+  }
+
+  timeoutFiltering.value = setTimeout(() => {
+    currentPage.value = 1; // Reset to first page when searching
+    getUnitItemsInventory();
+  }, 400);
+};
 
 const getUnitItemsInventory = async () => {
-  setTimeout(() => setLoading(false), 2000);
-  const response = await $fetch(`${url}/unit-items`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${useAuthStore().token}`,
-    },
-  });
-
-  if (response.status === 200) {
-    const id = route.params.id;
-    unitItemStore.unitItems = response.data.filter(
-      (item) => item.sub_item && String(item.sub_item.id) === id
+  pending.value = true;
+  try {
+    const response = await $fetch(
+      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}&sort_major=${sortByMajor.value}&sort_condition=${sortByCondition.value}`, 
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${useAuthStore().token}`,
+        },
+      }
     );
+
+    if (response.status === 200) {
+      const id = route.params.id;
+      unitItemStore.unitItems = response.data.filter(
+        (item) => item.sub_item && String(item.sub_item.id) === id
+      );
+      
+      // Set pagination data
+      if (response.meta) {
+        lastPage.value = response.meta.last_page;
+        // Filter total count for the current sub_item.merk
+        const currentMerk = unitItemStore.unitItems[0]?.sub_item.merk;
+        if (currentMerk) {
+          allItemCount.value = response.data.filter(
+            (item) => item.sub_item?.merk === currentMerk
+          ).length;
+        } else {
+          allItemCount.value = 0;
+        }
+      }
+      
+      pending.value = false;
+    }
+  } catch (error) {
+    console.error("Error fetching unit items:", error);
+    pending.value = false;
   }
 };
 
@@ -138,11 +358,71 @@ const selectAll = ref(false);
 
 function toggleAll() {
   if (selectAll.value) {
+    exportData.value = "all";
     selectedItems.value = unitItemStore.unitItems.map((item) => item.id);
   } else {
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 }
+
+const handleSort = (type) => {
+  if (type === "major") {
+    sortByMajor.value = sortByMajor.value === "asc" ? "desc" : "asc";
+    sortByCondition.value = '';
+  } else if (type === "condition") {
+    sortByCondition.value = sortByCondition.value === "asc" ? "desc" : "asc";
+    sortByMajor.value = '';
+  }
+  getUnitItemsInventory();
+};
+
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/unit-items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({
+        data: selectedItems.value,
+        export: exportData.value,
+        search: unitItemStore.filter.search,
+        sort_condition: sortByCondition.value,
+        sort_major: sortByMajor.value,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `borrowable_items_${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
+  }
+};
 
 watch(selectedItems, (newVal) => {
   selectAll.value =

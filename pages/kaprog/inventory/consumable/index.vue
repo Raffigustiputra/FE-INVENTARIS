@@ -54,10 +54,15 @@
       @breadcrumbClick="openModalFromBreadcrumb"
     />
     <div class="flex items-center justify-between mt-12 mb-4">
-      <h1 class="font-semibold text-2xl">Inventory
+      <h1 class="font-semibold text-2xl">
+        Inventory
         <div class="inline text-lg">/</div>
-        Consumable Items</h1>
-      <SearchBox v-model="consumableItemStore.filter.search" @input="handleSearch" />
+        Consumable Items
+      </h1>
+      <SearchBox
+        v-model="consumableItemStore.filter.search"
+        @input="handleSearch"
+      />
     </div>
   </div>
 
@@ -77,7 +82,11 @@
         >
           <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
-            <InputText label="Item Name" placeholder="Enter Item Name" v-model="consumableItemStore.input.name" />
+            <InputText
+              label="Item Name"
+              placeholder="Enter Item Name"
+              v-model="consumableItemStore.input.name"
+            />
           </div>
           <div class="w-full flex items-center gap-2">
             <InputNumber
@@ -85,7 +94,11 @@
               placeholder="Enter Quantity"
               v-model="consumableItemStore.input.quantity"
             />
-            <InputText label="QTY(pcs/pack)" v-model="consumableItemStore.input.unit" placeholder="Enter Unit"/>
+            <InputText
+              label="QTY(pcs/pack)"
+              v-model="consumableItemStore.input.unit"
+              placeholder="Enter Unit"
+            />
           </div>
         </Modal>
       </div>
@@ -105,11 +118,13 @@
           title="Update Item"
           :isSubmitting="isSubmitting"
         >
+          <div class="w-full flex items-center gap-2"></div>
           <div class="w-full flex items-center gap-2">
-            
-          </div>
-          <div class="w-full flex items-center gap-2">
-            <InputText label="Item Name" placeholder="Enter Item Name" v-model="consumableItemStore.input.name" />
+            <InputText
+              label="Item Name"
+              placeholder="Enter Item Name"
+              v-model="consumableItemStore.input.name"
+            />
           </div>
           <div class="w-full flex items-center gap-2">
             <InputNumber
@@ -117,7 +132,11 @@
               placeholder="Enter Quantity"
               v-model="consumableItemStore.input.quantity"
             />
-            <InputText label="QTY(pcs/pack)" v-model="consumableItemStore.input.unit" placeholder="Enter Unit"/>
+            <InputText
+              label="QTY(pcs/pack)"
+              v-model="consumableItemStore.input.unit"
+              placeholder="Enter Unit"
+            />
           </div>
         </Modal>
       </div>
@@ -140,9 +159,8 @@
         <div class="">
           <p class="text-gray-600">
             Are you sure you want to delete
-            <span class="font-semibold">{{
-              deleteItemData?.name
-            }}</span>?
+            <span class="font-semibold">{{ deleteItemData?.name }}</span
+            >?
           </p>
         </div>
       </Modal>
@@ -195,7 +213,8 @@
   <div class="flex items-center justify-between mt-4">
     <p class="text-xs text-gray-500">
       Showing {{ consumableItemStore.consumables.length > 0 ? 1 : 0 }} to
-      {{ consumableItemStore.consumables.length }} of {{ allItemCount }} Inventory Items
+      {{ consumableItemStore.consumables.length }} of
+      {{ allItemCount }} Inventory Items
     </p>
     <Pagination
       :currentPage="currentPage"
@@ -220,7 +239,7 @@ import { ref, onMounted, watch } from "vue";
 import Pagination from "@/components/pagination/index.vue";
 
 definePageMeta({
-  title: "Inventory",
+  title: "Consumable",
 });
 
 const formatDate = (dateStr) => {
@@ -232,14 +251,17 @@ const formatDate = (dateStr) => {
   return `${day} ${month} ${year}`;
 };
 
+const exportData = ref("selected");
+
 const breadcrumbs = [
   {
     label: "Manage Inventory",
     icon: IconsNavbarIconsFile,
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
+    click: () => exportSelectedData(),
   },
   {
     label: "Add Item Consumable",
@@ -248,10 +270,12 @@ const breadcrumbs = [
   {
     label: "Sort by Type",
     icon: IconsNavbarIconsFilterMajor,
+    click: () => handleSort("type"),
   },
   {
-    label: "Sort by Time",
+    label: "Sort by Qty",
     icon: IconsNavbarIconsFilterRole,
+    click: () => handleSort("quantity"),
   },
 ];
 
@@ -281,7 +305,7 @@ const selectAll = ref(false);
 const selectedItemType = ref("");
 const formErrors = ref({
   itemType: "",
-  general: ""
+  general: "",
 });
 
 const alertError = ref(false);
@@ -291,8 +315,12 @@ const alertMessage = ref("");
 
 function toggleAll() {
   if (selectAll.value) {
-    selectedItems.value = consumableItemStore.consumables.map((item) => item.id);
+    exportData.value = "all";
+    selectedItems.value = consumableItemStore.consumables.map(
+      (item) => item.id
+    );
   } else {
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 }
@@ -301,6 +329,8 @@ const lastPage = ref(0);
 const currentPage = ref(1);
 const allItemCount = ref(0);
 const maxVisiblePages = 3;
+const sortByType = ref("");
+const sortByQuantity = ref("");
 
 const paginationItems = computed(() => {
   const pages = [];
@@ -444,7 +474,6 @@ const closeModalCreate = () => {
   adminInventoryStore.input = {};
 };
 
-
 const openModalUpdate = (item) => {
   modalTitle.value = "Update Item";
   modalUpdate.value = true;
@@ -475,6 +504,64 @@ const closeModalDelete = () => {
   deleteItemData.value = null;
 };
 
+const handleSort = (type) => {
+  if (type === "type") {
+    sortByType.value = sortByType.value === "asc" ? "desc" : "asc";
+    sortByQuantity.value = "";
+  } else if (type === "quantity") {
+    sortByQuantity.value = sortByQuantity.value === "asc" ? "desc" : "asc";
+    sortByType.value = "";
+  }
+  getConsumableItems();
+};
+
+const exportSelectedData = async () => {
+  if (selectedItems.value.length === 0) {
+    alertWarning.value = true;
+    alertMessage.value = "Please select items to export";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${url}/export/consumable-items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: JSON.stringify({
+        data: selectedItems.value,
+        export: exportData.value,
+        search: consumableItemStore.filter.search,
+        sort_type: sortByType.value,
+        sort_quantity: sortByQuantity.value,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `consumable_items_${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      alertSuccess.value = true;
+      alertMessage.value = "Selected data exported successfully!";
+    } else {
+      alertError.value = true;
+      alertMessage.value = "Failed to export selected data";
+    }
+  } catch (error) {
+    console.error("Export error:", error);
+    alertError.value = true;
+    alertMessage.value = "Error occurred during export";
+  }
+};
+
 const pending = ref(true);
 
 const getMainInventoryItems = async () => {
@@ -498,7 +585,7 @@ const getConsumableItems = async () => {
   pending.value = true;
   try {
     const response = await $fetch(
-      `${url}/consumable-item/data?search=${consumableItemStore.filter.search}&page=${currentPage.value}`,
+      `${url}/consumable-item/data?search=${consumableItemStore.filter.search}&page=${currentPage.value}&sort_quantity=${sortByQuantity.value}&sort_type=${sortByType.value}`,
       {
         method: "GET",
         headers: {
@@ -528,7 +615,7 @@ const getConsumableItems = async () => {
 
 const createConsumableItem = async () => {
   if (isSubmitting.value) return;
-  const {name, quantity, unit, major_id} = consumableItemStore.input;
+  const { name, quantity, unit, major_id } = consumableItemStore.input;
   console.log("Consumable Item Form values:", consumableItemStore.input);
 
   if (!name || !quantity || !unit || !major_id) {
@@ -607,7 +694,10 @@ const updateConsumableItem = async () => {
     }
   } catch (e) {
     console.error("Error updating consumable item:", e);
-    showAlert("error", `Failed to update consumable item: ${e.message || "Unknown error"}`);
+    showAlert(
+      "error",
+      `Failed to update consumable item: ${e.message || "Unknown error"}`
+    );
   } finally {
     isSubmitting.value = false;
   }
@@ -618,11 +708,11 @@ const deleteConsumableItem = async () => {
     showAlert("error", "Item ID is missing");
     return;
   }
-  
+
   isSubmitting.value = true;
   try {
     console.log("Deleting consumable item with ID:", deleteItemData.value.id);
-    
+
     const response = await $fetch(
       `${url}/consumable-item/${deleteItemData.value.id}`,
       {
@@ -643,7 +733,10 @@ const deleteConsumableItem = async () => {
     }
   } catch (e) {
     console.error("Error deleting consumable item:", e);
-    showAlert("error", `Failed to delete consumable item: ${e.message || "Unknown error"}`);
+    showAlert(
+      "error",
+      `Failed to delete consumable item: ${e.message || "Unknown error"}`
+    );
   } finally {
     isSubmitting.value = false;
   }

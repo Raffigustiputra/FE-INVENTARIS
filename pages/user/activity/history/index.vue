@@ -258,8 +258,9 @@ definePageMeta({
 const historyStore = useHistory();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const storageUrl = useRuntimeConfig().public.storageUrl;
 const route = useRoute();
-const exportData = ref("");
+const exportData = ref("selected");
 
 // =============================================================================
 // REACTIVE STATE
@@ -414,7 +415,7 @@ const breadcrumbs = computed(() => [
     click: () => openModalFromBreadcrumb({ label: "Manage Inventory" }),
   },
   {
-    label: "Print Selected",
+    label: "Export Selected",
     icon: IconsNavbarIconsPrint,
     click: () => exportSelectedData(),
   },
@@ -564,7 +565,7 @@ const openDetailModal = async (item) => {
     };
 
     selectedCollateralType.value = item.guarantee || "";
-    imagePreview.value = item.image || "";
+    imagePreview.value = item.image ? storageUrl + "/" + item.image : "";
 
     // Determine borrower type
     if (item.student) {

@@ -5,6 +5,9 @@ export const useMainInventoryStore = defineStore("main-inventory", {
         input: {
             type: '',
         },
+        filter: {
+          search: '',
+        },
         inventory: [],
     }),
 });
@@ -12,6 +15,9 @@ export const useMainInventoryStore = defineStore("main-inventory", {
 export const useSubItemStore = defineStore("sub-item", {
     state: () => ({
         subItems: [],
+        filter: {
+            search: '',
+        },
     })
 });
 
