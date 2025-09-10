@@ -217,7 +217,7 @@
             <!-- left section -->
             <div class="w-9/12 border-r border-[#D9D9D9] h-auto mx-1 overflow-y-auto">
                 <!-- over view Section -->
-                <div class="mt-2 mr-2 border-b border-[#D9D9D9]">
+                <div class="my-6 mr-2 border-b border-[#D9D9D9]">
                     <div class="flex items-center justify-between">
                         <h1 class="font-semibold text-md">Overview</h1>
                         <div class="flex items-center gap-2">
@@ -306,10 +306,10 @@
                 <div
                 v-else
                 class="mt-2 mr-2">
-                    <h1 class="font-semibold text-md">Lastest Activity</h1>
+                    <h1 class="font-semibold  text-md">Lastest Activity</h1>
 
-                    <TableSkeleton v-if="pending" :rows="4" :columns="7" />
-                    <div v-else class="mt-2">
+                    <TableSkeleton v-if="pending" class="mt-6" :rows="4" :columns="7" />
+                    <div v-else class="mt-6">
                         <table class="min-w-full text-xs text-left rounded-t-lg overflow-hidden">
                             <thead class="h-6 bg-[#F7F8F9]">
                                 <tr class="font-semibold text-gray-700">
