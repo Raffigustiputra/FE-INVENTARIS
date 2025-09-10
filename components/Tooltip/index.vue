@@ -1,10 +1,12 @@
 <template>
-    <div class="tooltip-container" @mouseover="showTooltip" @mouseleave="hideTooltip">
+    <div class="tooltip-container" @mouseover="showTooltip" @mouseleave="hideTooltip" ref="container">
         <slot></slot>
-        <div v-if="visible" class="tooltip" :class="position">
+        <Teleport to="body">
+        <div v-if="visible" class="tooltip" :class="position" :style="tooltipStyle">
             {{ text }}
             <span class="tooltip-arrow" :class="position"></span>
         </div>
+        </Teleport>
     </div>
 </template>
 
@@ -18,67 +20,93 @@ export default {
         },
         position: {
             type: String,
-            default: "top", // Options: top, bottom, left, right
+            default: "top", 
         },
     },
     data() {
         return {
             visible: false,
+            tooltipStyle: {},
         };
     },
     methods: {
-        showTooltip() {
-            this.visible = true;
-        },
-        hideTooltip() {
-            this.visible = false;
-        },
+    showTooltip() {
+      this.visible = true;
+      // Use nextTick to ensure the container ref is available
+      this.$nextTick(() => {
+        const containerRect = this.$refs.container.getBoundingClientRect();
+        const scrollY = window.scrollY;
+        const scrollX = window.scrollX;
+        
+        let top = 0;
+        let left = 0;
+
+        // Calculate position based on the trigger element
+        switch (this.position) {
+          case 'right':
+            top = containerRect.top + containerRect.height / 2 + scrollY;
+            left = containerRect.right + 8 + scrollX; // 8px gap
+            break;
+          case 'left':
+            top = containerRect.top + containerRect.height / 2 + scrollY;
+            left = containerRect.left - 8 + scrollX; // 8px gap
+            break;
+          case 'bottom':
+            top = containerRect.bottom + 8 + scrollY; // 8px gap
+            left = containerRect.left + containerRect.width / 2 + scrollX;
+            break;
+          default: // top
+            top = containerRect.top - 8 + scrollY; // 8px gap
+            left = containerRect.left + containerRect.width / 2 + scrollX;
+        }
+        
+        this.tooltipStyle = {
+          top: `${top}px`,
+          left: `${left}px`,
+        };
+      });
+    },
+    hideTooltip() {
+      this.visible = false;
+    },
     },
 };
 </script>
 
 <style scoped>
 .tooltip-container {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
+  position: relative;
+  display: block;
+  cursor: pointer;
 }
 
 .tooltip {
-    position: absolute;
-    background-color: #303030;
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    white-space: nowrap;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  background-color: #303030;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 9999; 
+  transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
 .tooltip.top {
-    bottom: 100%;
-    left: 70%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -100%);
 }
 
 .tooltip.bottom {
-    top: 125%;
-    left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, 0);
 }
 
 .tooltip.left {
-    right: 125%;
-    top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-100%, -50%);
 }
 
 .tooltip.right {
-    left: 125%;
-    top: 50%;
-    transform: translateY(-50%);
+    transform: translate(0, -50%);
 }
 
 .tooltip-arrow {
@@ -89,15 +117,15 @@ export default {
 }
 
 .tooltip-arrow.top {
-    bottom: -5px;
-    left: 30%;
+    top: 100%;
+    left: 50%;
     transform: translateX(-50%);
     border-width: 5px 5px 0 5px;
     border-color: #303030 transparent transparent transparent;
 }
 
 .tooltip-arrow.bottom {
-    top: -5px;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     border-width: 0 5px 5px 5px;
@@ -105,7 +133,7 @@ export default {
 }
 
 .tooltip-arrow.left {
-    right: -5px;
+    left: 100%;
     top: 50%;
     transform: translateY(-50%);
     border-width: 5px 0 5px 5px;
@@ -113,7 +141,7 @@ export default {
 }
 
 .tooltip-arrow.right {
-    left: -5px;
+    right: 100%;
     top: 50%;
     transform: translateY(-50%);
     border-width: 5px 5px 5px 0;
