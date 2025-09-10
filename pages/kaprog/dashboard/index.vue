@@ -300,7 +300,7 @@
                                     {{ dayjs(i.created_at).format('DD MMMM YYYY') }}
                                 </h1>
                             </div>
-                            <div class="py-0.5 px-2 rounded-md bg-[#A2C5FF]">
+                            <div class="py-0.5 px-2 rounded-md flex justify-center min-w-24 bg-[#A2C5FF]">
                                 <p class="text-[0.65rem] text-[#1a4da5] font-medium">
                                     {{ i.code }}
                                 </p>
