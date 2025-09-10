@@ -26,7 +26,7 @@
       <!-- <div class="w-full h-0.5 bg-gray-100 fixed left-0 mt-2.5 z-100"></div> -->
       <div
       v-if="breadcrumbs && breadcrumbs.length > 0"
-      class="select-none w-full border-t-2 border-b-2 bg-white mt-2.5 -mb-5 border-gray-100 py-3 px-1"
+      class="select-none w-full border-t-2 border-b-2 bg-white mt-1 -mb-5 border-gray-100 py-3 px-1"
       >
       <div class="mx-auto flex items-center gap-5">
           <div

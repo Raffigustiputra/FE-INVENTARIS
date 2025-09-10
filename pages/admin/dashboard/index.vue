@@ -238,47 +238,48 @@
                                         --dp-hover-color: #f3f3f3;
                                         --dp-hover-text-color: #212121;
 
-                                        /* Warna utama */
-                                        --dp-primary-color: #1976d2;
-                                        --dp-primary-text-color: #fff;
+                    /* Warna utama */
+                    --dp-primary-color: #1976d2;
+                    --dp-primary-text-color: #fff;
 
-                                        /* Styling input */
-                                        --dp-border-radius: 6px;
-                                        --dp-font-size: 12px;
-                                        --dp-input-padding: 4px 6px;
+                    /* Styling input */
+                    --dp-border-radius: 6px;
+                    --dp-font-size: 12px;
+                    --dp-input-padding: 4px 6px;
 
-                                        /* Ukuran compact */
-                                        width: 150px;
-                                        height: 28px;
-                                        font-size: 12px;
-                                        border-radius: 6px;
-                                    " />
-                            </div>
-                            <p class="text-xs font-medium">-</p>
-                            <div>
-                                <VueDatePicker
-                                    v-model="toDate"
-                                    :enable-time-picker="false"
-                                    @update:model-value="updateTo"
-                                    placeholder="YYYY-MM-DD"
-                                    teleport="body"
-                                    :clearable="false"
-                                    style="
-                                        /* Warna dasar */
-                                        --dp-background-color: #fff;
-                                        --dp-text-color: #212121;
-                                        --dp-border-color: #ddd;
-                                        --dp-hover-color: #f3f3f3;
-                                        --dp-hover-text-color: #212121;
+                    /* Ukuran compact */
+                    width: 150px;
+                    height: 28px;
+                    font-size: 12px;
+                    border-radius: 6px;
+                  "
+                />
+              </div>
+              <p class="text-xs font-medium">-</p>
+              <div>
+                <VueDatePicker
+                  v-model="toDate"
+                  :enable-time-picker="false"
+                  @update:model-value="updateTo"
+                  placeholder="YYYY-MM-DD"
+                  teleport="body"
+                  :clearable="false"
+                  style="
+                    /* Warna dasar */
+                    --dp-background-color: #fff;
+                    --dp-text-color: #212121;
+                    --dp-border-color: #ddd;
+                    --dp-hover-color: #f3f3f3;
+                    --dp-hover-text-color: #212121;
 
-                                        /* Warna utama */
-                                        --dp-primary-color: #1976d2;
-                                        --dp-primary-text-color: #fff;
+                    /* Warna utama */
+                    --dp-primary-color: #1976d2;
+                    --dp-primary-text-color: #fff;
 
-                                        /* Styling input */
-                                        --dp-border-radius: 6px;
-                                        --dp-font-size: 12px;
-                                        --dp-input-padding: 4px 6px;
+                    /* Styling input */
+                    --dp-border-radius: 6px;
+                    --dp-font-size: 12px;
+                    --dp-input-padding: 4px 6px;
 
                                         /* Ukuran compact */
                                         width: 150px;
