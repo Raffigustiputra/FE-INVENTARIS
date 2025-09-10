@@ -113,7 +113,7 @@
                     <!-- left section -->
                     <div class="w-full border-r border-[#D9D9D9] h-auto overflow-y-auto">
                         <!-- over view Section -->
-                        <div class="mt-2 mr-2 px-2">
+                        <div class="my-6 mr-2 px-2">
                             <div class="flex items-center justify-between">
                                 <h1 class="font-semibold text-md">Overview</h1>
                                 <div class="flex items-center gap-2">
@@ -197,10 +197,10 @@
                         <SkeletonLatestActivitySkeleton v-if="loadingLatestActivity" />
                         <div
                         v-else
-                        class="mt-2 border-t border-[#D9D9D9]">
-                            <h1 class="font-semibold mt-4 text-md">Latest Activity</h1>
+                        class="mt-4 border-t border-[#D9D9D9]">
+                            <h1 class="font-semibold mt-6 text-md ml-2">Latest Activity</h1>
 
-                            <div class="mt-4 mr-2">
+                            <div class="mt-6 mr-2">
                                 <table
                                     class="min-w-full text-xs text-left rounded-t-lg overflow-hidden">
                                     <thead class="h-6 bg-[#F7F8F9]">
@@ -281,7 +281,7 @@
                     </div>
                 </div>
                 <div class="w-full">
-                    <div class="my-4 flex justify-center">
+                    <div class="my-6 flex justify-center">
                         <h1 class="font-semibold text-md">Latest Item</h1>
                     </div>
                     <SkeletonLatestItemsSkeleton v-if="loadingLatestItems" />
