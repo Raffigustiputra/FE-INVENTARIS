@@ -1,8 +1,8 @@
 <template>
-  <Navbar />
+  <Navbar class="border-[#D9D9D9] border-b mt-[5px]" />
     <div>
         <!-- welome and time secion -->
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center mt-2 py-4">
             <div>
                 <h1 class="text-xl font-semibold">Welcome Back, {{ authStore.getName }}</h1>
                 <p class="text-[#B0B0B0] text-sm font-light">
@@ -26,13 +26,14 @@
         </div>
 
         <!-- upper sections -->
-        <div class="border-b mt-3 flex py-4 items-center border-[#D9D9D9] border-t w-full">
+        <div class="border-b flex py-3 items-center border-[#D9D9D9] border-t w-full">
             <SkeletonCardSkeleton v-for="i in 4" v-if="loadingCards"  />
             <div
             v-else
-            class="flex justify-evenly items-start w-full">
+            class="flex justify-between space-x-4 items-center w-full">
                 <div 
-                class="flex items-center gap-3">
+                class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
+
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -76,7 +77,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -120,7 +121,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -164,7 +165,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 p-4 w-full">
                     <div class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full">
                         <svg
                             width="21"
@@ -214,7 +215,7 @@
         <!-- main Sections -->
         <div class="w-full flex">
             <!-- left section -->
-            <div class="w-9/12 border-r border-[#D9D9D9] h-auto px-2 overflow-y-auto">
+            <div class="w-9/12 border-r border-[#D9D9D9] h-auto mx-1 overflow-y-auto">
                 <!-- over view Section -->
                 <div class="mt-2 mr-2 border-b border-[#D9D9D9]">
                     <div class="flex items-center justify-between">
@@ -237,47 +238,48 @@
                                         --dp-hover-color: #f3f3f3;
                                         --dp-hover-text-color: #212121;
 
-                                        /* Warna utama */
-                                        --dp-primary-color: #1976d2;
-                                        --dp-primary-text-color: #fff;
+                    /* Warna utama */
+                    --dp-primary-color: #1976d2;
+                    --dp-primary-text-color: #fff;
 
-                                        /* Styling input */
-                                        --dp-border-radius: 6px;
-                                        --dp-font-size: 12px;
-                                        --dp-input-padding: 4px 6px;
+                    /* Styling input */
+                    --dp-border-radius: 6px;
+                    --dp-font-size: 12px;
+                    --dp-input-padding: 4px 6px;
 
-                                        /* Ukuran compact */
-                                        width: 150px;
-                                        height: 28px;
-                                        font-size: 12px;
-                                        border-radius: 6px;
-                                    " />
-                            </div>
-                            <p class="text-xs font-medium">-</p>
-                            <div>
-                                <VueDatePicker
-                                    v-model="toDate"
-                                    :enable-time-picker="false"
-                                    @update:model-value="updateTo"
-                                    placeholder="YYYY-MM-DD"
-                                    teleport="body"
-                                    :clearable="false"
-                                    style="
-                                        /* Warna dasar */
-                                        --dp-background-color: #fff;
-                                        --dp-text-color: #212121;
-                                        --dp-border-color: #ddd;
-                                        --dp-hover-color: #f3f3f3;
-                                        --dp-hover-text-color: #212121;
+                    /* Ukuran compact */
+                    width: 150px;
+                    height: 28px;
+                    font-size: 12px;
+                    border-radius: 6px;
+                  "
+                />
+              </div>
+              <p class="text-xs font-medium">-</p>
+              <div>
+                <VueDatePicker
+                  v-model="toDate"
+                  :enable-time-picker="false"
+                  @update:model-value="updateTo"
+                  placeholder="YYYY-MM-DD"
+                  teleport="body"
+                  :clearable="false"
+                  style="
+                    /* Warna dasar */
+                    --dp-background-color: #fff;
+                    --dp-text-color: #212121;
+                    --dp-border-color: #ddd;
+                    --dp-hover-color: #f3f3f3;
+                    --dp-hover-text-color: #212121;
 
-                                        /* Warna utama */
-                                        --dp-primary-color: #1976d2;
-                                        --dp-primary-text-color: #fff;
+                    /* Warna utama */
+                    --dp-primary-color: #1976d2;
+                    --dp-primary-text-color: #fff;
 
-                                        /* Styling input */
-                                        --dp-border-radius: 6px;
-                                        --dp-font-size: 12px;
-                                        --dp-input-padding: 4px 6px;
+                    /* Styling input */
+                    --dp-border-radius: 6px;
+                    --dp-font-size: 12px;
+                    --dp-input-padding: 4px 6px;
 
                                         /* Ukuran compact */
                                         width: 150px;
@@ -306,7 +308,8 @@
                 class="mt-2 mr-2">
                     <h1 class="font-semibold text-md">Lastest Activity</h1>
 
-                    <div class="mt-2">
+                    <TableSkeleton v-if="pending" :rows="4" :columns="7" />
+                    <div v-else class="mt-2">
                         <table class="min-w-full text-xs text-left rounded-t-lg overflow-hidden">
                             <thead class="h-6 bg-[#F7F8F9]">
                                 <tr class="font-semibold text-gray-700">
@@ -378,6 +381,10 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import dayjs from 'dayjs';
 
+definePageMeta({
+    title: 'Dashboard',
+});
+
 const url = useRuntimeConfig().public.authUrl;
 const authStore = useAuthStore();
 const superadminDashboardStore = useSuperadminDashboardStore();
@@ -386,7 +393,7 @@ const loadingCards = ref(true);
 const loadingBarChart = ref(true);
 const loadingList = ref(true);
 const loadingDonut = ref(true);
-const loadingLatestActivity = ref(true);
+const pending = ref(false);
 
 const now = new Date();
 
@@ -459,7 +466,8 @@ const getMajorLoansChart = async () => {
 };
 
 const getLatestActivty = async () => {
-    loadingLatestActivity.value = true;
+    pending.value = true;
+    loadingList.value = true;
     const response = await $fetch(`${url}/dashboard/superadmin/items-loans-history`, {
         method: 'GET',
         headers: {
@@ -469,7 +477,8 @@ const getLatestActivty = async () => {
     });
 
     if (response.status === 200) {
-        
+        pending.value = false;
+        loadingList.value = false;
         superadminDashboardStore.latestActivityRecords = response.data;
         loadingLatestActivity.value = false;
     }

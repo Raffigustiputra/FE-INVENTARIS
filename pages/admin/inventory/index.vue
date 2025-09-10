@@ -55,7 +55,11 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
-      <SearchBox text="Search inventory..." v-model="mainInventoryStore.filter.search" @input="handleSearch"/>
+      <SearchBox
+        text="Search inventory..."
+        v-model="mainInventoryStore.filter.search"
+        @input="handleSearch"
+      />
     </div>
 
     <!-- Modal Create -->
@@ -90,7 +94,7 @@
         </Modal>
       </div>
     </Transition>
-  
+
     <!-- Modal Update -->
     <Transition name="fade">
       <div
@@ -123,7 +127,7 @@
         </Modal>
       </div>
     </Transition>
-  
+
     <!-- Modal Delete -->
     <Transition name="fade">
       <div
@@ -153,14 +157,12 @@
     </Transition>
 
     <!-- SKELETON -->
-     <TableSkeleton v-if="pending"
-        :columns="2"
-     />
+    <TableSkeleton v-if="pending" :columns="2" />
 
     <!-- Tabel -->
     <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
       <table class="min-w-full text-sm text-left">
-        <thead class="bg-[#F7F8F9]">
+        <thead class="bg-[#F7F8F9] border-b border-gray-200">
           <tr class="text-sm font-medium text-gray-700">
             <th class="px-4 py-2 w-1">
               <input
@@ -177,11 +179,14 @@
           </tr>
         </thead>
 
-        <tbody class="bg-white" v-for="item in mainInventoryStore.inventory">
-          <tr 
-              :key="item.id"
-              class="hover:bg-gray-100 transition-colors duration-200"
-            >
+        <tbody
+          class="bg-white border-b border-gray-200"
+          v-for="item in mainInventoryStore.inventory"
+        >
+          <tr
+            :key="item.id"
+            class="hover:bg-gray-100 transition-colors duration-200"
+          >
             <!-- Checkbox -->
             <td class="px-4 py-4">
               <input
@@ -189,20 +194,22 @@
                 v-model="selectedItems"
                 :value="item.id"
                 class="w-4 h-4 rounded-md border-2 border-gray-400 cursor-pointer"
-                @click.stop
               />
             </td>
 
             <!-- Name -->
-            <td class="px-10 w-full py-4 cursor-pointer" @click="viewItem(item.id)">
-                {{ item.name }}
+            <td
+              class="px-10 w-full py-4 cursor-pointer"
+              @click="viewItem(item.id)"
+            >
+              {{ item.name }}
             </td>
 
             <!-- Action -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
-                <ButtonEdit @click.stop="openModalUpdate(item)" />
-                <ButtonDelete @click.stop="openModalDelete(item)" />
+                <ButtonEdit @click="openModalUpdate(item)" />
+                <ButtonDelete @click="openModalDelete(item)" />
               </div>
             </td>
           </tr>
@@ -211,8 +218,8 @@
     </div>
     <div class="flex items-center justify-between mt-4">
       <p class="text-xs text-gray-500 mt-3 ml-2">
-        Showing {{ mainInventoryStore.inventory.length > 0 ? 1 : 0 }} to {{ mainInventoryStore.inventory.length }} of
-        {{ countItem }} Items
+        Showing {{ mainInventoryStore.inventory.length > 0 ? 1 : 0 }} to
+        {{ mainInventoryStore.inventory.length }} of {{ countItem }} Items
       </p>
       <Pagination
         :currentPage="currentPage"
@@ -251,7 +258,7 @@ const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
 const pending = ref(false);
-const exportData = ref('selected');
+const exportData = ref("selected");
 
 const viewItem = (id) => {
   navigateTo(`/admin/inventory/${id}`);
@@ -424,15 +431,17 @@ const changePage = async (page) => {
 };
 
 const getMainInvetoryItems = async () => {
-    setTimeout(() => setLoading(false), 2000);
-    pending.value = true;
-  const response = await $fetch(`${url}/item/paginate?search=${mainInventoryStore.filter.search}&page=${currentPage.value}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  });
+  pending.value = true;
+  const response = await $fetch(
+    `${url}/item/paginate?search=${mainInventoryStore.filter.search}&page=${currentPage.value}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    }
+  );
 
   if (response.status === 200) {
     mainInventoryStore.inventory = response.data;
@@ -445,7 +454,10 @@ const getMainInvetoryItems = async () => {
 const isSubmitting = ref(false);
 
 const createItem = async () => {
-  if (!mainInventoryStore.input.name || mainInventoryStore.input.name.trim() === "") {
+  if (
+    !mainInventoryStore.input.name ||
+    mainInventoryStore.input.name.trim() === ""
+  ) {
     showAlert("warning", "Type name cannot be empty");
     return;
   }
@@ -468,7 +480,10 @@ const createItem = async () => {
 };
 
 const updateItem = async () => {
-  if (!mainInventoryStore.input.name || mainInventoryStore.input.name.trim() === "") {
+  if (
+    !mainInventoryStore.input.name ||
+    mainInventoryStore.input.name.trim() === ""
+  ) {
     showAlert("warning", "Type name cannot be empty");
     return;
   }
@@ -534,10 +549,12 @@ const selectAll = ref(false);
 
 function toggleAll() {
   if (selectAll.value) {
-    exportData.value = 'all',
-    selectedItems.value = mainInventoryStore.inventory.map((item) => item.id);
+    (exportData.value = "all"),
+      (selectedItems.value = mainInventoryStore.inventory.map(
+        (item) => item.id
+      ));
   } else {
-    exportData.value = 'selected';
+    exportData.value = "selected";
     selectedItems.value = [];
   }
 }
@@ -556,7 +573,7 @@ const exportSelectedData = async () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
       },
-      body: JSON.stringify({  
+      body: JSON.stringify({
         export: exportData.value,
         data: selectedItems.value,
         search: mainInventoryStore.filter.search,
@@ -568,10 +585,12 @@ const exportSelectedData = async () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `items_selected_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.download = `items_selected_${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
       link.click();
       window.URL.revokeObjectURL(url);
-      
+
       alertSuccess.value = true;
       alertMessage.value = "Selected data exported successfully!";
     } else {
@@ -586,7 +605,9 @@ const exportSelectedData = async () => {
 };
 
 watch(selectedItems, (newVal) => {
-  selectAll.value = newVal.length === mainInventoryStore.inventory.length && mainInventoryStore.inventory.length > 0;
+  selectAll.value =
+    newVal.length === mainInventoryStore.inventory.length &&
+    mainInventoryStore.inventory.length > 0;
 });
 
 onMounted(() => {

@@ -8,6 +8,7 @@ export default defineNuxtPlugin(async () => {
 
     if (!isValid) {
       await navigateTo("/");
+      alert("Session expired. Please log in again.");
     }
   }
 });

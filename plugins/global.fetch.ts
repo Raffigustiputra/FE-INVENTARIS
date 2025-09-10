@@ -21,6 +21,7 @@ export default defineNuxtPlugin(() => {
       if (error?.statusCode === 401) {
         await authStore.logout();
         await router.push('/');
+        alert("Session expired. Please log in again.");
         throw new Error('Session expired');
       }
       
