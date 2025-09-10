@@ -113,7 +113,7 @@
                     <!-- left section -->
                     <div class="w-full border-r border-[#D9D9D9] h-auto overflow-y-auto">
                         <!-- over view Section -->
-                        <div class="mt-2 mr-2 px-2">
+                        <div class="my-6 mr-2 px-2">
                             <div class="flex items-center justify-between">
                                 <h1 class="font-semibold text-md">Overview</h1>
                                 <div class="flex items-center gap-2">
@@ -197,10 +197,10 @@
                         <SkeletonLatestActivitySkeleton v-if="loadingLatestActivity" />
                         <div
                         v-else
-                        class="mt-2 border-t border-[#D9D9D9]">
-                            <h1 class="font-semibold mt-4 text-md">Latest Activity</h1>
+                        class="mt-4 border-t border-[#D9D9D9]">
+                            <h1 class="font-semibold mt-6 text-md ml-2">Latest Activity</h1>
 
-                            <div class="mt-4 mr-2">
+                            <div class="mt-6 mr-2">
                                 <table
                                     class="min-w-full text-xs text-left rounded-t-lg overflow-hidden">
                                     <thead class="h-6 bg-[#F7F8F9]">
@@ -266,8 +266,8 @@
             </div>
 
             <div class="w-3/12">
-                <div class="w-full mt-3 h-[28.5rem] border-b border-[#D9D9D9] border-t">
-                    <div class="w-full flex justify-center my-4">
+                <div class="w-full mt-3 min-h-[28.5rem] border-b border-[#D9D9D9] border-t">
+                    <div class="w-full flex justify-center my-6">
                         <h1 class="font-semibold text-md">Most Of Borrowing</h1>
                     </div>
                     <div>
@@ -275,13 +275,13 @@
                         <apexchart
                             v-else
                             type="donut"
-                            height="290"
+                            height="270"
                             :options="donutOptions"
                             :series="donutSeries" />
                     </div>
                 </div>
                 <div class="w-full">
-                    <div class="my-4 flex justify-center">
+                    <div class="my-6 flex justify-center">
                         <h1 class="font-semibold text-md">Latest Item</h1>
                     </div>
                     <SkeletonLatestItemsSkeleton v-if="loadingLatestItems" />
@@ -300,7 +300,7 @@
                                     {{ dayjs(i.created_at).format('DD MMMM YYYY') }}
                                 </h1>
                             </div>
-                            <div class="py-0.5 px-2 rounded-md bg-[#A2C5FF]">
+                            <div class="py-0.5 px-2 rounded-md flex justify-center min-w-24 bg-[#A2C5FF]">
                                 <p class="text-[0.65rem] text-[#1a4da5] font-medium">
                                     {{ i.code }}
                                 </p>
