@@ -26,37 +26,43 @@
   opacity: 0;
   transform: translateY(-4px);
 }
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #print-area, #print-area * {
+    visibility: visible !important;
+    display: block !important;
+  }
+  #print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white; /* opsional kalau mau putih */
+  }
+}
+
 </style>
 
 <template>
   <transition name="alert">
-    <AlertError
-      class="z-50"
-      v-if="alertError"
-      :title="alertMessage"
-      @hide="alertError = false"
-    />
+    <AlertError class="z-50" v-if="alertError" :title="alertMessage" @hide="alertError = false" />
   </transition>
   <transition name="alert">
-    <AlertSuccess
-      class="z-50"
-      v-if="alertSuccess"
-      :title="alertMessage"
-      @hide="alertSuccess = false"
-    />
+    <AlertSuccess class="z-50" v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
   </transition>
   <transition name="alert">
     <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
   </transition>
   <div>
-    <Navbar
-      :breadcrumbs="breadcrumbs"
-      @breadcrumbClick="openModalFromBreadcrumb"
-    />
+    <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="openModalFromBreadcrumb" />
     <div class="flex items-center justify-between mt-12 mb-4">
       <h1 class="font-semibold text-2xl">Inventory
         <div class="inline text-lg">/</div>
-        Borrowed Items</h1>
+        Borrowed Items
+      </h1>
       <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
     </div>
   </div>
@@ -64,55 +70,28 @@
   <!-- Modal Create Borrowable -->
   <div class="w-full">
     <Transition name="fade">
-      <div
-        v-if="modalCreate"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnClose="closeModalCreate"
-          title="Add New Item"
-          @btnSubmit="createUnitItem"
-          :isSubmitting="isSubmitting"
-          labelButton="Add Item"
-        >
+      <div v-if="modalCreate"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+        <Modal @btnClose="closeModalCreate" title="Add New Item" @btnSubmit="createUnitItem"
+          :isSubmitting="isSubmitting" labelButton="Add Item">
           <p class="text-sm font-medium text-[#727272] my-2">ITEM DETAILS</p>
           <div class="w-full flex items-center gap-2">
-            <InputSelect
-              class="w-1/2"
-              label="Item Type"
-              v-model="adminInventoryStore.input.item_id"
-              @change="
-                (event) =>
-                  console.log('Selected item type:', event.target.value)
-              "
-            >
-              <option
-                v-for="type in mainInventoryStore.inventory"
-                :key="type.id"
-                :value="type.id"
-              >
+            <InputSelect class="w-1/2" label="Item Type" v-model="adminInventoryStore.input.item_id" @change="
+              (event) =>
+                console.log('Selected item type:', event.target.value)
+            ">
+              <option v-for="type in mainInventoryStore.inventory" :key="type.id" :value="type.id">
                 {{ type.name }}
               </option>
             </InputSelect>
           </div>
           <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-1/2"
-              label="Brand Name"
-              placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk"
-            />
-            <InputDate
-              class="w-1/2"
-              label="Added Date"
-              v-model="adminInventoryStore.input.procurement_date"
-            />
+            <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.."
+              v-model="adminInventoryStore.input.merk" />
+            <InputDate class="w-1/2" label="Added Date" v-model="adminInventoryStore.input.procurement_date" />
           </div>
-          <InputTextarea
-            label="Description"
-            placeholder="Input Description Here.."
-            v-model="adminInventoryStore.input.description"
-          />
+          <InputTextarea label="Description" placeholder="Input Description Here.."
+            v-model="adminInventoryStore.input.description" />
         </Modal>
       </div>
     </Transition>
@@ -121,61 +100,29 @@
   <!-- Modal Update Borrowable -->
   <div class="w-full">
     <Transition name="fade">
-      <div
-        v-if="modalUpdate"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          @btnSubmit="updateUnitItem"
-          @btnClose="closeModalUpdate"
-          title="Update Item"
-          :isSubmitting="isSubmitting"
-          labelButton="Update Item"
-        >
+      <div v-if="modalUpdate"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+        <Modal @btnSubmit="updateUnitItem" @btnClose="closeModalUpdate" title="Update Item" :isSubmitting="isSubmitting"
+          labelButton="Update Item">
           <div class="w-full flex items-center gap-2">
-            <InputSelect
-              class="w-1/2"
-              label="Item Type"
-              v-model="adminInventoryStore.input.item_id"
-              @change="
-                (event) =>
-                  console.log('Selected item type:', event.target.value)
-              "
-            >
-              <option
-                v-for="type in mainInventoryStore.inventory"
-                :key="type.id"
-                :value="type.id"
-              >
+            <InputSelect class="w-1/2" label="Item Type" v-model="adminInventoryStore.input.item_id" @change="
+              (event) =>
+                console.log('Selected item type:', event.target.value)
+            ">
+              <option v-for="type in mainInventoryStore.inventory" :key="type.id" :value="type.id">
                 {{ type.name }}
               </option>
             </InputSelect>
           </div>
           <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-1/2"
-              label="Brand Name"
-              placeholder="Enter Brand Name Here.."
-              v-model="adminInventoryStore.input.merk"
-            />
-            <InputDate
-              class="w-1/2"
-              label="Added Date"
-              v-model="adminInventoryStore.input.procurement_date"
-            />
+            <InputText class="w-1/2" label="Brand Name" placeholder="Enter Brand Name Here.."
+              v-model="adminInventoryStore.input.merk" />
+            <InputDate class="w-1/2" label="Added Date" v-model="adminInventoryStore.input.procurement_date" />
           </div>
           <div class="w-full flex items-center gap-2">
-            <InputTextarea
-              label="Description"
-              placeholder="Input Description Here.."
-              v-model="adminInventoryStore.input.description"
-              rows="1"
-            />
-            <InputSelect
-              class="w-full"
-              label="Condition"
-              v-model="adminInventoryStore.input.condition"
-            >
+            <InputTextarea label="Description" placeholder="Input Description Here.."
+              v-model="adminInventoryStore.input.description" rows="1" />
+            <InputSelect class="w-full" label="Condition" v-model="adminInventoryStore.input.condition">
               <option value="true">Good</option>
               <option value="false">Damaged</option>
             </InputSelect>
@@ -187,17 +134,10 @@
 
   <!-- Modal Delete Borrowable -->
   <Transition name="fade">
-    <div
-      v-if="modalDelete"
-      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
-    >
-      <Modal
-        @btnSubmit="deleteUnitItem"
-        @btnClose="closeModalDelete"
-        title="Confirm Deletion"
-        :isSubmitting="isSubmitting"
-        labelButton="Delete"
-      >
+    <div v-if="modalDelete"
+      class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30">
+      <Modal @btnSubmit="deleteUnitItem" @btnClose="closeModalDelete" title="Confirm Deletion"
+        :isSubmitting="isSubmitting" labelButton="Delete">
         <div class="">
           <p class="text-gray-600">
             Are you sure you want to delete
@@ -205,10 +145,7 @@
               deleteItemData?.sub_item.item.name
             }}</span>
             with item code
-            <span class="block"
-              ><span class="font-semibold">{{ deleteItemData?.code_unit }}</span
-              >?</span
-            >
+            <span class="block"><span class="font-semibold">{{ deleteItemData?.code_unit }}</span>?</span>
           </p>
         </div>
       </Modal>
@@ -217,10 +154,7 @@
 
   <TableSkeleton v-if="pending" :rows="4" :columns="7" />
 
-  <div
-    v-else
-    class="overflow-x-auto overflow-y-auto rounded-lg bg-white max-h-[65vh]"
-  >
+  <div v-else class="overflow-x-auto overflow-y-auto rounded-lg bg-white max-h-[65vh]">
     <table class="min-w-full text-sm text-left relative">
       <thead class="bg-gray-100 sticky top-0 z-10">
         <tr class="text-sm font-semibold text-gray-700">
@@ -237,11 +171,7 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr
-          v-for="item in unitItemStore.unitItems"
-          :key="item.id"
-          class="hover:bg-gray-50"
-        >
+        <tr v-for="item in unitItemStore.unitItems" :key="item.id" class="hover:bg-gray-50">
           <td class="px-4 py-3">
             <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
@@ -252,18 +182,14 @@
             {{ formatDate(item.procurement_date) }}
           </td>
           <td class="px-4 py-3 text-center">
-            <span
-              :class="statusClass(item.status)"
-              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium"
-            >
+            <span :class="statusClass(item.status)"
+              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium">
               {{ toUpperCase(item.status) }}
             </span>
           </td>
           <td class="px-4 py-3 text-center">
-            <span
-              :class="conditionClass(item.condition)"
-              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium"
-            >
+            <span :class="conditionClass(item.condition)"
+              class="inline-block min-w-[80px] text-center px-3 py-1 rounded-md text-xs font-medium">
               {{ toUpperCase(item.condition) }}
             </span>
           </td>
@@ -285,15 +211,35 @@
       Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
       {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
     </p>
-    <Pagination
-      :currentPage="currentPage"
-      :lastPage="lastPage"
-      :paginationItems="paginationItems"
-      @prev="prevPage"
-      @next="nextPage"
-      @change="changePage"
-    />
+    <Pagination :currentPage="currentPage" :lastPage="lastPage" :paginationItems="paginationItems" @prev="prevPage"
+      @next="nextPage" @change="changePage" />
   </div>
+
+  <template>
+    <!-- Modal Print QR -->
+    <Transition name="fade">
+      <div v-if="modalPrintQR"
+        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/60">
+        <div class="bg-white w-[90%] h-[90%] rounded-lg overflow-auto relative p-4">
+          <!-- Tombol Close -->
+          <button class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded" @click="closeModalPrintQR">
+            X
+          </button>
+
+          <!-- Hanya ini yang akan diprint -->
+          <div id="print-area" class="bg-gray-900 p-4">
+            <IndexQR :items="selectedUnitItems" />
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+
+  </template>
+
+
+
+
 </template>
 <script setup>
 import {
@@ -305,8 +251,10 @@ import {
   IconsNavbarIconsAddQr,
   InputSelect,
 } from "#components";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import Pagination from "@/components/pagination/index.vue";
+import { useUnitItemStore } from "@/stores/main-inventory";
+import IndexQR from "@/pages/admin/qr/index.vue";
 
 definePageMeta({
   title: "Borrowable",
@@ -363,6 +311,13 @@ const openModalFromBreadcrumb = (item) => {
   if (item.label === "Add Item") {
     modalCreate.value = true;
   }
+  if (item.label === "Print QR-Code") {
+    if (selectedUnitItems.value.length === 0) {
+      showAlert("warning", "Pilih minimal satu barang dulu!");
+      return;
+    }
+    modalPrintQR.value = true;
+  }
 };
 
 // Modal states
@@ -377,6 +332,24 @@ const sortByCondition = ref("asc");
 const sortByDate = ref("asc");
 const sortByType = ref("asc");
 const selectAll = ref(false);
+const modalPrintQR = ref(false);
+
+const selectedUnitItems = computed(() =>
+  unitItemStore.unitItems.filter((item) => selectedItems.value.includes(item.id))
+);
+
+const closeModalPrintQR = () => {
+  modalPrintQR.value = false;
+};
+
+watch(modalPrintQR, async (newVal) => {
+  if (newVal) {
+    await nextTick();
+    setTimeout(() => {
+      window.print();
+    }, 300);
+  }
+});
 
 const alertError = ref(false);
 const alertSuccess = ref(false);
@@ -854,10 +827,10 @@ const statusClass = (status) => {
 
 const conditionClass = (condition) => {
   // Convert boolean values to string for display
-  const conditionStr = condition === true || condition === 'true' ? 'GOOD' : 
-                       condition === false || condition === 'false' ? 'DAMAGED' : 
-                       String(condition || '').toUpperCase();
-  
+  const conditionStr = condition === true || condition === 'true' ? 'GOOD' :
+    condition === false || condition === 'false' ? 'DAMAGED' :
+      String(condition || '').toUpperCase();
+
   switch (conditionStr) {
     case "GOOD":
     case "TRUE":
