@@ -7,6 +7,10 @@ export const useAdminDashboardStore = defineStore("adminDashboard", {
             from : dayjs().startOf('year').format('YYYY'),
             to : dayjs().endOf('year').format('YYYY'),
         },
-        data : []
+        data : [],
+        cardsData : [],
+        mostBorrowed : [],
+        lastActivityRecords : [],
+        latestItems : [],
     }),
 });

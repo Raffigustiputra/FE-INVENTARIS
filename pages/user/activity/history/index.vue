@@ -258,6 +258,7 @@ definePageMeta({
 const historyStore = useHistory();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const storageUrl = useRuntimeConfig().public.storageUrl;
 const route = useRoute();
 const exportData = ref("selected");
 
@@ -564,7 +565,7 @@ const openDetailModal = async (item) => {
     };
 
     selectedCollateralType.value = item.guarantee || "";
-    imagePreview.value = item.image || "";
+    imagePreview.value = item.image ? storageUrl + "/" + item.image : "";
 
     // Determine borrower type
     if (item.student) {

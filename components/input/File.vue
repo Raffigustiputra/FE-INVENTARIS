@@ -3,7 +3,7 @@
         <label for="" class="text-sm font-medium text-[#727272]">{{ props.label }}</label>
         <div
             class="flex flex-col gap-3 mt-1 items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition"
-            :class="[preview ? 'p-2' : 'p-8', disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer']"
+            :class="[preview ? 'p-2' : 'p-8', disabled ? 'cursor-not-allowed' : 'cursor-pointer']"
             @click="triggerFileInput">
             <template v-if="!preview">
                 <svg

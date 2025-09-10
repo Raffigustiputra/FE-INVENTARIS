@@ -201,8 +201,8 @@
             <!-- Action -->
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
-                <ButtonEdit @click.stop="openModalUpdate(item)" />
-                <ButtonDelete @click.stop="openModalDelete(item)" />
+                <ButtonEdit @click="openModalUpdate(item)" />
+                <ButtonDelete @click="openModalDelete(item)" />
               </div>
             </td>
           </tr>

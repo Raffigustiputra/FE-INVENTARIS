@@ -301,7 +301,10 @@
                 </div>
 
                 <!-- last Activity Section -->
-                <div class="mt-2 mr-2">
+                <SkeletonLatestActivitySkeleton v-if="loadingLatestActivity" />
+                <div
+                v-else
+                class="mt-2 mr-2">
                     <h1 class="font-semibold text-md">Lastest Activity</h1>
 
                     <TableSkeleton v-if="pending" :rows="4" :columns="7" />
@@ -476,6 +479,7 @@ const getLatestActivty = async () => {
         pending.value = false;
         loadingList.value = false;
         superadminDashboardStore.latestActivityRecords = response.data;
+        loadingLatestActivity.value = false;
     }
 };
 

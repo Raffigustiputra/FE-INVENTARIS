@@ -4,7 +4,7 @@
   </Head>
   <div class="w-full min-h-screen font-Poppins">
     <!-- Online checking -->
-    <!-- <div
+    <div
       v-if="!isOnline"
       class="h-screen flex flex-col text-center font-Poppins"
     >
@@ -31,7 +31,7 @@
           </p>
         </div>
       </main>
-    </div> -->
+    </div>
 
     <div>
       <div
@@ -47,7 +47,7 @@
           sidebarStore.isCollapsed ? 'ml-25' : 'ml-[320px]',
         ]"
       >
-        <main class="w-full h-full px-5">
+        <main class="w-full h-full px-5 pb-5">
           <slot></slot>
         </main>
       </div>
