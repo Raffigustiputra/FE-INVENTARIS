@@ -1,5 +1,5 @@
 <template>
-  <Navbar class="border-[#D9D9D9] border-b mt-[5px]" />
+  <Navbar class="border-[#D9D9D9] border-b pb-[5px]" />
   <div>
     <!-- welome and time secion -->
     <div class="flex justify-between items-center mt-2 py-4">
@@ -41,7 +41,7 @@
             v-else
             class="flex justify-between pr-20 pl-2 items-start w-full"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 border-[#D9D9D9] border-r w-full p-4">
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -68,7 +68,7 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 border-[#D9D9D9] border-r w-full p-4">
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -95,7 +95,7 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 w-full p-4">
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >

@@ -37,7 +37,7 @@
         Borrowed
       </h1>
       <SearchBox
-        :text="'Search Anything'"
+        :text="'Search Anything...'"
         v-model="searchQuery"
         @input="handleSearch"
       />

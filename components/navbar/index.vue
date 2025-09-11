@@ -1,5 +1,5 @@
 <template>
-  <header class="w-full bg-white z-30 sticky top-0 left-0 right-0">
+  <header class="w-full bg-white z-30 sticky top-0 left-0 right-0 bottom-0">
       <div class=" mx-auto flex items-center justify-between">
         <button @click="sidebarStore.toggle()" class="p-2 hover:bg-gray-200 cursor-pointer rounded-full">
           <IconsBurgernav

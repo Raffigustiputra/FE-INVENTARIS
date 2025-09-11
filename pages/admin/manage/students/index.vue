@@ -177,25 +177,17 @@
     />
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">List Students</h1>
-      <div class="flex items-center gap-4">
-        <button
-          @click="modalCreate = true"
-          class="bg-blue-500 hover:cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-        >
-          Add Student
-        </button>
-        <div
-          class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2"
-        >
-          <IconsSearchIcon class="w-6 h-6 text-gray-500" />
-          <input
-            type="text"
-            v-model="studentStore.filter.search"
-            @input="handleSearch"
-            class="outline-none w-full"
-            placeholder="Search Anything"
-          />
-        </div>
+      <div
+        class="w-64 h-9 p-2 border-2 border-[#E0E0E0] rounded-md flex items-center gap-2"
+      >
+        <IconsSearchIcon class="w-6 h-6 text-gray-500" />
+        <input
+          type="text"
+          v-model="studentStore.filter.search"
+          @input="handleSearch"
+          class="outline-none w-full"
+          placeholder="Search Anything..."
+        />
       </div>
     </div>
 

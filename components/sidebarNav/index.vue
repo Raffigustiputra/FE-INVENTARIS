@@ -64,21 +64,24 @@
   >
     <!-- SIDEBAR -->
       <div>
-       <div class="select-none flex items-center justify-between ml-5 mt-6 mb-4 mr-4">
-        <img
-          v-if="!sidebarStore.isCollapsed"
-          src="../../public/images/wv-logo.png"
-          alt="Logo"
-          class="w-[200px]"
-        />
-        <img
-          v-else
-          src="../../public/images/wv-blue.png"
-          alt="Logo"
-          class="w-[50px] mx-auto mb-2.5"
-        />
+      <div :class="[
+        'select-none flex items-center justify-between ml-5 mt-6 mr-4',
+        sidebarStore.isCollapsed ? 'mb-3' : 'mb-4'
+      ]">
+       <img
+         v-if="!sidebarStore.isCollapsed"
+         src="../../public/images/wv-logo.png"
+         alt="Logo"
+         class="w-[200px]"
+       />
+       <img
+         v-else
+         src="../../public/images/wv-blue.png"
+         alt="Logo"
+         class="w-[50px] mx-auto mb-2.5"
+       />
 
-      </div>
+          </div>
       <div class="border-b border-black/10 mx-4"></div>
 
         <!-- HEADER SMK -->

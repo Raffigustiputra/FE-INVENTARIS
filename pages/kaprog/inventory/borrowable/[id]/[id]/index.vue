@@ -73,7 +73,7 @@
           {{ unitItemStore.unitItems[0]?.sub_item.merk || "Unknown Sub Item" }}
         </template>
       </h1>
-      <SearchBox v-model="unitItemStore.filter.search" @input="handleSearch" />
+      <SearchBox text="Search Anything..." v-model="unitItemStore.filter.search" @input="handleSearch" />
     </div>
   </div>
 

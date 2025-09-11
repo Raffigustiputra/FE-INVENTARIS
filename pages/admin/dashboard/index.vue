@@ -1,5 +1,5 @@
 <template>
-  <Navbar class="border-[#D9D9D9] border-b mt-[5px]" />
+  <Navbar class="border-[#D9D9D9] border-b pb-[5px]" />
     <div>
         <!-- welome and time secion -->
         <div class="flex justify-between items-center mt-2 py-4">

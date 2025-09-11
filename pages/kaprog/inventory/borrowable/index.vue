@@ -31,7 +31,8 @@
   body * {
     visibility: hidden !important;
   }
-  #print-area, #print-area * {
+  #print-area,
+  #print-area * {
     visibility: visible !important;
     display: block !important;
   }
@@ -43,34 +44,51 @@
     background: white; /* opsional kalau mau putih */
   }
 }
-
 </style>
 
 <template>
   <transition name="alert">
-    <AlertError class="z-50" v-if="alertError" :title="alertMessage" @hide="alertError = false" />
+    <AlertError
+      class="z-50"
+      v-if="alertError"
+      :title="alertMessage"
+      @hide="alertError = false"
+    />
   </transition>
   <transition name="alert">
-    <AlertSuccess class="z-50" v-if="alertSuccess" :title="alertMessage" @hide="alertSuccess = false" />
+    <AlertSuccess
+      class="z-50"
+      v-if="alertSuccess"
+      :title="alertMessage"
+      @hide="alertSuccess = false"
+    />
   </transition>
   <transition name="alert">
     <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
   </transition>
   <div>
-    <Navbar :breadcrumbs="breadcrumbs" @breadcrumbClick="openModalFromBreadcrumb" />
+    <Navbar
+      :breadcrumbs="breadcrumbs"
+    />
     <div class="flex items-center justify-between mt-12 mb-4">
-      <h1 class="font-semibold text-2xl">Inventory
+      <h1 class="font-semibold text-2xl">
+        Inventory
         <div class="inline text-lg">/</div>
-        Reusable Items</h1>
-      <SearchBox v-model="mainInventoryStore.filter.search" @input="handleSearch" />
+        Reusable Items
+      </h1>
+      <SearchBox
+        text="Search Anything..."
+        v-model="mainInventoryStore.filter.search"
+        @input="handleSearch"
+      />
     </div>
   </div>
 
   <TableSkeleton v-if="pending" :rows="4" :columns="1" />
 
-  <div v-else class="overflow-x-auto overflow-y-auto rounded-lg bg-white max-h-[65vh]">
+    <div v-else class="overflow-x-auto overflow-y-auto max-h-[65vh] rounded-lg bg-white">
     <table class="min-w-full text-sm text-left relative">
-      <thead class="bg-gray-100 sticky top-0 z-10">
+      <thead class="bg-gray-100 ">
         <tr class="text-sm font-semibold text-gray-700">
           <th class="px-4 py-3 w-1">
             <input type="checkbox" v-model="selectAll" @change="toggleAll" />
@@ -87,7 +105,12 @@
           <td class="px-4 py-3">
             <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
-          <td class="px-10 py-4 text-left cursor-pointer" @click="viewItem(item.id)">{{ item.name }}</td>
+          <td
+            class="px-10 py-4 text-left cursor-pointer"
+            @click="viewItem(item.id)"
+          >
+            {{ item.name }}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -95,21 +118,34 @@
 
   <div class="flex items-center justify-between mt-4">
     <p class="text-xs text-gray-500">
-      Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
-      {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
+      Showing {{ mainInventoryStore.inventory.length > 0 ? 1 : 0 }} to
+      {{ mainInventoryStore.inventory.length }} of {{ allItemCount }} Inventory Items
     </p>
-    <Pagination :currentPage="currentPage" :lastPage="lastPage" :paginationItems="paginationItems" @prev="prevPage"
-      @next="nextPage" @change="changePage" />
+    <Pagination
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      :paginationItems="paginationItems"
+      @prev="prevPage"
+      @next="nextPage"
+      @change="changePage"
+    />
   </div>
 
   <template>
     <!-- Modal Print QR -->
     <Transition name="fade">
-      <div v-if="modalPrintQR"
-        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/60">
-        <div class="bg-white w-[90%] h-[90%] rounded-lg overflow-auto relative p-4">
+      <div
+        v-if="modalPrintQR"
+        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/60"
+      >
+        <div
+          class="bg-white w-[90%] h-[90%] rounded-lg overflow-auto relative p-4"
+        >
           <!-- Tombol Close -->
-          <button class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded" @click="closeModalPrintQR">
+          <button
+            class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded"
+            @click="closeModalPrintQR"
+          >
             X
           </button>
 
@@ -120,13 +156,7 @@
         </div>
       </div>
     </Transition>
-
-
   </template>
-
-
-
-
 </template>
 <script setup>
 import {
@@ -166,7 +196,7 @@ const breadcrumbs = [
   {
     label: "Export Selected",
     icon: IconsNavbarIconsPrint,
-    click: () => exportSelectedData()
+    click: () => exportSelectedData(),
   },
 ];
 
@@ -202,7 +232,9 @@ const selectAll = ref(false);
 const modalPrintQR = ref(false);
 
 const selectedUnitItems = computed(() =>
-  unitItemStore.unitItems.filter((item) => selectedItems.value.includes(item.id))
+  unitItemStore.unitItems.filter((item) =>
+    selectedItems.value.includes(item.id)
+  )
 );
 
 const closeModalPrintQR = () => {
@@ -229,11 +261,13 @@ const viewItem = (id) => {
 
 function toggleAll() {
   if (selectAll.value) {
-    exportData.value = "all";
+    // Jika header checkbox dicentang, pilih semua item
     selectedItems.value = mainInventoryStore.inventory.map((item) => item.id);
+    exportData.value = "all";
   } else {
-    exportData.value = "selected";
+    // Jika header checkbox tidak dicentang, kosongkan semua item
     selectedItems.value = [];
+    exportData.value = "selected";
   }
 }
 
@@ -291,25 +325,29 @@ const paginationItems = computed(() => {
 const nextPage = async () => {
   if (currentPage.value < lastPage.value) {
     currentPage.value++;
+    selectedItems.value = []; // Reset selected items when changing page
+    selectAll.value = false; // Reset select all state
     pending.value = true;
     console.log(currentPage.value);
     nextTick(() => {
-      getUnitItemsInventory();
+      getMainInventoryItems();
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: "smooth",
       });
     });
   }
-};
+};``
 
 const prevPage = async () => {
   if (currentPage.value > 1) {
     currentPage.value--;
+    selectedItems.value = []; // Reset selected items when changing page
+    selectAll.value = false; // Reset select all state
     pending.value = true;
     console.log(currentPage.value);
     nextTick(() => {
-      getUnitItemsInventory();
+      getMainInventoryItems();
       window.scrollTo({
         top: document.documentElement.scrollHeight,
         behavior: "smooth",
@@ -321,11 +359,13 @@ const prevPage = async () => {
 const changePage = async (page) => {
   if (page !== "...") {
     currentPage.value = page;
+    selectedItems.value = []; // Reset selected items when changing page
+    selectAll.value = false; // Reset select all state
     pending.value = true;
     console.log(currentPage.value);
   }
   nextTick(() => {
-    getUnitItemsInventory();
+    getMainInventoryItems();
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
@@ -343,15 +383,30 @@ const handleSearch = () => {
 
   timeoutFiltering = setTimeout(() => {
     currentPage.value = 1; // Reset to first page when searching
+    selectedItems.value = []; // Reset selected items when searching
+    selectAll.value = false; // Reset select all state
     getMainInventoryItems();
   }, 500);
 };
 
 watch(selectedItems, (newVal) => {
   selectAll.value =
-    newVal.length === unitItemStore.unitItems.length &&
-    unitItemStore.unitItems.length > 0;
+    newVal.length === mainInventoryStore.inventory.length &&
+    mainInventoryStore.inventory.length > 0;
 });
+
+// Watcher untuk sinkronisasi selectAll ketika data inventory berubah
+watch(() => mainInventoryStore.inventory, (newInventory) => {
+  // Jika tidak ada item yang dipilih, pastikan selectAll false
+  if (selectedItems.value.length === 0) {
+    selectAll.value = false;
+  } else {
+    // Jika ada item yang dipilih, periksa apakah semua item dipilih
+    selectAll.value =
+      selectedItems.value.length === newInventory.length &&
+      newInventory.length > 0;
+  }
+}, { immediate: true });
 
 const showAlert = (type, message) => {
   alertMessage.value = message;
@@ -434,7 +489,7 @@ const exportSelectedData = async () => {
 const getMainInventoryItems = async () => {
   pending.value = true;
   const response = await $fetch(
-    `${url}/item?search=${mainInventoryStore.filter.search}&page=${currentPage.value}&sort_type=${sortByType.value}`,
+    `${url}/item/paginate?search=${mainInventoryStore.filter.search}&page=${currentPage.value}&sort_type=${sortByType.value}`,
     {
       method: "GET",
       headers: {
@@ -451,6 +506,8 @@ const getMainInventoryItems = async () => {
 
   if (response.status === 200) {
     pending.value = false;
+    lastPage.value = response.meta.last_page;
+    allItemCount.value = response.meta.total;
     mainInventoryStore.inventory = response.data;
   }
 };
@@ -459,26 +516,29 @@ const getUnitItemsInventory = async () => {
   try {
     pending.value = true;
 
-    const response = await $fetch(`${url}/unit-items?sort_condition=${sortByCondition.value}&sort_date=${sortByDate.value}&sort_type=${sortByType.value}&`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-      params: {
-        search: unitItemStore.filter.search,
-        page: currentPage.value,
-        sort_by_type: unitItemStore.filter.sortByType,
-        sort_by_time: unitItemStore.filter.sortByTime,
-      },
-    });
+    const response = await $fetch(
+      `${url}/unit-items?sort_condition=${sortByCondition.value}&sort_date=${sortByDate.value}&sort_type=${sortByType.value}&`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+        params: {
+          search: unitItemStore.filter.search,
+          page: currentPage.value,
+          sort_by_type: unitItemStore.filter.sortByType,
+          sort_by_time: unitItemStore.filter.sortByTime,
+        },
+      }
+    );
 
     if (response) {
       unitItemStore.unitItems = response.data ?? response;
 
       if (response.meta) {
         lastPage.value = response.meta.last_page;
-        allItemCount.value = response.meta.total;
+        allItemCount.value = console.log(response.meta.total);
       }
     } else {
       alertError.value = true;
@@ -508,11 +568,13 @@ const handleSortInventory = (type) => {
     sortByCondition.value = sortByCondition.value === "asc" ? "desc" : "asc";
   }
 
+  currentPage.value = 1; // Reset to first page when sorting
+  selectedItems.value = []; // Reset selected items when sorting
+  selectAll.value = false; // Reset select all state
   getMainInventoryItems();
 };
 
 onMounted(() => {
   getMainInventoryItems();
 });
-
 </script>

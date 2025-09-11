@@ -14,7 +14,7 @@ export const statusClass = (status: string) => {
 export const conditionClass = (condition: string) => {
   switch ((condition || "").toUpperCase()) {
     case "GOOD":
-      return "bg-red-200 text-red-700";
+      return "bg-green-200 text-green-700";
     case "DAMAGED":
       return "bg-red-200 text-red-700";
     default:

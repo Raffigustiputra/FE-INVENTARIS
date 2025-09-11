@@ -29,7 +29,6 @@
 </style>
 
 <template>
-  <div>
     <transition name="alert">
       <AlertError
         class="z-50"
@@ -56,7 +55,7 @@
     <div class="flex items-center justify-between mt-12 mb-7">
       <h1 class="font-semibold text-2xl">Inventory</h1>
       <SearchBox
-        text="Search inventory..."
+        text="Search Anything..."
         v-model="mainInventoryStore.filter.search"
         @input="handleSearch"
       />
@@ -160,8 +159,8 @@
     <TableSkeleton v-if="pending" :columns="2" />
 
     <!-- Tabel -->
-    <div v-else class="overflow-x-auto rounded-lg bg-[#F7F8F9]">
-      <table class="min-w-full text-sm text-left">
+    <div v-else class="rounded-lg bg-[#F7F8F9]">
+      <table class="min-w-full text-sm text-left relative">
         <thead class="bg-[#F7F8F9] border-b border-gray-200">
           <tr class="text-sm font-medium text-gray-700">
             <th class="px-4 py-2 w-1">
@@ -230,7 +229,6 @@
         @change="changePage"
       />
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -389,7 +387,6 @@ const nextPage = async () => {
   if (currentPage.value < lastPage.value) {
     currentPage.value++;
     pending.value = true;
-    console.log(currentPage.value);
     nextTick(() => {
       getMainInvetoryItems();
       window.scrollTo({
@@ -404,7 +401,6 @@ const prevPage = async () => {
   if (currentPage.value > 1) {
     currentPage.value--;
     pending.value = true;
-    console.log(currentPage.value);
     nextTick(() => {
       getMainInvetoryItems();
       window.scrollTo({
@@ -419,7 +415,6 @@ const changePage = async (page) => {
   if (page !== "...") {
     currentPage.value = page;
     pending.value = true;
-    console.log(currentPage.value);
   }
   nextTick(() => {
     getMainInvetoryItems();
