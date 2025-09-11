@@ -74,7 +74,7 @@
                 />
                 <InputRadio
                   class="w-1/2"
-                  valueName="Borrowable Item"
+                  valueName="Reusable Item"
                   name="itemType"
                   value="borrowable"
                   v-model="selectedItemType"

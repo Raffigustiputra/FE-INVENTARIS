@@ -340,7 +340,7 @@
                       for="borrowable"
                       class="text-sm font-medium cursor-pointer"
                     >
-                      Borrowable Item
+                      Reusable Item
                     </label>
                   </div>
                 </div>
