@@ -142,20 +142,23 @@
             <div
                 class="select-none bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto">
                 <img
-                    v-if="$route.path.includes('/admin')"
-                    :src="
-                        authStore.userInfo
-                            ? storageUrl + '/' + authStore.userInfo.major.icon
-                            : '../../public/images/wikrama-logo.png'
-                    "
+                    v-if="$route.path.includes('/admin') && authStore?.userInfo?.major?.icon"
+                    :src="`${storageUrl}/${authStore.userInfo.major.icon}`"
                     alt="Wikrama Logo"
                     class="select-none rounded-full w-[40px]" />
+
+                <!-- Kalau non-admin -->
+                <img
+                    v-else-if="authStore?.userInfo?.major?.icon"
+                    :src="`${storageUrl}/${authStore.userInfo.major.icon}`"
+                    alt="RPL Logo"
+                    class="w-[45px] rounded-full" />
+
+                <!-- Fallback kalau nggak ada icon -->
                 <img
                     v-else
-                    :src="
-                        authStore.userInfo ? storageUrl + '/' + authStore.userInfo.major.icon : '../../public/images/rpl-logo.png'
-                    "
-                    alt="RPL Logo"
+                    src="../../public/images/rpl.png"
+                    alt="Default Logo"
                     class="w-[45px] rounded-full" />
                 <Transition name="fade-text">
                     <div v-if="!sidebarStore.isCollapsed" class="flex-col gap-1">
@@ -636,6 +639,5 @@ const menuByRole = {
 onMounted(() => {
     getUser();
     GetMajor();
-    console.log(storageUrl + "/" + authStore.userInfo.major.icon);
 });
 </script>
