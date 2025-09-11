@@ -1423,12 +1423,12 @@ const submitReturn = async () => {
 
   if (response.ok) {
     alertSuccess.value = true;
-    alertMessage.value = "Return date submitted successfully!";
+    alertMessage.value = "Return item successfully!";
     closeModal();
     getUnitLoan();
   } else {
     alertError.value = true;
-    alertMessage.value = "Failed to submit return date";
+    alertMessage.value = "Failed to submit return item";
   }
 };
 
