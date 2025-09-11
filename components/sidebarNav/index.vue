@@ -60,38 +60,8 @@
   </transition>
 
   <div
-    :class="[
-      'fixed top-0 left-0 z-5 h-screen flex flex-col justify-between bg-white border-r border-black/10 overflow-y-auto transition-all duration-300 ease-in-out',
-      sidebarStore.isCollapsed ? 'w-25' : 'w-[320px]',
-    ]"
-  >
-    <!-- SIDEBAR -->
-    <div>
-      <div
-        :class="[
-          'select-none flex items-center justify-between ml-5 mt-6 mr-4',
-          sidebarStore.isCollapsed ? 'mb-3' : 'mb-4',
-        ]"
-      >
-        <img
-          v-if="!sidebarStore.isCollapsed"
-          src="../../public/images/wv-logo.png"
-          alt="Logo"
-          class="w-[200px]"
-        />
-        <img
-          v-else
-          src="../../public/images/wv-blue.png"
-          alt="Logo"
-          class="w-[50px] mx-auto mb-2.5"
-        />
-      </div>
-      <div class="border-b border-black/10 mx-4"></div>
-
-      <!-- HEADER SMK -->
-      <div
         v-if="createModal"
-        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
+        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
           title="Add New Major"
@@ -162,6 +132,37 @@
           </div>
         </Modal>
       </div>
+
+  <div
+    :class="[
+      'fixed top-0 left-0 z-5 h-screen flex flex-col justify-between bg-white border-r border-black/10 overflow-y-auto transition-all duration-300 ease-in-out',
+      sidebarStore.isCollapsed ? 'w-25' : 'w-[320px]',
+    ]"
+  >
+    <!-- SIDEBAR -->
+    <div>
+      <div
+        :class="[
+          'select-none flex items-center justify-between ml-5 mt-6 mr-4',
+          sidebarStore.isCollapsed ? 'mb-3' : 'mb-4',
+        ]"
+      >
+        <img
+          v-if="!sidebarStore.isCollapsed"
+          src="../../public/images/wv-logo.png"
+          alt="Logo"
+          class="w-[200px]"
+        />
+        <img
+          v-else
+          src="../../public/images/wv-blue.png"
+          alt="Logo"
+          class="w-[50px] mx-auto mb-2.5"
+        />
+      </div>
+      <div class="border-b border-black/10 mx-4"></div>
+
+      <!-- HEADER SMK -->
     </div>
   </div>
 
@@ -199,7 +200,7 @@
           v-if="
             $route.path.includes('/admin') && authStore?.userInfo?.major?.icon
           "
-          :src="`${storageUrl}/${authStore.userInfo.major.icon}`"
+          src="../../public/images/wikrama-logo.png"
           alt="Wikrama Logo"
           class="select-none rounded-full w-[40px]"
         />
@@ -207,7 +208,7 @@
         <!-- Kalau non-admin -->
         <img
           v-else-if="authStore?.userInfo?.major?.icon"
-          :src="`${storageUrl}/${authStore.userInfo.major.icon}`"
+          :src="`${authStore.userInfo.major.icon_url}`"
           alt="RPL Logo"
           class="w-[45px] rounded-full"
         />
