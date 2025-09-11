@@ -4,8 +4,8 @@
       :to="props.navigateTo"
       class="px-4 py-2 rounded-lg flex items-center gap-3 duration-300 hover:cursor-pointer"
       :class="[
-        isActive ? 'bg-[#0844A4]' : 'hover:bg-black/10',
-        props.isCollapsed ? 'justify-center' : '' // Pusatkan ikon saat collapsed
+        isActive && !props.childMenu ? 'bg-[#0844A4]' : 'hover:bg-black/10',
+        isActive && props.childMenu ? 'bg-[#414141]/20' : ''
       ]"
     >
       <div>
@@ -15,7 +15,7 @@
         <h1
           :class="[
             'text-sm font-semibold select-none transition-opacity duration-200 whitespace-nowrap',
-            isActive ? 'text-white' : 'text-black/60'
+            isActive && !props.childMenu ? 'text-white' : 'text-black/60',
           ]"
         >
           {{ props.navigationItem }}
@@ -24,7 +24,7 @@
           v-if="props.childMenu"
           :class="[
             'w-4 h-4 transition-transform absolute right-6 select-none',
-            isOpen ? 'rotate-180' : 'rotate-0', isActive ? 'text-white' : 'text-black/60'
+            isOpen ? 'rotate-180' : 'rotate-0', isActive && !props.childMenu ? 'text-white' : 'text-black/60'
           ]"
           fill="none"
           stroke="currentColor"

@@ -30,6 +30,9 @@ const switchVisibility = () => {
 const router = useRouter();
 const url = useRuntimeConfig().public.authUrl;
 
+const username = ref("");
+const password = ref("");
+
 const alertError = ref(false);
 const alertMessage = ref("");
 const alertSuccess = ref(false);
@@ -60,8 +63,8 @@ const login = async () => {
     const response = await $fetch(`${url}/login`, {
       method: "POST",
       body: {
-        username: authStore.input.username,
-        password: authStore.input.password,
+        username: username.value,
+        password: password.value,
       },
     });
 
@@ -86,11 +89,40 @@ const login = async () => {
     }
   } catch (err) {
     console.error("Login gagal:", err);
-    showAlert("error", "Failed to login");
+    if (err.status === 429) {
+      showAlert("error", err.data.message || "Too many attempts. Please try again later.");
+    } else {
+      showAlert("error", "Failed to login");
+    }
   } finally {
     loading.value = false;
   }
 };
+
+onMounted(() => {
+  if (authStore.token && authStore.role) {
+    if (authStore.role === "superadmin") {
+      router.push("/admin/dashboard");
+    } else if (authStore.role === "admin") {
+      router.push("/kaprog/dashboard");
+    } else if (authStore.role === "user") {
+      router.push("/user/dashboard");
+    }
+    return;
+  }
+
+  const isValid = authStore.validateTokenAndFetchUser();
+  
+  if (isValid) {
+    if (authStore.role === "superadmin") {
+      router.push("/admin/dashboard");
+    } else if (authStore.role === "admin") {
+      router.push("/kaprog/dashboard");
+    } else if (authStore.role === "user") {
+      router.push("/user/dashboard");
+    }
+  }
+});
 
 definePageMeta({
   layout: "none",
@@ -166,7 +198,7 @@ definePageMeta({
         <div class="mx-4 flex flex-col gap-1">
           <h1 class="ml-1 font-medium text-xs sm:text-sm">Username</h1>
           <input
-            v-model="authStore.input.username"
+            v-model="username"
             type="text"
             placeholder="Input your username..."
             class="px-3 sm:px-4 py-2 sm:py-3 focus:ring-1 focus:ring-[#dddddd] outline-none w-full border text-xs sm:text-sm border-[#EAEAEA] rounded-lg"
@@ -175,7 +207,7 @@ definePageMeta({
         <div class="mx-4 mt-4 flex flex-col gap-1 relative">
           <h1 class="ml-1 font-medium text-xs sm:text-sm">Password</h1>
           <input
-            v-model="authStore.input.password"
+            v-model="password"
             :type="typeInputPassword"
             placeholder="Input your password..."
             class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm w-full border focus:ring-1 focus:ring-[#dddddd] outline-none border-[#EAEAEA] rounded-lg"

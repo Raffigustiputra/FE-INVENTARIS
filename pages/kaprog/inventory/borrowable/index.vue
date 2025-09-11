@@ -28,22 +28,120 @@
 }
 
 @media print {
-  body * {
+  /* Hide everything by default */
+  * {
     visibility: hidden !important;
   }
-  #print-area, #print-area * {
+  
+  /* Only show print area and its contents */
+  #print-area,
+  #print-area * {
     visibility: visible !important;
-    display: block !important;
   }
+  
+  /* Hide the entire body content except print area */
+  body > *:not(#print-area) {
+    display: none !important;
+  }
+  
+  /* Force print area to be the only visible content */
   #print-area {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: white; /* opsional kalau mau putih */
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Hide all navigation, sidebar, and layout elements */
+  nav,
+  aside,
+  header,
+  footer,
+  .sidebar,
+  .navbar,
+  .breadcrumb,
+  .breadcrumbs,
+  .alert,
+  .modal,
+  .tooltip,
+  .dropdown,
+  button,
+  .btn,
+  [class*="sidebar"],
+  [class*="nav"],
+  [class*="header"],
+  [class*="footer"],
+  [class*="alert"],
+  [class*="modal"],
+  [class*="tooltip"],
+  [class*="dropdown"],
+  [class*="transition"],
+  .fixed,
+  .absolute:not(#print-area):not(#print-area *),
+  .z-50,
+  .z-40,
+  .z-30,
+  .z-20,
+  .z-10 {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Hide layout containers */
+  .ml-25,
+  .ml-\[320px\] {
+    margin-left: 0 !important;
+  }
+  
+  /* Ensure no background colors or borders interfere */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Force colors to print */
+  #print-area * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Remove page margins */
+  @page {
+    margin: 0 !important;
+    size: A4;
+  }
+  
+  /* Hide Vue transitions */
+  .fade-enter-active,
+  .fade-leave-active,
+  .alert-enter-active,
+  .alert-leave-active {
+    display: none !important;
   }
 }
 
+@media print {
+  .hidden {
+    display: block !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+}
 </style>
 
 <template>
@@ -92,42 +190,9 @@
       </tbody>
     </table>
   </div>
-
-  <div class="flex items-center justify-between mt-4">
-    <p class="text-xs text-gray-500">
-      Showing {{ unitItemStore.unitItems.length > 0 ? 1 : 0 }} to
-      {{ unitItemStore.unitItems.length }} of {{ allItemCount }} Inventory Items
-    </p>
-    <Pagination :currentPage="currentPage" :lastPage="lastPage" :paginationItems="paginationItems" @prev="prevPage"
-      @next="nextPage" @change="changePage" />
-  </div>
-
-  <template>
-    <!-- Modal Print QR -->
-    <Transition name="fade">
-      <div v-if="modalPrintQR"
-        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/60">
-        <div class="bg-white w-[90%] h-[90%] rounded-lg overflow-auto relative p-4">
-          <!-- Tombol Close -->
-          <button class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded" @click="closeModalPrintQR">
-            X
-          </button>
-
-          <!-- Hanya ini yang akan diprint -->
-          <div id="print-area" class="bg-gray-900 p-4">
-            <IndexQR :items="selectedUnitItems" />
-          </div>
-        </div>
-      </div>
-    </Transition>
-
-
-  </template>
-
-
-
-
+  
 </template>
+
 <script setup>
 import {
   IconsNavbarIconsFile,
@@ -138,10 +203,8 @@ import {
   IconsNavbarIconsAddQr,
   InputSelect,
 } from "#components";
-import { ref, onMounted, watch, nextTick } from "vue";
-import Pagination from "@/components/pagination/index.vue";
+import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useUnitItemStore } from "@/stores/main-inventory";
-import IndexQR from "@/pages/admin/qr/index.vue";
 
 definePageMeta({
   title: "Borrowable",
@@ -204,19 +267,6 @@ const modalPrintQR = ref(false);
 const selectedUnitItems = computed(() =>
   unitItemStore.unitItems.filter((item) => selectedItems.value.includes(item.id))
 );
-
-const closeModalPrintQR = () => {
-  modalPrintQR.value = false;
-};
-
-watch(modalPrintQR, async (newVal) => {
-  if (newVal) {
-    await nextTick();
-    setTimeout(() => {
-      window.print();
-    }, 300);
-  }
-});
 
 const alertError = ref(false);
 const alertSuccess = ref(false);

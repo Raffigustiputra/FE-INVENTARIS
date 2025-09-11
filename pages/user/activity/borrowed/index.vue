@@ -931,6 +931,7 @@
 import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { useLoanStore } from "~/stores/loan";
 import { useAuthStore } from "~/stores/auth";
+import { useRoute } from "vue-router";
 import {
   IconsNavbarIconsAddItem,
   IconsNavbarIconsFile,
@@ -1155,6 +1156,14 @@ const openModal = (modalType) => {
 };
 
 const closeModal = () => {
+  const router = useRouter();
+  const route = useRoute();
+  
+  // if (Object.keys(route.query).length > 0) {
+  //   router.push({ path: route.path, query: {} });
+  // }
+  router.replace({ path: '/user/activity/borrowed' });
+  
   currentModal.value = null;
   isPreviewData.value = false;
   resetFormData();
@@ -2152,7 +2161,22 @@ watch([alertError, alertSuccess, alertWarning], ([error, success, warning]) => {
 onMounted(() => {
   getUnitLoan();
   getConsumableItemData();
-  // getListUnitItem();
+  
+  // Handle auto-opening modal from dashboard
+  const route = useRoute();
+  
+  if (route.query.autoOpen === 'true') {
+    selectedItemType.value = route.query.itemType || "";
+    selectedBorrowerType.value = route.query.borrowerType || "";
+    
+    if (selectedItemType.value && selectedBorrowerType.value) {
+      setTimeout(() => {
+        const nextModal = `${selectedItemType.value}-${selectedBorrowerType.value}`;
+        currentModal.value = nextModal;
+        resetLoanData();
+      }, 300);
+    }
+  }
 });
 
 // ===== PAGE METADATA =====

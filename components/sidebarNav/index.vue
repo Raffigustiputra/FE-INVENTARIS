@@ -122,30 +122,64 @@
               :key="menu.path"
             >
               <div>
+                <Tooltip v-if="sidebarStore.isCollapsed" :text="menu.name" position="right">
+                  <NavLink
+                    v-if="
+                      $route &&
+                      menu &&
+                      $route.path.split('/')[1] === menu.path.split('/')[1]
+                    "
+                    :is-collapsed="sidebarStore.isCollapsed"
+                    :childMenu="menu.childMenu"
+                    :navigationItem="menu.name"
+                    :navigateTo="menu.childMenu ? '' : menu.path"
+                    :isOpen="expandedMenu === menu.path"
+                    @click="
+                      menu.childMenu
+                        ? toggleMenu(menu.path)
+                        : $router.push(menu.path)
+                    "
+                  >
+                    <template #default="{ isActive }">
+                      <div
+                        @click="
+                          menu.childMenu
+                            ? toggleMenu(menu.path)
+                            : $router.push(menu.path)
+                        "
+                        class="flex justify-center items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
+                      >
+                        <div
+                          class="flex justify-center items-center gap-2"
+                        >
+                          <component
+                            :is="menu.icon"
+                            :class="[
+                              'size-4 transition-colors duration-300',
+                              isActive && !menu.childMenu
+                                ? 'text-white fill-white'
+                                : 'fill-[#727272]',
+                            ]"
+                          />
+                        </div>
+                      </div>
+                    </template>
+                  </NavLink>
+                </Tooltip>
+
+                <!-- Else -->
                 <NavLink
-                  v-if="
-                    $route &&
-                    menu &&
-                    $route.path.split('/')[1] === menu.path.split('/')[1]
-                  "
+                  v-else
                   :is-collapsed="sidebarStore.isCollapsed"
                   :childMenu="menu.childMenu"
                   :navigationItem="menu.name"
                   :navigateTo="menu.childMenu ? '' : menu.path"
                   :isOpen="expandedMenu === menu.path"
-                  @click="
-                    menu.childMenu
-                      ? toggleMenu(menu.path)
-                      : $router.push(menu.path)
-                  "
+                  @click="menu.childMenu ? toggleMenu(menu.path) : $router.push(menu.path)"
                 >
                   <template #default="{ isActive }">
                     <div
-                      @click="
-                        menu.childMenu
-                          ? toggleMenu(menu.path)
-                          : $router.push(menu.path)
-                      "
+                      @click="menu.childMenu ? toggleMenu(menu.path) : $router.push(menu.path)"
                       class="flex justify-between items-center py-2 cursor-pointer rounded-md transition-colors duration-300"
                     >
                       <div class="flex items-center gap-2">
@@ -153,7 +187,7 @@
                           :is="menu.icon"
                           :class="[
                             'size-4 transition-colors duration-300',
-                            isActive
+                            isActive && !menu.childMenu
                               ? 'text-white fill-white'
                               : 'fill-[#727272]',
                           ]"
@@ -165,7 +199,7 @@
               </div>
 
               <!-- CHILD MENU -->
-              <transition name="fade">
+              <!-- <transition name="fade"> -->
                 <div
                   v-if="expandedMenu === menu.path && !sidebarStore.isCollapsed"
                   class="pl-8 mt-1 space-y-1"
@@ -192,7 +226,7 @@
                     </template>
                   </NavLink>
                 </div>
-              </transition>
+              <!-- </transition> -->
             </template>
           </div>
         </div>
@@ -228,14 +262,21 @@
       <!-- LOGOUT -->
       <div>
         <div class="border-b border-black/10 mx-4"></div>
-        <Tooltip text="Logout" position="top">
-          <div class="px-2 mb-4 mt-4" :class="{'flex justify-center': sidebarStore.isCollapsed}">
-            <IconsLogoutIcon
-              class="size-6 fill-[#8e8e8e] hover:fill-[#5c5c5c] cursor-pointer transition-colors duration-300 mx-6 mb-4 mt-4"
-              @click="submitLogout"
-            />
+        <div class="px-2 mb-4 mt-4 w-fit" :class="{'flex justify-center w-full': sidebarStore.isCollapsed}">
+            <Tooltip v-if="!sidebarStore.isCollapsed" text="Logout" position="top">
+              <IconsLogoutIcon
+                class="size-6 fill-[#8e8e8e] hover:fill-[#5c5c5c] cursor-pointer transition-colors duration-300 mx-6 mb-4 mt-4"
+                @click="submitLogout"
+              />
+            </Tooltip>
+            
+            <Tooltip v-else text="Logout" position="right">
+              <IconsLogoutIcon
+                class="size-6 fill-[#8e8e8e] hover:fill-[#5c5c5c] cursor-pointer transition-colors duration-300 mx-6 mb-4 mt-4"
+                @click="submitLogout"
+              />
+            </Tooltip>
           </div>
-        </Tooltip>
       </div>
   </div>
 </template>
@@ -265,8 +306,6 @@ const url = useRuntimeConfig().public.authUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
 
-const loading = ref(false);
-
 const createModal = ref(false);
 const openCreateModal = () => {
   createModal.value = true;
@@ -278,7 +317,7 @@ const closeCreateModal = () => {
   majorStore.input.color = "";
 };
 
-const emit = defineEmits(["logout"]);
+const emit = defineEmits(['logout']);
 
 const props = defineProps({
   countKaprog: Number,
@@ -364,11 +403,6 @@ const menuByRole = {
       name: "Inventory",
       path: "/admin/inventory",
       icon: IconsInventorySA,
-    },
-    {
-      name: "QR",
-      path: "/admin/qr",
-      icon: IconsDashboard,
     },
     {
       name: "Manage Data",

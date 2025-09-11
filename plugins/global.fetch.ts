@@ -18,9 +18,7 @@ export default defineNuxtPlugin(() => {
       return response;
     } catch (error: any) {
       // Check for TOKEN_EXPIRED in error responses
-      if (error?.data?.error === 'TOKEN_EXPIRED' || 
-          error?.response?.data?.error === 'TOKEN_EXPIRED' ||
-          error?.statusCode === 401) {
+      if (error?.statusCode === 401) {
         await authStore.logout();
         await router.push('/');
         alert("Session expired. Please log in again.");

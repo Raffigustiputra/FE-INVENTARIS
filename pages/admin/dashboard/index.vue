@@ -1,8 +1,8 @@
 <template>
-  <Navbar />
+  <Navbar class="border-[#D9D9D9] border-b mt-[5px]" />
     <div>
         <!-- welome and time secion -->
-        <div class="flex justify-between items-center border-[#D9D9D9] border-t mt-2 py-4">
+        <div class="flex justify-between items-center mt-2 py-4">
             <div>
                 <h1 class="text-xl font-semibold">Welcome Back, {{ authStore.getName }}</h1>
                 <p class="text-[#B0B0B0] text-sm font-light">

@@ -1,9 +1,9 @@
 <template>
-    <div class="fixed bottom-3 right-0 z-10 w-2/12">
+    <div class="fixed bottom-3 right-0 z-10 w-[20%]">
         <div class="w-full flex justify-end items-start">
             <div
                 @click="$emit('hide')"
-                class="cursor-pointer bg-[#FFF7EA] border-[#EFDECA] mt-2 mr-2 w-full h-auto flex justify-start items-center p-3 gap-4 rounded-md shadow-md border">
+                class="cursor-pointer bg-[#FFF7EA] border-[#EFDECA] mt-2 mr-2 w-full h-auto flex justify-start items-center p-4 gap-4 rounded-md shadow-md border">
                 <div>
                     <svg
                         class="size-8"
