@@ -892,7 +892,7 @@ const getUnitItemsInventory = async () => {
   pending.value = true;
   try {
     const response = await $fetch(
-      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}&sort_date=${sortByDate.value}&sort_condition=${sortByCondition.value}`,
+      `${url}/unit-items?search=${unitItemStore.filter.search}&page=${currentPage.value}&sort_date=${sortByDate.value}&sort_condition=${sortByCondition.value}&sub_item_id=${route.params.id}`,
       {
         method: "GET",
         headers: {
@@ -904,19 +904,13 @@ const getUnitItemsInventory = async () => {
 
     if (response.status === 200) {
       const id = route.params.id;
-      unitItemStore.unitItems = response.data.filter(
-        (item) => item.sub_item && String(item.sub_item.id) === id
-      );
+      unitItemStore.unitItems = response.data;
 
-      // Set pagination data
       if (response.meta) {
         lastPage.value = response.meta.last_page;
-        // Filter total count for the current sub_item.merk
         const currentMerk = unitItemStore.unitItems[0]?.sub_item.merk;
         if (currentMerk) {
-          allItemCount.value = response.data.filter(
-            (item) => item.sub_item?.merk === currentMerk
-          ).length;
+          allItemCount.value = response.meta.total;
         } else {
           allItemCount.value = 0;
         }

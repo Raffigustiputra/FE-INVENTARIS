@@ -1183,10 +1183,10 @@ const getModalTitle = () => {
     selection: "Form Borrowing",
     "borrowable-student": isPreviewData.value
       ? "Detail Borrowing"
-      : "Form Borrowing",
+      : "Borrowable Form - Student",
     "borrowable-teacher": isPreviewData.value
       ? "Detail Borrowing"
-      : "Form Borrowing",
+      : "Borrowable Form - Teacher",
     "consumable-student": isPreviewData.value
       ? "Detail Borrowing"
       : "Consumable Form - Student",
@@ -2162,7 +2162,6 @@ onMounted(() => {
   getUnitLoan();
   getConsumableItemData();
   
-  // Handle auto-opening modal from dashboard
   const route = useRoute();
   
   if (route.query.autoOpen === 'true') {
@@ -2171,6 +2170,7 @@ onMounted(() => {
     
     if (selectedItemType.value && selectedBorrowerType.value) {
       setTimeout(() => {
+        getListUnitItem();
         const nextModal = `${selectedItemType.value}-${selectedBorrowerType.value}`;
         currentModal.value = nextModal;
         resetLoanData();

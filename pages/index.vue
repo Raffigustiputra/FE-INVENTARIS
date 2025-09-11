@@ -74,19 +74,13 @@ const login = async () => {
       name: response.data.name,
       usid: response.data.usid,
       username: response.data.username,
-      major_id: response.data.major_id, // Store the complete major object
-      expires_at: response.expires_at, // Store the expiration time
+      major_id: response.data.major_id,
+      expires_at: response.expires_at,
     });
 
-    if (response.data.role === "superadmin") {
-      router.push("/admin/dashboard");
-    } else if (response.data.role === "admin") {
-      router.push("/kaprog/dashboard");
-    } else if (response.data.role === "user") {
-      router.push("/user/dashboard");
-    } else {
-      showAlert("error", "Unknown role");
-    }
+    // Immediate redirect after setting auth data
+    redirectToDashboard(response.data.role);
+    
   } catch (err) {
     console.error("Login gagal:", err);
     if (err.status === 429) {
@@ -99,28 +93,23 @@ const login = async () => {
   }
 };
 
-onMounted(() => {
-  if (authStore.token && authStore.role) {
-    if (authStore.role === "superadmin") {
-      router.push("/admin/dashboard");
-    } else if (authStore.role === "admin") {
-      router.push("/kaprog/dashboard");
-    } else if (authStore.role === "user") {
-      router.push("/user/dashboard");
-    }
-    return;
+const redirectToDashboard = (role) => {
+  switch (role) {
+    case 'superadmin':
+      router.push('/admin/dashboard');
+      break;
+    case 'admin':
+      router.push('/kaprog/dashboard');
+      break;
+    case 'user':
+      router.push('/user/dashboard');
+      break;
   }
+};
 
-  const isValid = authStore.validateTokenAndFetchUser();
-  
-  if (isValid) {
-    if (authStore.role === "superadmin") {
-      router.push("/admin/dashboard");
-    } else if (authStore.role === "admin") {
-      router.push("/kaprog/dashboard");
-    } else if (authStore.role === "user") {
-      router.push("/user/dashboard");
-    }
+onMounted(async () => {
+  if (authStore.isAuth && authStore.role) {
+    redirectToDashboard(authStore.role);
   }
 });
 
@@ -142,6 +131,30 @@ definePageMeta({
       v-if="alertSuccess"
       :title="alertMessage"
       @hide="alertSuccess = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertError
+      class="z-50"
+      v-if="$globalAlerts.showError"
+      :title="$globalAlerts.message"
+      @hide="$globalAlerts.showError = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertWarning
+      class="z-50"
+      v-if="$globalAlerts.showWarning"
+      :title="$globalAlerts.message"
+      @hide="$globalAlerts.showWarning = false"
+    />
+  </transition>
+  <transition name="alert">
+    <AlertSuccess
+      class="z-50"
+      v-if="$globalAlerts.showSuccess"
+      :title="$globalAlerts.message"
+      @hide="$globalAlerts.showSuccess = false"
     />
   </transition>
 
@@ -290,7 +303,9 @@ definePageMeta({
       <p
         class="text-[10px] sm:text-xs font-semibold mt-6 sm:mt-10 text-center sm:text-left"
       >
-        © PPLG XII-V 2025. All Rights Reserved
+        <a href="https://www.instagram.com/fivolutionn__/" target="_blank" class="underline hover:text-blue-900">
+          © PPLG XII-V 2025.</a> All Rights Reserved
+        
       </p>
     </div>
   </div>

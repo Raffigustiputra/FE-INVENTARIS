@@ -306,7 +306,7 @@
                 <div
                 v-else
                 class="mt-2 mr-2">
-                    <h1 class="font-semibold  text-md">Lastest Activity</h1>
+                    <h1 class="font-semibold  text-md">Latest Activity</h1>
 
                     <TableSkeleton v-if="pending" class="mt-6" :rows="4" :columns="7" />
                     <div v-else class="mt-6">

@@ -1,47 +1,55 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const authStore = useAuthStore();
   
-  // Skip validation on server-side or if already on login page
-  if (process.server || to.path === "/") {
+  // Skip pada server-side
+  if (process.server) {
     return;
   }
 
-  // If we have a token but haven't validated it yet, validate it
-  if (authStore.token && !authStore.isAuth) {
-    const isValid = await authStore.validateTokenAndFetchUser();
-    
-    if (!isValid) {
-      return navigateTo("/");
-    }
+  // Initialize auth jika belum
+  if (!authStore.isInitialized) {
+    await authStore.initializeAuth();
   }
 
-  // If user is authenticated and trying to access login page
+  // Auto redirect jika sudah login dan akses login page
   if (authStore.isAuth && to.path === "/") {
     const role = authStore.role;
     let dashboard = '/';
-    if (role === 'superadmin') dashboard = '/admin/dashboard';
-    else if (role === 'admin') dashboard = '/kaprog/dashboard';
-    else if (role === 'user') dashboard = '/user/dashboard';
-    return navigateTo(dashboard);
-  }
-
-  // If not authenticated and trying to access protected routes
-  if (!authStore.getToken) {
-    if (to.path !== "/") {
-      return navigateTo("/");
+    
+    switch (role) {
+      case 'superadmin':
+        dashboard = '/admin/dashboard';
+        break;
+      case 'admin':
+        dashboard = '/kaprog/dashboard';
+        break;
+      case 'user':
+        dashboard = '/user/dashboard';
+        break;
+    }
+    
+    if (dashboard !== '/') {
+      return navigateTo(dashboard);
     }
   }
 
+  // Protect routes jika belum login
+  if (!authStore.isAuth && to.path !== "/") {
+    return navigateTo("/");
+  }
+
   // Role-based access control
-  if (to.path.startsWith("/admin") && authStore.role !== "superadmin") {
-    return navigateTo("/");
-  }
+  if (authStore.isAuth) {
+    if (to.path.startsWith("/admin") && authStore.role !== "superadmin") {
+      return navigateTo("/");
+    }
 
-  if (to.path.startsWith("/kaprog") && authStore.role !== "admin") {
-    return navigateTo("/");
-  }
+    if (to.path.startsWith("/kaprog") && authStore.role !== "admin") {
+      return navigateTo("/");
+    }
 
-  if (to.path.startsWith("/user") && authStore.role !== "user") {
-    return navigateTo("/");
+    if (to.path.startsWith("/user") && authStore.role !== "user") {
+      return navigateTo("/");
+    }
   }
 });
