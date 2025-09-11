@@ -54,6 +54,7 @@
           :isSubmitting="isSubmitting"
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
+          labelButton="Select"
         >
         <div class="max-h-96 overflow-y">
 

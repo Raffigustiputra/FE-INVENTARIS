@@ -1,8 +1,8 @@
 <template>
-  <Navbar />
+  <Navbar class="border-[#D9D9D9] border-b pb-[5px]"/>
   <div>
     <!-- welome and time secion -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center mt-2 py-4">
       <div>
         <h1 class="text-xl font-semibold">
           Welcome Back, {{ authStore.getName }}
@@ -41,7 +41,7 @@
             v-else
             class="flex justify-between pr-20 pl-2 items-start w-full"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -68,7 +68,7 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 p-4 w-full border-[#D9D9D9] border-r">
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -95,7 +95,7 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 p-4 w-full">
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -289,6 +289,14 @@
           </div>
           <div>
             <SkeletonPieChartSkeleton v-if="loadingDonut" />
+            <div v-else-if="isDonutChartEmpty" class="flex items-center justify-center h-64 text-gray-500">
+              <div class="text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <p class="mt-2 text-sm">No borrowing data available</p>
+              </div>
+            </div>
             <apexchart
               v-else
               type="donut"
@@ -665,13 +673,13 @@ const chartOptions = {
   },
 };
 
-const donutSeries = ref([]);
+const donutSeries = ref([1]); // Initialize with 1 to show empty chart placeholder
 const donutOptions = ref({
   chart: {
     type: "donut",
     toolbar: { show: false },
   },
-  labels: [], // bakal diisi dari API
+  labels: ['Loading...'], // Initial label
   colors: ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#3B82F6"],
   legend: {
     position: "bottom",
@@ -799,13 +807,41 @@ const getMostBorrowed = async () => {
       loading.value = false;
       adminDashboardStore.mostBorrowed = response.data;
 
-      // update chart data langsung
-      donutSeries.value = response.data.map((item) => item.total_borrowed);
-      donutOptions.value.labels = response.data.map((item) => item.name);
+      console.log('Most borrowed data:', response.data); // Debug log
+
+      // Pastikan data ada dan valid
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        // Filter data yang memiliki total_borrowed > 0
+        const validData = response.data.filter(item => item.total_borrowed > 0);
+
+        if (validData.length > 0) {
+          // update chart data
+          donutSeries.value = validData.map((item) => item.total_borrowed);
+          donutOptions.value.labels = validData.map((item) => item.name || 'Unknown');
+
+          console.log('Donut series:', donutSeries.value); // Debug log
+          console.log('Donut labels:', donutOptions.value.labels); // Debug log
+        } else {
+          // Semua data memiliki total_borrowed = 0
+          console.warn('All borrowing data is zero');
+          donutSeries.value = [1]; // Minimal 1 untuk menampilkan chart kosong
+          donutOptions.value.labels = ['No Borrowing Activity'];
+        }
+      } else {
+        // Fallback untuk data kosong
+        console.warn('No data received for most borrowed chart');
+        donutSeries.value = [1]; // Minimal 1 untuk menampilkan chart kosong
+        donutOptions.value.labels = ['No Data'];
+      }
     }
   } catch (err) {
     loadingDonut.value = false;
+    loading.value = false;
     console.error("Error fetching most borrowed:", err);
+
+    // Fallback untuk error
+    donutSeries.value = [1];
+    donutOptions.value.labels = ['Error Loading Data'];
   }
 };
 
@@ -833,6 +869,17 @@ const formattedDate = new Intl.DateTimeFormat("en-US", options).format(now);
 
 const parts = formattedDate.replace(",", "").split(" ");
 // parts = ['Thu', 'July', '31', '2025', '07:30', 'AM']
+
+// Computed property untuk mendeteksi apakah donut chart kosong
+const isDonutChartEmpty = computed(() => {
+  return !donutSeries.value ||
+         donutSeries.value.length === 0 ||
+         !donutOptions.value.labels ||
+         donutOptions.value.labels.length === 0 ||
+         (donutOptions.value.labels.includes('No Data') && !donutOptions.value.labels.includes('Loading...')) ||
+         (donutOptions.value.labels.includes('No Borrowing Activity') && !donutOptions.value.labels.includes('Loading...')) ||
+         (donutOptions.value.labels.includes('Error Loading Data') && !donutOptions.value.labels.includes('Loading...'));
+});
 
 onMounted(() => {
   getMostBorrowed();

@@ -4,7 +4,6 @@
     height="16"
     viewBox="0 0 23 16"
     stroke="currentColor"
-    stroke-width="1"
     stroke-linecap="round"
     stroke-linejoin="round"
     xmlns="http://www.w3.org/2000/svg"

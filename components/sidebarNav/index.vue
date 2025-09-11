@@ -174,7 +174,7 @@
     <!-- SIDEBAR -->
     <div>
       <div
-        class="select-none flex items-center justify-between ml-5 mt-6 mb-4 mr-4"
+        :class="['select-none flex items-center justify-between ml-5 mt-6', sidebarStore.isCollapsed ? 'mb-3' : 'mb-4']"
       >
         <img
           v-if="!sidebarStore.isCollapsed"
