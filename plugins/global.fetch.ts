@@ -51,12 +51,21 @@ export default defineNuxtPlugin(() => {
       
       return response;
     } catch (error: any) {
-      // Check for TOKEN_EXPIRED in error responses
       if (error?.statusCode === 401) {
-        showAlert('error', 'Session expired. You will be redirected to login.');
-        await authStore.logout();
-        await router.push('/');
-        throw new Error('Session expired');
+        const isLogoutRequest = typeof request === 'string' 
+          ? request.includes('/logout') 
+          : request?.url?.includes('/logout');
+        
+        const isLoginRequest = typeof request === 'string' 
+          ? request.includes('/login') 
+          : request?.url?.includes('/login');
+        
+        if (!isLogoutRequest && !isLoginRequest) {
+          showAlert('error', 'Session expired. You will be redirected to login.');
+          await authStore.logout();
+          await router.push('/');
+          throw new Error('Session expired');
+        }
       }
       
       // Handle other error types
