@@ -157,7 +157,7 @@
                 <!-- Fallback kalau nggak ada icon -->
                 <img
                     v-else
-                    src="../../public/images/rpl.png"
+                    src="../../public/images/wikrama-logo.png"
                     alt="Default Logo"
                     class="w-[45px] rounded-full" />
                 <Transition name="fade-text">
