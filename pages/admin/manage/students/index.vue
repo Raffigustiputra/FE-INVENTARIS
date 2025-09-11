@@ -50,52 +50,49 @@
     </transition>
     <Transition name="fade">
       <div
-        v-if="modalImport"
+        v-if="modalCreate"
         class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
       >
         <Modal
-          @btnSubmit="submitImportStudent"
-          @btnClose="closeModalImport"
-          title="Import Student"
+          title="Create Student"
+          @btnSubmit="submitCreateStudent"
+          @btnClose="closeModal"
         >
-          <div
-            class="w-full border-2 border-gray-300 rounded-lg p-8 min-h-[180px] flex flex-col items-center justify-center text-gray-500"
-          >
-            <IconsUpload class="w-10 h-10 mb-3 text-gray-400" />
-
-            <!-- Kalau belum ada file -->
-            <template v-if="!fileImport">
-              <p>
-                Drag & Drop or
-                <label class="text-blue-500 cursor-pointer">
-                  Choose File
-                  <input
-                    type="file"
-                    accept=".csv,.xlsx"
-                    class="hidden"
-                    @change="handleFileUpload"
-                  />
-                </label>
-                to upload
-              </p>
-              <p class="text-xs mt-1">CSV or XLSX</p>
-            </template>
-
-            <!-- Kalau sudah ada file -->
-            <template v-else>
-              <p class="mt-3 text-sm text-gray-700 font-medium">
-                📄 {{ fileImport.name }}
-              </p>
-              <label class="mt-2 text-blue-500 cursor-pointer text-sm">
-                Change File
-                <input
-                  type="file"
-                  accept=".csv,.xlsx"
-                  class="hidden"
-                  @change="handleFileUpload"
-                />
-              </label>
-            </template>
+          <div class="w-full flex items-center gap-2">
+            <InputText
+              label="Name"
+              placeholder="Enter Name Here.."
+              v-model="studentStore.input.name"
+              class="w-1/2"
+            />
+            <InputNumber
+              label="NIS"
+              placeholder="Enter NIS Here.."
+              v-model="studentStore.input.nis"
+              class="w-1/2"
+            />
+          </div>
+          <div class="w-full flex items-center gap-2">
+            <InputText
+              label="Rayon"
+              placeholder="Enter Rayon Here.."
+              v-model="studentStore.input.rayon"
+              class="w-1/2"
+            />
+            <InputSelect
+              label="Major"
+              placeholder="Select Major"
+              v-model="studentStore.input.major_id"
+              class="w-1/2"
+            >
+              <option
+                v-for="i in majorStore.dataMajor"
+                :key="i.id"
+                :value="i.id"
+              >
+                {{ i.name }}
+              </option>
+            </InputSelect>
           </div>
         </Modal>
       </div>
@@ -189,7 +186,7 @@
           v-model="studentStore.filter.search"
           @input="handleSearch"
           class="outline-none w-full"
-          placeholder="Search Anything"
+          placeholder="Search Anything..."
         />
       </div>
     </div>
@@ -291,6 +288,10 @@ import {
 } from "#components";
 import { useAuthStore } from "@/stores/auth";
 import Pagination from '@/components/pagination/index.vue'
+import IconsUpload from "@/components/icons/upload.vue";
+import AlertError from "@/components/alert/Error.vue";
+import AlertSuccess from "@/components/alert/Success.vue";
+import AlertWarning from "@/components/alert/Warning.vue";
 
 definePageMeta({
   layout: "default",
@@ -585,26 +586,34 @@ const submitCreateStudent = async () => {
     showAlert("warning", "Major cannot be empty");
     return;
   }
-  const response = await $fetch(`${url}/student`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authStore.token}`,
-    },
-    body: {
-      name: studentStore.input.name,
-      nis: studentStore.input.nis,
-      rayon: studentStore.input.rayon,
-      major_id: studentStore.input.major_id,
-    },
-  });
 
-  if (response.status === 200 || response.status === 201) {
-    showAlert("success", "Student Successfully Created");
-    closeModal();
-    getStudent();
-  } else {
-    showAlert("error", "Something went wrong while creating student");
+  try {
+    const response = await $fetch(`${url}/student`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: {
+        name: studentStore.input.name,
+        nis: studentStore.input.nis,
+        rayon: studentStore.input.rayon,
+        major_id: studentStore.input.major_id,
+      },
+    });
+
+    console.log('Create student response:', response); // Debug log
+
+    if (response.status === 200 || response.status === 201) {
+      showAlert("success", "Student Successfully Created");
+      closeModal();
+      getStudent();
+    } else {
+      showAlert("error", "Something went wrong while creating student");
+    }
+  } catch (error) {
+    console.error('Error creating student:', error);
+    showAlert("error", "Failed to create student. Please try again.");
   }
 };
 
@@ -683,12 +692,18 @@ function darkenColor(hex, percent) {
 
 onMounted(() => {
   getStudent();
+  getMajor();
 });
 
 const breadcrumbs = [
   {
     label: "Manage Accounts",
     icon: IconsNavbarIconsManageUser,
+  },
+  {
+    label: "Add Student",
+    icon: IconsNavbarIconsAddUser,
+    onClick: () => { modalCreate.value = true; },
   },
   {
     label: "Import Student",

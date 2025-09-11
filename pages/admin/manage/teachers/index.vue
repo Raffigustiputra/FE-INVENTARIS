@@ -108,7 +108,7 @@
           v-model="teacherStore.filter.search"
           @input="handleSearch"
           class="outline-none w-full"
-          placeholder="Search anything..."
+          placeholder="Search Anything..."
         />
       </div>
     </div>

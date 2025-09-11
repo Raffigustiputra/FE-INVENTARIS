@@ -10,7 +10,7 @@
         <span v-if="pending">...</span>
         <span v-else>{{ subItemStore.subItems[0]?.item?.name }}</span>
       </h1>
-      <SearchBox v-model="subItemStore.filter.search" @input="handleSearch" />
+      <SearchBox text="Search Anything..." v-model="subItemStore.filter.search" @input="handleSearch" />
     </div>
 
      <TableSkeleton v-if="pending"

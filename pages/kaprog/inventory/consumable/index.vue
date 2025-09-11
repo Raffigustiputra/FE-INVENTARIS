@@ -60,6 +60,7 @@
         Consumable Items
       </h1>
       <SearchBox
+        text="Search Anything..."
         v-model="consumableItemStore.filter.search"
         @input="handleSearch"
       />
@@ -264,7 +265,7 @@ const breadcrumbs = [
     click: () => exportSelectedData(),
   },
   {
-    label: "Add Item Consumable",
+    label: "Add Item",
     icon: IconsNavbarIconsAddItem,
   },
   {
@@ -315,13 +316,13 @@ const alertMessage = ref("");
 
 function toggleAll() {
   if (selectAll.value) {
+    // Jika header checkbox dicentang, pilih semua item
+    selectedItems.value = consumableItemStore.consumables.map((item) => item.id);
     exportData.value = "all";
-    selectedItems.value = consumableItemStore.consumables.map(
-      (item) => item.id
-    );
   } else {
-    exportData.value = "selected";
+    // Jika header checkbox tidak dicentang, kosongkan semua item
     selectedItems.value = [];
+    exportData.value = "selected";
   }
 }
 
@@ -381,6 +382,8 @@ const paginationItems = computed(() => {
 const nextPage = async () => {
   if (currentPage.value < lastPage.value) {
     currentPage.value++;
+    selectedItems.value = []; // Reset selected items when changing page
+    selectAll.value = false; // Reset select all state
     pending.value = true;
     console.log(currentPage.value);
     nextTick(() => {
@@ -396,6 +399,8 @@ const nextPage = async () => {
 const prevPage = async () => {
   if (currentPage.value > 1) {
     currentPage.value--;
+    selectedItems.value = []; // Reset selected items when changing page
+    selectAll.value = false; // Reset select all state
     pending.value = true;
     console.log(currentPage.value);
     nextTick(() => {
@@ -411,6 +416,8 @@ const prevPage = async () => {
 const changePage = async (page) => {
   if (page !== "...") {
     currentPage.value = page;
+    selectedItems.value = []; // Reset selected items when changing page
+    selectAll.value = false; // Reset select all state
     pending.value = true;
     console.log(currentPage.value);
   }
@@ -433,6 +440,8 @@ const handleSearch = () => {
 
   timeoutFiltering = setTimeout(() => {
     currentPage.value = 1; // Reset to first page when searching
+    selectedItems.value = []; // Reset selected items when searching
+    selectAll.value = false; // Reset select all state
     getConsumableItems();
   }, 500);
 };
@@ -442,6 +451,19 @@ watch(selectedItems, (newVal) => {
     newVal.length === consumableItemStore.consumables.length &&
     consumableItemStore.consumables.length > 0;
 });
+
+// Watcher untuk sinkronisasi selectAll ketika data consumables berubah
+watch(() => consumableItemStore.consumables, (newConsumables) => {
+  // Jika tidak ada item yang dipilih, pastikan selectAll false
+  if (selectedItems.value.length === 0) {
+    selectAll.value = false;
+  } else {
+    // Jika ada item yang dipilih, periksa apakah semua item dipilih
+    selectAll.value =
+      selectedItems.value.length === newConsumables.length &&
+      newConsumables.length > 0;
+  }
+}, { immediate: true });
 
 const showAlert = (type, message) => {
   alertMessage.value = message;
@@ -512,6 +534,10 @@ const handleSort = (type) => {
     sortByQuantity.value = sortByQuantity.value === "asc" ? "desc" : "asc";
     sortByType.value = "";
   }
+
+  currentPage.value = 1; // Reset to first page when sorting
+  selectedItems.value = []; // Reset selected items when sorting
+  selectAll.value = false; // Reset select all state
   getConsumableItems();
 };
 
