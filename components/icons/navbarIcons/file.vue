@@ -3,8 +3,7 @@
     width="20"
     height="18"
     viewBox="0 0 20 18"
-    stroke="currentColor"
-    stroke-width="1"
+    
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
