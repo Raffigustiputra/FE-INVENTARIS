@@ -718,12 +718,6 @@ const options = {
   hour12: true, // AM/PM
 };
 
-const formattedDate = new Intl.DateTimeFormat("en-US", options).format(now);
-// contoh hasil asli: "Thu, July 31, 2025, 07:30 AM"
-
-const parts = formattedDate.replace(",", "").split(" ");
-// parts = ['Thu', 'July', '31', '2025', '07:30', 'AM']
-
 // Computed property untuk mendeteksi apakah donut chart kosong
 const isDonutChartEmpty = computed(() => {
   return !donutSeries.value ||
@@ -746,7 +740,21 @@ onMounted(() => {
   });
 });
 
-const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} - ${parts[4]} ${parts[5]}`;
+const formattedDate = new Intl.DateTimeFormat('en-US', options).format(now);
+// contoh hasil: "Thu, July 31, 2025, 07:30 AM"
+
+// ubah koma jadi spasi, pecah string
+const parts = formattedDate.replace(/,/g, '').split(' ');
+
+// sekarang parts: ['Thu', 'July', '31', '2025', '07:30', 'AM']
+
+// langsung ambil AM/PM pakai index terakhir:
+const ampm = parts[parts.length - 1];
+
+console.log(ampm); // "AM" atau "PM"
+
+// kalau mau gabung ke string kamu:
+const today = `${parts[0]}, ${parts[2]} ${parts[1]} ${parts[3]} -  ${parts[5]} ${ampm}`;
 </script>
 
 <style scoped>
