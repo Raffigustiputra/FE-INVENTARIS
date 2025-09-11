@@ -1,4 +1,21 @@
 <style scoped>
+.alert-enter-from,
+.alert-leave-to {
+    opacity: 0;
+    transform: translateX(50%);
+}
+
+.alert-enter-to,
+.alert-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.alert-enter-active,
+.alert-leave-active {
+    transition: all 350ms ease;
+}
+
 .fade-enter-active,
 .fade-leave-active {
     transition: all 0.3s ease;
@@ -22,6 +39,24 @@
 </style>
 
 <template>
+    <transition name="alert">
+        <AlertError
+            class="z-50"
+            v-if="alertError"
+            :title="alertMessage"
+            @hide="alertError = false" />
+    </transition>
+    <transition name="alert">
+        <AlertSuccess
+            class="z-50"
+            v-if="alertSuccess"
+            :title="alertMessage"
+            @hide="alertSuccess = false" />
+    </transition>
+    <transition name="alert">
+        <AlertWarning class="z-50" v-if="alertWarning" :title="alertMessage" />
+    </transition>
+
     <Transition name="fade">
         <div
             v-if="createModal"
@@ -319,6 +354,37 @@ const url = useRuntimeConfig().public.authUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
 
+const alertError = ref(false);
+const alertSuccess = ref(false);
+const alertWarning = ref(false);
+const alertMessage = ref('');
+
+const showAlert = (type, message) => {
+    alertMessage.value = message;
+
+    if (type === 'error') {
+        alertError.value = true;
+        setTimeout(() => {
+            alertError.value = false;
+            alertMessage.value = '';
+        }, 3000);
+    } else if (type === 'warning') {
+        alertWarning.value = true;
+        setTimeout(() => {
+            alertWarning.value = false;
+            alertMessage.value = '';
+        }, 2500);
+    } else if (type === 'success') {
+        alertSuccess.value = true;
+        setTimeout(() => {
+            alertSuccess.value = false;
+            alertMessage.value = '';
+        }, 2500);
+    } else {
+        alert(message);
+    }
+};
+
 const createModal = ref(false);
 const openCreateModal = () => {
     createModal.value = true;
@@ -357,6 +423,18 @@ const handleFileUpload = (event) => {
 };
 
 const submitCreateMajor = async () => {
+    if (majorStore.input.name === '') {
+        showAlert('warning', 'Major name cannot be empty!');
+        return;
+    }
+    if (majorStore.input.icon === '') {
+        showAlert('warning', 'Major icon cannot be empty!');
+        return;
+    }
+    if (majorStore.input.color === '') {
+        showAlert('warning', 'Major color cannot be empty!');
+        return;
+    }
     const response = await $fetch(`${url}/major`, {
         method: 'POST',
         headers: {
@@ -369,9 +447,12 @@ const submitCreateMajor = async () => {
             color: majorStore.input.color,
         },
     });
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
+        showAlert('success', 'Major created successfully!');
         closeCreateModal();
         GetMajor();
+    } else {
+        showAlert('error', 'Major failed to create!');
     }
     majorStore.$patch({
         name: '',
