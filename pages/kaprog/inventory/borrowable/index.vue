@@ -82,12 +82,12 @@
         <tr
           v-for="item in mainInventoryStore.inventory"
           :key="item.id"
-          class="hover:bg-gray-50"
+          class="hover:bg-gray-100 transition-colors duration-200"
         >
           <td class="px-4 py-3">
             <input type="checkbox" v-model="selectedItems" :value="item.id" />
           </td>
-          <td class="py-3 text-left px-10 cursor-pointer" @click="viewItem(item.id)">{{ item.name }}</td>
+          <td class="px-10 py-4 text-left cursor-pointer" @click="viewItem(item.id)">{{ item.name }}</td>
         </tr>
       </tbody>
     </table>
