@@ -5,11 +5,6 @@
      devtools: { enabled: true },
      css: ["~/assets/css/main.css"],
 
-     devServer: {
-       host: "15.15.15.146",
-       port: 5173, // bisa diganti
-     },
-
      vite: {
        plugins: [tailwindcss()],
      },
