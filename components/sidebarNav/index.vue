@@ -143,10 +143,20 @@
                 class="select-none bg-[#EBEBEB] gap-2 rounded-lg py-2 px-4 flex items-center mx-4 mt-4 h-auto">
                 <img
                     v-if="$route.path.includes('/admin')"
-                    src="../../public/images/wikrama-logo.png"
+                    :src="
+                        authStore.userInfo
+                            ? storageUrl + '/' + authStore.userInfo.major.icon
+                            : '../../public/images/wikrama-logo.png'
+                    "
                     alt="Wikrama Logo"
-                    class="select-none w-[40px]" />
-                <img v-else src="../../public/images/rpl.png" alt="RPL Logo" class="w-[45px]" />
+                    class="select-none rounded-full w-[40px]" />
+                <img
+                    v-else
+                    :src="
+                        authStore.userInfo ? storageUrl + '/' + authStore.userInfo.major.icon : '../../public/images/rpl-logo.png'
+                    "
+                    alt="RPL Logo"
+                    class="w-[45px] rounded-full" />
                 <Transition name="fade-text">
                     <div v-if="!sidebarStore.isCollapsed" class="flex-col gap-1">
                         <h1 class="text-sm font-bold whitespace-nowrap">SMK Wikrama Bogor</h1>
@@ -351,6 +361,7 @@ import { useSidebarStore } from '~/stores/sidebar'; // Import the store
 const sidebarStore = useSidebarStore();
 const authStore = useAuthStore();
 const url = useRuntimeConfig().public.authUrl;
+const storageUrl = useRuntimeConfig().public.storageUrl;
 const router = useRouter();
 const majorStore = useMajorStore();
 
@@ -358,6 +369,12 @@ const alertError = ref(false);
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
 const alertMessage = ref('');
+
+const form = ref({
+    name: '',
+    icon: '',
+    color: '',
+});
 
 const showAlert = (type, message) => {
     alertMessage.value = message;
@@ -416,37 +433,60 @@ const GetMajor = async () => {
     }
 };
 
-const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    majorStore.input.icon = file.name; // hasilnya "gambar.png"
-};
-
-const submitCreateMajor = async () => {
-    if (majorStore.input.name === '') {
-        showAlert('warning', 'Major name cannot be empty!');
-        return;
-    }
-    if (majorStore.input.icon === '') {
-        showAlert('warning', 'Major icon cannot be empty!');
-        return;
-    }
-    if (majorStore.input.color === '') {
-        showAlert('warning', 'Major color cannot be empty!');
-        return;
-    }
-    const response = await $fetch(`${url}/major`, {
-        method: 'POST',
+const getUser = async () => {
+    const response = await $fetch(`${url}/user`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authStore.token}`,
-        },
-        body: {
-            name: majorStore.input.name,
-            icon: majorStore.input.icon,
-            color: majorStore.input.color,
+            'ngrok-skip-browser-warning': true,
         },
     });
+    if (response.status === 200) {
+        authStore.userInfo = response.data;
+        console.log(authStore.userInfo);
+    }
+};
+
+// const handleFileUpload = (event) => {
+//     const file = event.target.files[0];
+//     if (!file) return;
+//     majorStore.input.icon = file.name; // hasilnya "gambar.png"
+// };
+
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    majorStore.input.icon = file;
+};
+
+const submitCreateMajor = async () => {
+    if (!majorStore.input.name) {
+        showAlert('warning', 'Major name cannot be empty!');
+        return;
+    }
+    if (!majorStore.input.icon) {
+        showAlert('warning', 'Major icon cannot be empty!');
+        return;
+    }
+    if (!majorStore.input.color) {
+        showAlert('warning', 'Major color cannot be empty!');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('icon', majorStore.input.icon); // file
+    formData.append('name', majorStore.input.name);
+    formData.append('color', majorStore.input.color);
+
+    const response = await $fetch(`${url}/major`, {
+        method: 'POST',
+        headers: {
+            // ❌ jangan pakai Content-Type json
+            Authorization: `Bearer ${authStore.token}`,
+        },
+        body: formData, // kirim formData
+    });
+
     if (response.status === 200 || response.status === 201) {
         showAlert('success', 'Major created successfully!');
         closeCreateModal();
@@ -454,9 +494,8 @@ const submitCreateMajor = async () => {
     } else {
         showAlert('error', 'Major failed to create!');
     }
-    majorStore.$patch({
-        name: '',
-    });
+
+    majorStore.$patch({ name: '' });
 };
 
 const submitLogout = async () => {
@@ -595,6 +634,8 @@ const menuByRole = {
 };
 
 onMounted(() => {
+    getUser();
     GetMajor();
+    console.log(storageUrl + "/" + authStore.userInfo.major.icon);
 });
 </script>
