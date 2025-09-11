@@ -394,6 +394,7 @@ const loadingBarChart = ref(true);
 const loadingList = ref(true);
 const loadingDonut = ref(true);
 const pending = ref(false);
+const loadingLatestActivity = ref(true);
 
 const now = new Date();
 
@@ -466,7 +467,7 @@ const getMajorLoansChart = async () => {
 };
 
 const getLatestActivty = async () => {
-    pending.value = true;
+    loadingLatestActivity.value = true;
     loadingList.value = true;
     const response = await $fetch(`${url}/dashboard/superadmin/items-loans-history`, {
         method: 'GET',
