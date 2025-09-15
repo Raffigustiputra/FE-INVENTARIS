@@ -22,6 +22,13 @@
         </p>
       </div>
 
+      <div v-else-if="error.statusCode === 500" class="flex items-center flex-col">
+        <h2 class="text-2xl font-semibold text-gray-800">Internal Server Error</h2>
+        <p class="text-sm text-gray-400 font-medium">
+          Oops! The server ran into a problem. We're working on fixing it as soon as possible.
+        </p>
+      </div>
+
       <div
         v-else-if="error.statusCode === 403"
         class="flex items-center flex-col">

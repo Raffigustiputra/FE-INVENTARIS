@@ -5,6 +5,18 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
 
+  app: {
+    head: {
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: '/images/WV APP - Circle.png',
+        }
+      ]
+    }
+  },
+
   devServer: {
     host: "15.15.12.19",
     port: 5173, // bisa diganti

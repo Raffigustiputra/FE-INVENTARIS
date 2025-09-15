@@ -58,7 +58,7 @@
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-medium">Reuseable</p>
+                <p class="text-sm font-medium">Reusable</p>
                 <p class="text-xs">
                   {{
                     adminDashboardStore.cardsData
