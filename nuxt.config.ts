@@ -1,14 +1,12 @@
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
+  app: {
+    baseURL: '/inventory-ui/'
+  },
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-
- //  devServer: {
- //    host: "15.15.15.146",
- //    port: 5173, // bisa diganti
- //  },
 
   vite: {
     plugins: [tailwindcss()],

@@ -41,7 +41,9 @@
             v-else
             class="flex justify-between pr-20 pl-2 items-start w-full"
           >
-            <div class="flex items-center gap-3 border-[#D9D9D9] border-r w-full p-4">
+            <div
+              class="flex items-center gap-3 border-[#D9D9D9] border-r w-full p-4"
+            >
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -58,7 +60,7 @@
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-medium">Reuseable</p>
+                <p class="text-sm font-medium">Reusable</p>
                 <p class="text-xs">
                   {{
                     adminDashboardStore.cardsData
@@ -68,7 +70,9 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3 border-[#D9D9D9] border-r w-full p-4">
+            <div
+              class="flex items-center gap-3 border-[#D9D9D9] border-r w-full p-4"
+            >
               <div
                 class="bg-[#D9D9D9] flex items-center justify-center p-3 rounded-full"
               >
@@ -289,10 +293,23 @@
           </div>
           <div>
             <SkeletonPieChartSkeleton v-if="loadingDonut" />
-            <div v-else-if="isDonutChartEmpty" class="flex items-center justify-center h-64 text-gray-500">
+            <div
+              v-else-if="isDonutChartEmpty"
+              class="flex items-center justify-center h-64 text-gray-500"
+            >
               <div class="text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg
+                  class="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
                 <p class="mt-2 text-sm">No borrowing data available</p>
               </div>
@@ -525,7 +542,7 @@ const donutOptions = ref({
     type: "donut",
     toolbar: { show: false },
   },
-  labels: ['Loading...'], // Initial label
+  labels: ["Loading..."], // Initial label
   colors: ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#3B82F6"],
   legend: {
     position: "bottom",
@@ -645,12 +662,18 @@ const getMostBorrowed = async () => {
       loadingDonut.value = false;
       adminDashboardStore.mostBorrowed = response.data;
 
-      console.log('Most borrowed data:', response.data); // Debug log
+      console.log("Most borrowed data:", response.data); // Debug log
 
       // Pastikan data ada dan valid
-      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      if (
+        response.data &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
         // Filter data yang memiliki total_borrowed > 0
-        const validData = response.data.filter(item => item.total_borrowed > 0);
+        const validData = response.data.filter(
+          (item) => item.total_borrowed > 0
+        );
 
         if (validData.length > 0) {
           // update chart data dengan cara yang benar untuk reactivity
@@ -659,31 +682,31 @@ const getMostBorrowed = async () => {
           // Update seluruh donutOptions object untuk memastikan reactivity
           donutOptions.value = {
             ...donutOptions.value,
-            labels: validData.map((item) => item.name || 'Unknown')
+            labels: validData.map((item) => item.name || "Unknown"),
           };
 
-          console.log('Donut series:', donutSeries.value); // Debug log
-          console.log('Donut labels:', donutOptions.value.labels); // Debug log
+          console.log("Donut series:", donutSeries.value); // Debug log
+          console.log("Donut labels:", donutOptions.value.labels); // Debug log
         } else {
           // Semua data memiliki total_borrowed = 0
-          console.warn('All borrowing data is zero');
+          console.warn("All borrowing data is zero");
           donutSeries.value = [1]; // Minimal 1 untuk menampilkan chart kosong
           donutOptions.value = {
             ...donutOptions.value,
-            labels: ['No Borrowing Activity']
+            labels: ["No Borrowing Activity"],
           };
         }
       } else {
         // Fallback untuk data kosong
-        console.warn('No data received for most borrowed chart');
+        console.warn("No data received for most borrowed chart");
         donutSeries.value = [1]; // Minimal 1 untuk menampilkan chart kosong
         donutOptions.value = {
           ...donutOptions.value,
-          labels: ['No Data']
+          labels: ["No Data"],
         };
       }
     } else {
-      console.error('Failed to fetch most borrowed data:', response.status);
+      console.error("Failed to fetch most borrowed data:", response.status);
       loadingDonut.value = false;
     }
   } catch (err) {
@@ -694,7 +717,7 @@ const getMostBorrowed = async () => {
     donutSeries.value = [1];
     donutOptions.value = {
       ...donutOptions.value,
-      labels: ['Error Loading Data']
+      labels: ["Error Loading Data"],
     };
   }
 };
@@ -720,12 +743,14 @@ const options = {
 
 // Computed property untuk mendeteksi apakah donut chart kosong
 const isDonutChartEmpty = computed(() => {
-  return !donutSeries.value ||
-         donutSeries.value.length === 0 ||
-         donutOptions.value.labels.includes('Loading...') ||
-         donutOptions.value.labels.includes('No Data') ||
-         donutOptions.value.labels.includes('No Borrowing Activity') ||
-         donutOptions.value.labels.includes('Error Loading Data');
+  return (
+    !donutSeries.value ||
+    donutSeries.value.length === 0 ||
+    donutOptions.value.labels.includes("Loading...") ||
+    donutOptions.value.labels.includes("No Data") ||
+    donutOptions.value.labels.includes("No Borrowing Activity") ||
+    donutOptions.value.labels.includes("Error Loading Data")
+  );
 });
 
 onMounted(() => {
@@ -740,11 +765,11 @@ onMounted(() => {
   });
 });
 
-const formattedDate = new Intl.DateTimeFormat('en-US', options).format(now);
+const formattedDate = new Intl.DateTimeFormat("en-US", options).format(now);
 // contoh hasil: "Thu, July 31, 2025, 07:30 AM"
 
 // ubah koma jadi spasi, pecah string
-const parts = formattedDate.replace(/,/g, '').split(' ');
+const parts = formattedDate.replace(/,/g, "").split(" ");
 
 // sekarang parts: ['Thu', 'July', '31', '2025', '07:30', 'AM']
 
