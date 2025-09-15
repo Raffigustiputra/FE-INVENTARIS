@@ -32,7 +32,7 @@
         <div class="inline text-lg">/</div>
         History
         <div class="inline text-lg">/</div>
-        {{ viewData === "borrowable" ? "Borrowable" : "Consumable" }}
+        {{ viewData === "borrowable" ? "Reusable" : "Consumable" }}
       </h1>
       <SearchBox
         :text="'Search Anything...'"
