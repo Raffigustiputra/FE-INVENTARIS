@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   app: {
+    baseURL: '/inventory-ui/',
     head: {
       link: [
         {
@@ -17,10 +18,10 @@ export default defineNuxtConfig({
     }
   },
 
-  devServer: {
-    host: "15.15.12.19",
-    port: 5173, // bisa diganti
-  },
+  // devServer: {
+  //   host: "15.15.12.19",
+  //   port: 5173, // bisa diganti
+  // },
 
   vite: {
     plugins: [tailwindcss()],
