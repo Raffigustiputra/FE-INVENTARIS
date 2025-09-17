@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   },
 
   devServer: {
-    host: "15.15.12.19",
+    // host: "15.15.12.19",
     port: 5173, // bisa diganti
   },
 

@@ -307,6 +307,17 @@ const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
 
+const sortMajor = ref('');
+
+const handleSort = (type) => {
+  if (type === "major") {
+    sortMajor.value = sortMajor.value === "asc" ? "desc" : "asc";
+  } else {
+    sortMajor.value = "";
+  }
+  fetchUsers();
+};
+
 const showAlert = (type, message) => {
   alertMessage.value = message;
 
@@ -356,6 +367,7 @@ const openModalDelete = (item) => {
   accountStore.input.name = item.name;
   modalDelete.value = true;
 };
+
 const OpenModalCreate = () => {
   modalCreate.value = true;
   getMajor();
@@ -383,7 +395,6 @@ const GetMajor = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authStore.token}`,
-      'ngrok-skip-browser-warning': true
     },
   });
   if (response.status === 200) {
@@ -393,7 +404,7 @@ const GetMajor = async () => {
 
 const fetchUsers = async () => {
   const response = await $fetch(
-    `${url}/user/data?search=${accountStore.filter.search}`,
+    `${url}/user/data?search=${accountStore.filter.search}&sort_dir=${sortMajor.value}`,
     {
       method: "GET",
       headers: {
@@ -538,6 +549,7 @@ const breadcrumbs = [
   {
     label: "Sort by Major",
     icon: IconsNavbarIconsFilterMajor,
+    onClick: () => handleSort("major"),
   },
 ];
 

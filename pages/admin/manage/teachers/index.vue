@@ -28,7 +28,6 @@
 }
 </style>
 
-
 <template>
   <div>
     <Navbar
@@ -53,6 +52,7 @@
           @btnSubmit="submitImportTeacher"
           @btnClose="closeModalImport"
           title="Import Teacher"
+          :isSubmitting="isSubmitting"
         >
           <div
             class="w-full border-2 border-gray-300 rounded-lg p-8 min-h-[180px] flex flex-col items-center justify-center text-gray-500"
@@ -92,6 +92,100 @@
                 />
               </label>
             </template>
+          </div>
+        </Modal>
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div
+        v-if="modalCreate"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
+      >
+        <Modal
+          title="Create Student"
+          @btnSubmit="submitCreateTeacher"
+          @btnClose="closeModal"
+          :isSubmitting="isSubmitting"
+        >
+          <div class="w-full flex items-center gap-2">
+            <InputText
+              label="Name"
+              placeholder="Enter Name Here.."
+              v-model="teacherStore.input.name"
+              class="w-1/2"
+            />
+            <InputText
+              label="NIP"
+              placeholder="Enter NIP Here.."
+              v-model="teacherStore.input.nip"
+              class="w-1/2"
+            />
+          </div>
+          <InputText
+            label="Telephone"
+            placeholder="Enter Telephone Here.."
+            v-model="teacherStore.input.telephone"
+            class="w-1/2"
+          />
+        </Modal>
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div
+        v-if="modalEdit"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
+      >
+        <Modal
+          title="Edit Teacher"
+          @btnSubmit="submitEditTeacher"
+          @btnClose="closeModal"
+          :isSubmitting="isSubmitting"
+        >
+          <div class="w-full flex items-center gap-2">
+            <InputText
+              label="Name"
+              placeholder="Enter Name Here.."
+              v-model="teacherStore.input.name"
+              class="w-1/2"
+            />
+            <InputText
+              label="NIP"
+              placeholder="Enter NIP Here.."
+              v-model="teacherStore.input.nip"
+              class="w-1/2"
+            />
+          </div>
+          <InputText
+            label="Telephone"
+            placeholder="Enter Telephone Here.."
+            v-model="teacherStore.input.telephone"
+            class="w-1/2"
+          />
+        </Modal>
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div
+        v-if="modalDelete"
+        class="fixed top-0 left-0 z-40 flex items-center justify-center w-full h-screen bg-black/30"
+      >
+        <Modal
+          @btnSubmit="submitDeleteTeacher"
+          @btnClose="closeModal"
+          :isSubmitting="isSubmitting"
+          title="Delete Student"
+        >
+          <div class="w-full flex flex-col items-center py-4">
+            <div class="text-red-500 mb-3"></div>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">
+              Confirm Deletion
+            </h3>
+            <p class="text-center text-gray-600">
+              Are you sure you want to delete
+              <span class="font-semibold">{{ teacherStore.input.name }}</span>
+              ?
+              <br />
+            </p>
           </div>
         </Modal>
       </div>
@@ -147,8 +241,12 @@
             </td>
             <td class="px-4 py-4 text-right">
               <div class="inline-flex gap-1 items-center">
-                <ButtonEdit />
-                <ButtonDelete />
+                <ButtonEdit 
+                  @click="openModalEdit(teacher)"
+                />
+                <ButtonDelete 
+                  @click="openModalDelete(teacher)"
+                />
               </div>
             </td>
           </tr>
@@ -180,7 +278,7 @@ import {
 import IconsUpload from "@/components/icons/upload.vue";
 
 import { useAuthStore } from "@/stores/auth";
-import AlertSuccess from "@/components/alert/Success.vue"; // sesuaikan path-nya
+// import AlertSuccess from "@/components/alert/Success.vue"; // sesuaikan path-nya
 import Pagination from "@/components/pagination/index.vue";
 
 definePageMeta({
@@ -189,6 +287,41 @@ definePageMeta({
 });
 
 let timeoutFiltering = null;
+
+
+const alertError = ref(false);
+const alertMessage = ref("");
+const alertSuccess = ref(false);
+const alertWarning = ref(false);
+
+let modalCreate = ref(false);
+let modalEdit = ref(false);
+let modalDelete = ref(false);
+const isSubmitting = ref(false);
+
+let closeModal = () => {
+  modalCreate.value = false;
+  modalEdit.value = false;
+  modalDelete.value = false;
+  teacherStore.input.name = "";
+  teacherStore.input.nip = "";
+  teacherStore.input.telephone = "";
+};
+
+const openModalEdit = (item) => {
+  console.log(item.nip);
+  modalEdit.value = true;
+  teacherStore.input.id = item.id;
+  teacherStore.input.name = item.name;
+  teacherStore.input.nip = item.nip;
+  teacherStore.input.telephone = item.telephone;
+};
+
+const openModalDelete = (item) => {
+  teacherStore.input.id = item.id;
+  teacherStore.input.name = item.name;
+  modalDelete.value = true;
+};
 
 const handleSearch = () => {
   pending.value = true;
@@ -331,6 +464,7 @@ const submitImportTeacher = async () => {
   formData.append("file", fileImport.value);
 
   try {
+    isSubmitting.value = true;
     const response = await $fetch(`${url}/teacher/import`, {
       method: "POST",
       headers: {
@@ -339,7 +473,7 @@ const submitImportTeacher = async () => {
       body: formData,
     });
 
-    if (response.status === "success") {
+    if (response.status === 200) {
       alertTitle.value = "Import successful";
       alertSubtitle.value = response.message;
       alertShow.value = true;
@@ -365,29 +499,169 @@ const submitImportTeacher = async () => {
     alertShow.value = true;
   } finally {
     closeModalImport();
+    isSubmitting.value = false;
+  }
+};
+
+const submitCreateTeacher = async () => {
+  if (teacherStore.input.name === "") {
+    showAlert("warning", "Name cannot be empty");
+    return;
+  } else if (teacherStore.input.nip === "") {
+    showAlert("warning", "NIP cannot be empty");
+    return;
+  } else if (teacherStore.input.telephone === "") {
+    showAlert("warning", "No Telephone cannot be empty");
+    return;
+  }
+
+  try {
+    isSubmitting.value = true;
+    const response = await $fetch(`${url}/teacher`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: {
+        name: teacherStore.input.name,
+        nip: teacherStore.input.nip,
+        telephone: teacherStore.input.telephone,
+      },
+    });
+
+    if (response.status === 200 || response.status === 201) {
+      showAlert("success", "Teacher Successfully Created");
+      closeModal();
+      getTeachers();
+    } else {
+      showAlert("error", "Something went wrong while creating teacher");
+    }
+  } catch (error) {
+    console.error("Error creating teacher:", error);
+    showAlert("error", "Failed to create teacher. Please try again.");
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const submitEditTeacher = async () => {
+  if (teacherStore.input.name === "") {
+    showAlert("warning", "Name cannot be empty");
+    return;
+  } else if (teacherStore.input.nip === "") {
+    showAlert("warning", "NIP cannot be empty");
+    return;
+  } else if (teacherStore.input.telephone === "") {
+    showAlert("warning", "No Telephone cannot be empty");
+    return;
+  }
+
+  try {
+    isSubmitting.value = true;
+    const response = await $fetch(`${url}/teacher/${teacherStore.input.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: {
+        name: teacherStore.input.name,
+        nip: teacherStore.input.nip,
+        telephone: teacherStore.input.telephone,
+      },
+    });
+
+    if (response.status === 200 || response.status === 201) {
+      showAlert("success", "Teacher Successfully Updated");
+      closeModal();
+      getTeachers();
+    } else {
+      showAlert("error", "Something went wrong while updating teacher");
+    }
+  } catch {
+    showAlert("error", "Failed to update teacher. Please try again.");
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const submitDeleteTeacher = async () => {
+  try {
+    isSubmitting.value = true;
+    const response = await $fetch(`${url}/teacher/${teacherStore.input.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    });
+    if (response.status === 200 || response.status === 201) {
+      showAlert("success", "Teacher Successfully Deleted");
+      closeModal();
+      getTeachers();
+    } else {
+      showAlert("error", "Something went wrong while deleting teacher");
+    }
+  } catch {
+    showAlert("error", "Failed to delete teacher. Please try again.");
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
 const pending = ref(true);
 
 const getTeachers = async () => {
-  const response = await $fetch(
-    `${url}/teacher/data?search=${teacherStore.filter.search}&page=${currentPage.value}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-        "ngrok-skip-browser-warning": "true",
-      },
+  try {
+    pending.value = true;
+    const response = await $fetch(
+      `${url}/teacher/data?search=${teacherStore.filter.search}&page=${currentPage.value}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }
+    );
+    if (response.status === 200 || response.status === 201) {
+      teacherStore.teachers = response.data;
+      lastPage.value = response.meta.last_page;
+      allTeacherCount.value = response.meta.total;
+      pending.value = false;
     }
-  );
-
-  if (response.status === 200 || response.status === 201) {
-    teacherStore.teachers = response.data;
-    lastPage.value = response.meta.last_page;
-    allTeacherCount.value = response.meta.total;
+  } catch (error) {
+    console.error("Error fetching teachers:", error);
+    showAlert("error", "Failed to fetch teachers. Please try again.");
+  } finally {
     pending.value = false;
+  }
+};
+
+const showAlert = (type, message) => {
+  alertMessage.value = message;
+
+  if (type === "error") {
+    alertError.value = true;
+    setTimeout(() => {
+      alertError.value = false;
+      alertMessage.value = "";
+    }, 3000);
+  } else if (type === "warning") {
+    alertWarning.value = true;
+    setTimeout(() => {
+      alertWarning.value = false;
+      alertMessage.value = "";
+    }, 2500);
+  } else if (type === "success") {
+    alertSuccess.value = true;
+    setTimeout(() => {
+      alertSuccess.value = false;
+      alertMessage.value = "";
+    }, 2500);
+  } else {
+    alert(message);
   }
 };
 
@@ -401,7 +675,14 @@ const breadcrumbs = [
     icon: IconsNavbarIconsManageUser,
   },
   {
-    label: "Import Teacher",
+    label: "Add Teacher",
+    icon: IconsNavbarIconsAddUser,
+    onClick: () => {
+      modalCreate.value = true;
+    },
+  },
+  {
+    label: "Import Teachers",
     icon: IconsNavbarIconsAddUser,
     onClick: openModalImport,
   },
