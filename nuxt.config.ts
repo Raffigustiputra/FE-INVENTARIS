@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
+  
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
@@ -12,7 +13,7 @@ export default defineNuxtConfig({
         {
           rel: 'icon',
           type: 'image/png',
-          href: '/images/WV APP - Circle.png',
+          href: '/inventory-ui/images/WV APP - Circle.png',
         }
       ]
     }
@@ -31,14 +32,18 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      authUrl: process.env.NUXT_AUTH_URL,
-      storageUrl: process.env.NUXT_STORAGE_URL,
+      authUrl:
+        process.env.NUXT_PUBLIC_AUTH_URL || "http://45.64.100.26:2233/inventory-api/public/api",
+        storageUrl: process.env.NUXT_PUBLIC_STORAGE_URL || "http://45.64.100.26:2233/inventory-api/public/storage",
     },
+  },
+
+  nitro: {
+    preset: 'static'
   },
 
   modules: ["@pinia/nuxt", "pinia-plugin-persistedstate/nuxt"],
 
-  // Add the plugin for vue3-apexcharts
   plugins: [
     { src: "~/plugins/vue3-apexcharts.js", mode: "client" }, // Ensure this is added
   ],

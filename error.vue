@@ -2,7 +2,7 @@
   <div class="h-screen flex flex-col text-center font-Poppins">
     <header class=" border-gray-200">
       <img
-        src="/public/images/WV-BLACKLANDSCAPE.png"
+        src="/images/WV-BLACKLANDSCAPE.png"
         alt="WV black landscape"
         class="w-50 m-5"
       />
@@ -10,7 +10,7 @@
 
     <main class="text-black h-[80%] flex flex-col items-center justify-center">
       <img
-        src="/public/images/errorImages/404.png"
+        src="/images/errorImages/404.png"
         alt="404 Image"
         class="w-90" />
       <h1 class="text-6xl font-medium my-4 tracking-tight"> {{ error.statusCode }} </h1>

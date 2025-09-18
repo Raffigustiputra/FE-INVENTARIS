@@ -54,7 +54,7 @@
           :isSubmitting="isSubmitting"
           :disableSubmit="!isFormValid()"
           :showActions="!isPreviewData"
-          :labelButton="buttonLabel"
+          :labelButton="currentModal === 'selection' ? 'Select' : (currentModal.startsWith('return-') ? 'Return' : 'Submit')"
         >
         <div class="max-h-96 overflow-y">
 
@@ -355,11 +355,11 @@
                 for="confirmData"
                 class="text-sm text-gray-700 select-none"
               >
-                {{ checkboxLabel }}
+                Make sure the data is correct
               </label>
             </div>
           </div>
-
+  
           <!-- Borrowable Teacher Form -->
           <div
             v-if="
@@ -550,11 +550,11 @@
                 for="confirmData"
                 class="text-sm text-gray-700 select-none"
               >
-                {{ checkboxLabel }}
+                Make sure the data is correct
               </label>
             </div>
           </div>
-
+  
           <!-- Consumable Student Form -->
           <div v-if="currentModal === 'consumable-student'">
             <div class="space-y-4">
@@ -692,11 +692,11 @@
                 for="confirmData"
                 class="text-sm text-gray-700 select-none"
               >
-                {{ checkboxLabel }}
+                Make sure the data is correct
               </label>
             </div>
           </div>
-
+  
           <!-- Consumable Teacher Form -->
           <div v-if="currentModal === 'consumable-teacher'">
             <div class="space-y-4">
@@ -828,7 +828,7 @@
                 for="confirmData"
                 class="text-sm text-gray-700 select-none"
               >
-                {{ checkboxLabel }}
+                Make sure the data is correct
               </label>
             </div>
           </div>
@@ -1117,22 +1117,6 @@ const paginationItems = computed(() => {
   return pages;
 });
 
-const buttonLabel = computed(() => {
-  if (currentModal.value === 'selection') {
-    return 'Select';
-  } else {
-    return 'Submit';
-  }
-});
-
-const checkboxLabel = computed(() => {
-  if (currentModal.value && currentModal.value.startsWith('return-')) {
-    return 'Make sure the item is in good condition';
-  } else {
-    return 'Make sure the data is correct';
-  }
-});
-
 // Breadcrumbs Configuration
 const breadcrumbs = [
   {
@@ -1389,12 +1373,12 @@ const submitBorrowableStudent = async () => {
 
   if (response.ok) {
     alertSuccess.value = true;
-    alertMessage.value = "Reusable form submitted successfully!";
+    alertMessage.value = "Borrowable form submitted successfully!";
     closeModal();
     getUnitLoan();
   } else {
     alertError.value = true;
-    alertMessage.value = "Failed to submit reusable form";
+    alertMessage.value = "Failed to submit borrowable form";
   }
 };
 

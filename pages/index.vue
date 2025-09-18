@@ -164,7 +164,7 @@ definePageMeta({
     <div class="absolute right-4 top-6 sm:right-8 sm:top-10">
       <div class="flex items-center relative gap-2">
         <img
-          src="/public/images/wv-blue.png"
+          src="/images/wv-blue.png"
           alt="Logo wv-blue"
           class="size-16 sm:size-20 object-contain"
         />
@@ -179,7 +179,7 @@ definePageMeta({
     <!-- Background Image Layer -->
     <div
       class="absolute inset-0 bg-cover bg-center opacity-30"
-      style="background-image: url('/images/Banner-Web.jpg'); opacity: 0.3"
+      :style="{ backgroundImage: `url(${useRuntimeConfig().app.baseURL}images/Banner-Web.jpg)` }"
     ></div>
 
     <!-- Konten utama -->

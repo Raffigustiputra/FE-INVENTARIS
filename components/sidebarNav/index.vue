@@ -60,78 +60,73 @@
   </transition>
 
   <div
-        v-if="createModal"
-        class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/30"
-      >
-        <Modal
-          title="Add New Major"
-          @btnSubmit="submitCreateMajor"
-          @btnClose="closeCreateModal"
-        >
-          <div class="w-full flex items-center gap-2">
-            <InputText
-              class="w-2/12"
-              v-model="majorStore.input.name"
-              label="Major Name"
-              placeholder="Enter Major Name Here.."
-            />
-            <div class="w-9/12">
-              <label
-                for="file"
-                class="block ml-0.5 text-sm font-medium text-[#727272]"
-              >
-                Major Logo
-              </label>
+    v-if="createModal"
+    class="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-black/30"
+  >
+    <Modal
+      title="Add New Major"
+      @btnSubmit="submitCreateMajor"
+      @btnClose="closeCreateModal"
+    >
+      <div class="w-full flex items-center gap-2">
+        <InputText
+          class="w-2/12"
+          v-model="majorStore.input.name"
+          label="Major Name"
+          placeholder="Enter Major Name Here.."
+        />
+        <div class="w-9/12">
+          <label
+            for="file"
+            class="block ml-0.5 text-sm font-medium text-[#727272]"
+          >
+            Major Logo
+          </label>
 
-              <!-- wrapper untuk input & teks -->
-              <label
-                for="file"
-                class="relative block mt-2 w-full px-4 py-2 rounded-sm text-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC] cursor-pointer"
+          <!-- wrapper untuk input & teks -->
+          <label
+            for="file"
+            class="relative block mt-2 w-full px-4 py-2 rounded-sm text-sm border border-[#D2D2D2] font-medium bg-[#F9FBFC] cursor-pointer"
+          >
+            <span id="fileName" class="text-[#727272] flex items-center gap-2">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 13 13"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <span
-                  id="fileName"
-                  class="text-[#727272] flex items-center gap-2"
-                >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 13 13"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5.6875 9.75V3.12813L3.575 5.24063L2.4375 4.0625L6.5 0L10.5625 4.0625L9.425 5.24063L7.3125 3.12813V9.75H5.6875ZM1.625 13C1.17812 13 0.795573 12.8409 0.477344 12.5227C0.159115 12.2044 0 11.8219 0 11.375V8.9375H1.625V11.375H11.375V8.9375H13V11.375C13 11.8219 12.8409 12.2044 12.5227 12.5227C12.2044 12.8409 11.8219 13 11.375 13H1.625Z"
-                      fill="#545454"
-                    />
-                  </svg>
-
-                  Upload File
-                </span>
-                <input
-                  @change="handleFileUpload($event)"
-                  type="file"
-                  id="file"
-                  name="file"
-                  class="hidden"
-                  onchange="document.getElementById('fileName').textContent = this.files.length ? this.files[0].name : 'Upload File'"
+                <path
+                  d="M5.6875 9.75V3.12813L3.575 5.24063L2.4375 4.0625L6.5 0L10.5625 4.0625L9.425 5.24063L7.3125 3.12813V9.75H5.6875ZM1.625 13C1.17812 13 0.795573 12.8409 0.477344 12.5227C0.159115 12.2044 0 11.8219 0 11.375V8.9375H1.625V11.375H11.375V8.9375H13V11.375C13 11.8219 12.8409 12.2044 12.5227 12.5227C12.2044 12.8409 11.8219 13 11.375 13H1.625Z"
+                  fill="#545454"
                 />
-              </label>
-            </div>
-            <div class="w-16">
-              <h1 class="text-sm mb-2 font-medium text-[#727272] ml-0.5">
-                Color
-              </h1>
-              <input
-                v-model="majorStore.input.color"
-                type="color"
-                name=""
-                id=""
-                class="size-[2.3rem] w-full rounded-sm p-0.5 border border-[#D2D2D2]"
-              />
-            </div>
-          </div>
-        </Modal>
+              </svg>
+
+              Upload File
+            </span>
+            <input
+              @change="handleFileUpload($event)"
+              type="file"
+              id="file"
+              name="file"
+              class="hidden"
+              onchange="document.getElementById('fileName').textContent = this.files.length ? this.files[0].name : 'Upload File'"
+            />
+          </label>
+        </div>
+        <div class="w-16">
+          <h1 class="text-sm mb-2 font-medium text-[#727272] ml-0.5">Color</h1>
+          <input
+            v-model="majorStore.input.color"
+            type="color"
+            name=""
+            id=""
+            class="size-[2.3rem] w-full rounded-sm p-0.5 border border-[#D2D2D2]"
+          />
+        </div>
       </div>
+    </Modal>
+  </div>
 
   <div
     :class="[
@@ -149,13 +144,13 @@
       >
         <img
           v-if="!sidebarStore.isCollapsed"
-          src="../../public/images/wv-logo.png"
+          src="/images/wv-logo.png"
           alt="Logo"
           class="w-[200px]"
         />
         <img
           v-else
-          src="../../public/images/wv-blue.png"
+          src="/images/wv-blue.png"
           alt="Logo"
           class="w-[50px] mx-auto mb-2.5"
         />
@@ -175,17 +170,20 @@
     <!-- SIDEBAR -->
     <div>
       <div
-        :class="['select-none flex items-center justify-between ml-5 mt-6', sidebarStore.isCollapsed ? 'mb-3' : 'mb-4']"
+        :class="[
+          'select-none flex items-center justify-between ml-5 mt-6',
+          sidebarStore.isCollapsed ? 'mb-3' : 'mb-4',
+        ]"
       >
         <img
           v-if="!sidebarStore.isCollapsed"
-          src="../../public/images/wv-logo.png"
+          src="/images/wv-logo.png"
           alt="Logo"
           class="w-[200px]"
         />
         <img
           v-else
-          src="../../public/images/wv-blue.png"
+          src="/images/wv-blue.png"
           alt="Logo"
           class="w-[50px] mx-auto mb-2.5"
         />
@@ -200,7 +198,7 @@
           v-if="
             $route.path.includes('/admin') && authStore?.userInfo?.major?.icon
           "
-          src="../../public/images/wikrama-logo.png"
+          src="/images/wikrama-logo.png"
           alt="Wikrama Logo"
           class="select-none rounded-full w-[40px]"
         />
@@ -216,7 +214,7 @@
         <!-- Fallback kalau nggak ada icon -->
         <img
           v-else
-          src="../../public/images/wikrama-logo.png"
+          src="/images/wikrama-logo.png"
           alt="Default Logo"
           class="w-[45px] rounded-full"
         />
