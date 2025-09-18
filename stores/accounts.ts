@@ -14,5 +14,6 @@ export const useAccountsStore = defineStore("accounts", {
             search : ''
         },
         Accounts : [],
+        total : 0
     }),
 });
