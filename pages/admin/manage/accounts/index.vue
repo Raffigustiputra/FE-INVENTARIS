@@ -267,11 +267,20 @@
         </tbody>
       </table>
     </div>
-    <p class="text-xs text-gray-500 mt-3 ml-2">
-      Showing {{ accountStore.Accounts.length > 0 ? 1 : 0 }} to
-      {{ accountStore.Accounts.length }} of
-      {{ accountStore.Accounts.length }} Accounts
-    </p>
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-xs text-gray-500">
+        Showing {{ accountStore.Accounts.length }} of
+        {{ accountStore.total }} Students
+      </p>
+      <Pagination
+        :currentPage="currentPage"
+        :lastPage="lastPage"
+        :paginationItems="paginationItems"
+        @prev="prevPage"
+        @next="nextPage"
+        @change="changePage"
+      />
+    </div>
   </div>
 </template>
 
@@ -306,6 +315,104 @@ const alertError = ref(false);
 const alertMessage = ref("");
 const alertSuccess = ref(false);
 const alertWarning = ref(false);
+
+const lastPage = ref(0);
+const currentPage = ref(1);
+const maxVisiblePages = 3;
+
+const sortByMajor = ref("");
+
+const paginationItems = computed(() => {
+  const pages = [];
+  const halfVisible = Math.floor(maxVisiblePages / 2);
+
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = 1;
+  }
+
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (currentPage.value <= halfVisible + 1) {
+      for (let i = 1; i <= maxVisiblePages - 1; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
+        i++
+      ) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (
+        let i = currentPage.value - halfVisible + 1;
+        i <= currentPage.value + halfVisible - 1;
+        i++
+      ) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(lastPage.value);
+    }
+  }
+  return pages;
+});
+
+const nextPage = async () => {
+  if (currentPage.value < lastPage.value) {
+    currentPage.value++;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      fetchUsers();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const prevPage = async () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pending.value = true;
+    console.log(currentPage.value);
+    nextTick(() => {
+      fetchUsers();
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }
+};
+
+const changePage = async (page) => {
+  if (page !== "...") {
+    currentPage.value = page;
+    pending.value = true;
+    console.log(currentPage.value);
+  }
+  nextTick(() => {
+    fetchUsers();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  });
+};
+
 
 const sortMajor = ref('');
 
@@ -404,18 +511,20 @@ const GetMajor = async () => {
 
 const fetchUsers = async () => {
   const response = await $fetch(
-    `${url}/user/data?search=${accountStore.filter.search}&sort_dir=${sortMajor.value}`,
+    `${url}/user/data?search=${accountStore.filter.search}&sort_dir=${sortMajor.value}&page=${currentPage.value}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
-      },
+},
     }
   );
 
   if (response.status === 200) {
     accountStore.Accounts = response.data.filter(user => user.role !== "superadmin");
+    lastPage.value = response.meta.last_page;
+    accountStore.total = response.meta.total;
     pending.value = false;
   }
 };
