@@ -592,7 +592,7 @@ const pending = ref(true);
 
 const getMainInventoryItems = async () => {
   const response = await $fetch(
-    `${url}/item?search=${consumableItemStore.filter.search}&page=${currentPage.value}`,
+    `${url}/item?search=${consumableItemStore.filter.search}&page=${currentPage.value}&tabs=false`,
     {
       method: "GET",
       headers: {

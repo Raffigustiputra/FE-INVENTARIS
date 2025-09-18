@@ -542,7 +542,7 @@ const printSelected = async () => {
 const getMainInventoryItems = async () => {
   pending.value = true;
   const response = await $fetch(
-    `${url}/item?search=${mainInventoryStore.filter.search}&page=${currentPage.value}`,
+    `${url}/item?search=${mainInventoryStore.filter.search}&page=${currentPage.value}&tabs=false`,
     {
       method: "GET",
       headers: {
