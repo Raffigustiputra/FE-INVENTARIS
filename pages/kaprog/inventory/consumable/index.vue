@@ -91,7 +91,7 @@
           </div>
           <div class="w-full flex items-center gap-2">
             <InputNumber
-              label="QTY"
+              label="Qty"
               placeholder="Enter Quantity"
               v-model="consumableItemStore.input.quantity"
             />
@@ -267,6 +267,7 @@ const breadcrumbs = [
   {
     label: "Add Item",
     icon: IconsNavbarIconsAddItem,
+    click: () => (modalCreate.value = true),
   },
   {
     label: "Sort by Type",
@@ -569,9 +570,7 @@ const exportSelectedData = async () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `consumable_items_${new Date()
-        .toISOString()
-        .slice(0, 10)}.xlsx`;
+      link.download = `Inventory Consumable Items - ${authStore.userInfo.major.name}.xlsx`;
       link.click();
       window.URL.revokeObjectURL(url);
 

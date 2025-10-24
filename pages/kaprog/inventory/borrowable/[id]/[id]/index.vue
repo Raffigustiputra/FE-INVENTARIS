@@ -776,25 +776,12 @@ const paginationItems = computed(() => {
   const pages = [];
   const halfVisible = Math.floor(maxVisiblePages / 2);
 
-  // Filter only items with the current merk
-  const currentMerk = unitItemStore.unitItems[0]?.sub_item.merk;
-  const filteredItems = currentMerk
-    ? unitItemStore.unitItems.filter(
-        (item) => item.sub_item?.merk === currentMerk
-      )
-    : unitItemStore.unitItems;
-
-  // Calculate total pages based on filtered items
-  const totalFiltered = filteredItems.length;
-  const itemsPerPage = 10; // adjust if needed
-  const filteredLastPage = Math.max(1, Math.ceil(totalFiltered / itemsPerPage));
-
-  if (currentPage.value > filteredLastPage) {
+  if (currentPage.value > lastPage.value) {
     currentPage.value = 1;
   }
 
-  if (filteredLastPage <= maxVisiblePages) {
-    for (let i = 1; i <= filteredLastPage; i++) {
+  if (lastPage.value <= maxVisiblePages) {
+    for (let i = 1; i <= lastPage.value; i++) {
       pages.push(i);
     }
   } else {
@@ -803,13 +790,13 @@ const paginationItems = computed(() => {
         pages.push(i);
       }
       pages.push("...");
-      pages.push(filteredLastPage);
-    } else if (currentPage.value >= filteredLastPage - halfVisible) {
+      pages.push(lastPage.value);
+    } else if (currentPage.value >= lastPage.value - halfVisible) {
       pages.push(1);
       pages.push("...");
       for (
-        let i = filteredLastPage - (maxVisiblePages - 2);
-        i <= filteredLastPage;
+        let i = lastPage.value - (maxVisiblePages - 2);
+        i <= lastPage.value;
         i++
       ) {
         pages.push(i);
@@ -825,7 +812,7 @@ const paginationItems = computed(() => {
         pages.push(i);
       }
       pages.push("...");
-      pages.push(filteredLastPage);
+      pages.push(lastPage.value);
     }
   }
   return pages;
@@ -995,9 +982,7 @@ const exportSelectedData = async () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `borrowable_items_${new Date()
-        .toISOString()
-        .slice(0, 10)}.xlsx`;
+      link.download = `Inventory Reusable Items - ${authStore.userInfo.major.name}.xlsx`;
       link.click();
       window.URL.revokeObjectURL(url);
 

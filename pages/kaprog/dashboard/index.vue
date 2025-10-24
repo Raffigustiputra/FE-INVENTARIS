@@ -259,7 +259,7 @@
                       <td align="center" class="px-3 py-2">
                         <span class="text-xs">
                           {{
-                            dayjs(i.borrowed_at).format("YYYY-MM-DD | HH:mm")
+                            dayjs(i.date_time).format("YYYY-MM-DD | HH:mm")
                           }}
                         </span>
                       </td>
@@ -339,7 +339,7 @@
                   <span class="truncate">{{ i.merk }}</span>
                 </h1>
                 <h1 class="text-[0.55rem]">
-                  {{ dayjs(i.created_at).format("DD MMMM YYYY") }}
+                  {{ dayjs(i.added_at).format("DD MMMM YYYY") }}
                 </h1>
               </div>
               <div
@@ -612,7 +612,7 @@ const getLastActivity = async () => {
 const getLastItems = async () => {
   loadingLatestItems.value = true;
   const response = await $fetch(
-    `${url}/dashboard/admin-user/items-loans-history`,
+    `${url}/dashboard/admin-user/latest-items`,
     {
       method: "GET",
       headers: {

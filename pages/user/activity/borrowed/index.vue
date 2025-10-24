@@ -1542,7 +1542,7 @@ const exportSelectedData = async () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `borrowed_items_selected_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.download = `Report Borrowed Items - ${authStore.userInfo.major.name}  ${new Date().toISOString().slice(0, 10)}.xlsx`;
       link.click();
       window.URL.revokeObjectURL(url);
       

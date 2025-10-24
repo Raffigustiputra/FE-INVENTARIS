@@ -107,8 +107,8 @@
 import PropertyIcon from "@/components/icons/vector.vue";
 import LinkIcon from "@/components/icons/global_netv.vue";
 
-const logoSrc = "/images/WV - WHITE LANDSCAPE 1.png"
-const minilogoSrc = "/images/WV - WHITE 1.png"
+const logoSrc = `${useRuntimeConfig().app.baseURL}images/WV - WHITE LANDSCAPE 1.png`
+const minilogoSrc = `${useRuntimeConfig().app.baseURL}images/WV - WHITE 1.png`
 
 defineProps({
     selectedItems: {
